@@ -11,4 +11,33 @@ package diceliar;
  */
 public class Players {
     
+    Player[] vectorPlayers;
+    
+    public Players(int _nPlayers){
+        //costruttore
+        vectorPlayers = new Player[_nPlayers];
+        
+    }
+    
+    void addPlayer(){
+        
+    }
+    void removePlayer(){
+        
+    }
+    void initDice(){
+        
+    }
+    void getAllDice(){
+        
+    }
+
+    public Player[] getVectorPlayers() {
+        return vectorPlayers;
+    }
+
+    public void setVectorPlayers(Player[] _vectorPlayers) {
+        this.vectorPlayers = _vectorPlayers;
+    }
+    
 }

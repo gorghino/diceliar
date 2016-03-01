@@ -10,5 +10,6 @@ package diceliar;
  * @author proietfb
  */
 public class Player {
+
     
 }
