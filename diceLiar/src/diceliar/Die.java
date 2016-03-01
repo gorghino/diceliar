@@ -5,10 +5,30 @@
  */
 package diceliar;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  *
  * @author proietfb
  */
 public class Die {
+    int value;
+    
+    public Die(){
+        value = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+    }
+    
+    public void resetValue(){
+        value = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int _value) {
+        this.value = _value;
+    }
+    
     
 }

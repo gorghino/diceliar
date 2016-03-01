@@ -5,6 +5,8 @@
  */
 package diceliar;
 
+import java.util.Arrays;
+
 /**
  *
  * @author gorgo
@@ -19,6 +21,7 @@ public class DiceLiar {
     public static void main(String[] args) {
         
         Board startBoard = new Board(START_TURN, 2);
+        Players currentPlayers = startBoard.getCurrentPlayers();
     }
     
 }

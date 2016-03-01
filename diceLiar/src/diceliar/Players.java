@@ -5,6 +5,8 @@
  */
 package diceliar;
 
+import java.util.UUID;
+
 /**
  *
  * @author proietfb
@@ -15,7 +17,10 @@ public class Players {
     
     public Players(int _nPlayers){
         //costruttore
-        vectorPlayers = new Player[_nPlayers];
+        vectorPlayers = new Player[_nPlayers]; 
+        for (int i = 0; i < _nPlayers; i += 1) {
+            vectorPlayers[i] = new Player();
+        }
         
     }
     
@@ -38,6 +43,15 @@ public class Players {
 
     public void setVectorPlayers(Player[] _vectorPlayers) {
         this.vectorPlayers = _vectorPlayers;
+    }
+    
+    public UUID[] getAllId(){
+        int i=0;
+        UUID[] idArray = new UUID[vectorPlayers.length];
+        for (i=0;i<vectorPlayers.length;i++)
+            idArray[i] = vectorPlayers[i].getId();
+        
+        return idArray;
     }
     
 }

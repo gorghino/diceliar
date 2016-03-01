@@ -5,6 +5,7 @@
  */
 package diceliar;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -18,8 +19,11 @@ public class Player {
     int myBet;
     
     public Player(){
+        System.out.println("Creo player");
         id = UUID.randomUUID();
         myTurn = 0;
+        
+        Dice myDice = new Dice(5);
     }
     
     public Player(String _name, UUID _id, int _myTurn, int _myBet){

@@ -10,23 +10,42 @@ package diceliar;
  * @author proietfb
  */
 public class Dice {
-    int nDice;
-    int[] vectorDice;
+    int nDice; //Numero di dadi validi 
+    Die[] vectorDice;
     
-    public Dice(int _nDice, int[] _vectorDice){
+    public Dice(int _nDice){
         //costruttore
         nDice = _nDice;
-        vectorDice = _vectorDice;
+
+        vectorDice = new Die[_nDice]; 
+        for (int i = 0; i < _nDice; i += 1) {
+            vectorDice[i] = new Die();
+        }
     }
     
-    void initDice(){
-        
+    void resetDice(){
+        for (int i = 0; i < nDice; i += 1) {
+            vectorDice[i].resetValue();
+        }
     }
-    void addDie(){
-        
-    }
+    
+    void addDie(){}
+    
     void removeDie(){
-        
+        int arrayLength = vectorDice.length;
+        for (int i = arrayLength; i > 0; i -= 1) {
+            if(vectorDice[i].getValue() != 0){
+                vectorDice[i].setValue(0);
+                break;
+            }            
+        }
+    }
+    
+    public int[] getDiceValues(){
+        int[] diceValue = new int[5];
+        for(int i=0; i< nDice; i+=1)
+            diceValue[i] = vectorDice[i].getValue();
+        return diceValue;
     }
 
     public int getnDice() {
@@ -37,11 +56,11 @@ public class Dice {
         this.nDice = _nDice;
     }
 
-    public int[] getVectorDice() {
+    public Die[] getVectorDice() {
         return vectorDice;
     }
 
-    public void setVectorDice(int[] _vectorDice) {
+    public void setVectorDice(Die[] _vectorDice) {
         this.vectorDice = _vectorDice;
     }
     
