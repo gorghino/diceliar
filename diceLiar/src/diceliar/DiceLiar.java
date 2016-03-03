@@ -22,6 +22,18 @@ public class DiceLiar {
         
         Board startBoard = new Board(START_TURN, 2);
         Players currentPlayers = startBoard.getCurrentPlayers();
+        currentPlayers.setCurrentBoard(startBoard);
+        
+        System.out.println(Arrays.toString(currentPlayers.getVectorPlayers()[0].getmyDiceValue()) + "\t" + Arrays.toString(currentPlayers.getVectorPlayers()[0].getmyDiceValueGrouped()));
+        System.out.println(Arrays.toString(currentPlayers.getVectorPlayers()[1].getmyDiceValue()) + "\t" + Arrays.toString(currentPlayers.getVectorPlayers()[1].getmyDiceValueGrouped()));
+
+  
+        //Imposto il giocatore iniziale random
+        int playerStarterID = startBoard.setStarter();
+        Player playerStarter = startBoard.getCurrentPlayers().getVectorPlayers()[playerStarterID];
+        playerStarter.setTurn(true);
+        playerStarter.makeChoice();
+        
     }
     
 }

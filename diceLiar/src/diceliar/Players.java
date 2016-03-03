@@ -5,6 +5,7 @@
  */
 package diceliar;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -14,15 +15,25 @@ import java.util.UUID;
 public class Players {
     
     Player[] vectorPlayers;
+    Board currentBoard;
     
     public Players(int _nPlayers){
         //costruttore
         vectorPlayers = new Player[_nPlayers]; 
         for (int i = 0; i < _nPlayers; i += 1) {
-            vectorPlayers[i] = new Player();
+            vectorPlayers[i] = new Player(this);
         }
         
     }
+
+    public Board getCurrentBoard() {
+        return currentBoard;
+    }
+
+    public void setCurrentBoard(Board _currentBoard) {
+        this.currentBoard = _currentBoard;
+    }  
+    
     
     void addPlayer(){
         
@@ -33,7 +44,19 @@ public class Players {
     void initDice(){
         
     }
-    void getAllDice(){
+    public int[] getAllDice(){
+        int[] allDiceVector = new int[6]; 
+        for (int i = 0; i < vectorPlayers.length; i += 1) {
+            Player player = vectorPlayers[i];
+            for(int j=0; j<6; j += 1){
+                //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped()[j] + " dadi di valore " + (j+1));
+                allDiceVector[j] += player.getmyDiceValueGrouped()[j];
+            }
+        }
+        
+        System.out.println(Arrays.toString(allDiceVector));
+        
+        return allDiceVector;
         
     }
 

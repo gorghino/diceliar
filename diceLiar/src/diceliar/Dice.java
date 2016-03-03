@@ -47,6 +47,14 @@ public class Dice {
             diceValue[i] = vectorDice[i].getValue();
         return diceValue;
     }
+    
+    public int[] getDiceValuesGrouped(){
+         int[] diceValue = new int[6];
+         for(int i=0; i<5; i+=1)
+             diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
+               
+        return diceValue;
+    }
 
     public int getnDice() {
         return nDice;
