@@ -1,0 +1,3 @@
+grant codeBase "file:/home/proietfb/NetBeansProjects/Server/src/" {
+	permission java.security.AllPermission;
+};
