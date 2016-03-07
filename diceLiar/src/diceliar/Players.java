@@ -21,7 +21,7 @@ public class Players {
         //costruttore
         vectorPlayers = new Player[_nPlayers]; 
         for (int i = 0; i < _nPlayers; i += 1) {
-            vectorPlayers[i] = new Player(this);
+            vectorPlayers[i] = new Player(this, i);
         }
         
     }
@@ -69,12 +69,21 @@ public class Players {
     }
     
     public UUID[] getAllId(){
-        int i=0;
         UUID[] idArray = new UUID[vectorPlayers.length];
-        for (i=0;i<vectorPlayers.length;i++)
+        for (int i=0;i<vectorPlayers.length;i++)
             idArray[i] = vectorPlayers[i].getId();
         
         return idArray;
+    }
+    
+    public void resetAllDice(){
+        for (int i=0;i<vectorPlayers.length;i++)
+            vectorPlayers[i].resetDice();
+    }
+    
+    public void printDice(){
+         for (int i=0;i<vectorPlayers.length;i++)
+               System.out.println(i + ": " + Arrays.toString(vectorPlayers[i].getmyDiceValue()) + "\t" + Arrays.toString(vectorPlayers[i].getmyDiceValueGrouped()));
     }
     
 }

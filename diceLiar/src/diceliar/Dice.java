@@ -23,7 +23,7 @@ public class Dice {
         }
     }
     
-    void resetDice(){
+    public void resetDice(){
         for (int i = 0; i < nDice; i += 1) {
             vectorDice[i].resetValue();
         }
