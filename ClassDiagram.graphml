@@ -29,7 +29,7 @@
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel>nTurns
+            <y:AttributeLabel>nTurn
 nPlayers</y:AttributeLabel>
             <y:MethodLabel>initGame()
 checkBet()
@@ -82,7 +82,8 @@ getAllDice()</y:MethodLabel>
             <y:AttributeLabel>id
 name
 myTurn
-myBet</y:AttributeLabel>
+myBet
+myDice</y:AttributeLabel>
             <y:MethodLabel>makeChoice()
 makeBet()
 doubt()
