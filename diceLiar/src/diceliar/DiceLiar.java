@@ -29,13 +29,15 @@ public class DiceLiar {
         currentPlayers.setCurrentBoard(startBoard);
         
         currentPlayers.printDice();
-        
+               if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
          RMIServer obj = new RMIServer(startBoard);
             //creo un registro e vi collego il metodo associandolo come istanza
             //ad un nome ("server")
             
-            Registry reg = LocateRegistry.createRegistry(5678);
-            System.setProperty("java.rmi.server.hostname","lucia.cs.unibo.it");
+            Registry reg = LocateRegistry.createRegistry(1099);
+            //System.setProperty("java.rmi.server.hostname","lucia.cs.unibo.it");
             reg.bind("server", obj);
             
             System.out.println("Server Started...");
