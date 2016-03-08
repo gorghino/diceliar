@@ -1,4 +1,5 @@
 
+import diceliar.RMI;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -40,7 +41,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI{
             //creo un registro e vi collego il metodo associandolo come istanza
             //ad un nome ("server")
             
-            Registry reg = LocateRegistry.createRegistry(1099);
+            Registry reg = LocateRegistry.createRegistry(5678);
+            System.setProperty("java.rmi.server.hostname","130.136.155.76");
             reg.bind("server", obj);
             
             System.out.println("Server Started...");

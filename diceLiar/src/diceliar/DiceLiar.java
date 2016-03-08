@@ -5,6 +5,10 @@
  */
 package diceliar;
 
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Arrays;
 
 /**
@@ -18,7 +22,7 @@ public class DiceLiar {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException {
         
         Board startBoard = new Board(START_TURN, 2);
         Players currentPlayers = startBoard.getCurrentPlayers();
@@ -26,7 +30,17 @@ public class DiceLiar {
         
         currentPlayers.printDice();
         
-        startBoard.initGame(startBoard);
+         RMIServer obj = new RMIServer(startBoard);
+            //creo un registro e vi collego il metodo associandolo come istanza
+            //ad un nome ("server")
+            
+            Registry reg = LocateRegistry.createRegistry(5678);
+            System.setProperty("java.rmi.server.hostname","lucia.cs.unibo.it");
+            reg.bind("server", obj);
+            
+            System.out.println("Server Started...");
+        
+        //startBoard.initGame(startBoard);
       
         
     }
