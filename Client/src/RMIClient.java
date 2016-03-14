@@ -13,36 +13,35 @@ import java.rmi.registry.Registry;
  * @author proietfb
  */
 public class RMIClient  {
-    
-    
+
+
     public int sum(int x, int y){
         return x+y;
     }
     public static void main(String[] args) {
         RMIClient client = new RMIClient();
         client.connectServer();
-        
+
     }
     private void connectServer(){
       //  if (System.getSecurityManager() == null) {
             //System.setSecurityManager(new SecurityManager());
        // }
         try{
-            
-            Registry reg= LocateRegistry.getRegistry("dalibor.cs.unibo.it", 40000);
+
+            Registry reg= LocateRegistry.getRegistry("localhost", 40000);
             //ottengo lo stub dell'oggetto remoto contenuto nel server
             RMI rmi = (RMI) reg.lookup("server");
             System.out.println("Connected to server");
-            
+
             //uso il metodo remoto
             Board text = rmi.getBoard();
             System.out.println(Integer.toString(text.getnPlayers()));
-            
-            
+
+
         }
         catch(Exception e){
             System.out.println(e);
         }
     }
 }
-           

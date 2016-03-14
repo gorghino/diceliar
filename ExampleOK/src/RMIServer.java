@@ -31,11 +31,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI{
         //return text;
     }
 
-    @Override
-    public int sum(int x, int y){
-        return x+y;
-    }
-
 //    public static void main(String[] args) {
 //       // if (System.getSecurityManager() == null) {
 //        //    System.setSecurityManager(new SecurityManager());

@@ -1,7 +1,3 @@
-
-
-
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -16,10 +12,11 @@ import java.rmi.RemoteException;
  * @author proietfb
  */
 public interface RMI extends Remote{
+    
     public String getData(String text) throws RemoteException;
-
-    public int sum(int x,int y) throws RemoteException;
     
     public Board getBoard() throws RemoteException;
+    
+    
 
 }
