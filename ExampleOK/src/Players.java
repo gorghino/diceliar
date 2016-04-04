@@ -1,5 +1,3 @@
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -8,8 +6,8 @@
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
 
 /**
  *
@@ -20,13 +18,12 @@ public class Players implements Serializable{
     Player[] vectorPlayers;
     Board currentBoard;
 
-    public Players(int _nPlayers){
+    public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray){
         //costruttore
         vectorPlayers = new Player[_nPlayers];
         for (int i = 0; i < _nPlayers; i += 1) {
-            vectorPlayers[i] = new Player(this, i);
+            vectorPlayers[i] = new Player(this, i, _rmiPlayerArray.get(i).ip, _rmiPlayerArray.get(i).port);
         }
-
     }
 
     public Board getCurrentBoard() {
@@ -71,17 +68,18 @@ public class Players implements Serializable{
         this.vectorPlayers = _vectorPlayers;
     }
 
-    public UUID[] getAllId(){
-        UUID[] idArray = new UUID[vectorPlayers.length];
+    public int[] getAllId(){
+        int[] idArray = new int[vectorPlayers.length];
         for (int i=0;i<vectorPlayers.length;i++)
-            idArray[i] = vectorPlayers[i].getId();
+            idArray[i] = vectorPlayers[i].getMyID();
 
         return idArray;
     }
 
     public void resetAllDice(){
-        for (int i=0;i<vectorPlayers.length;i++)
-            vectorPlayers[i].resetDice();
+        for(Player vectorPlayer : vectorPlayers) {
+            vectorPlayer.resetDice();
+        }
     }
 
     public void printDice(){

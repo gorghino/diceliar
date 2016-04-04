@@ -1,6 +1,10 @@
 
+
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -10,18 +14,16 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  *
- * @author davide.aguiari
+ * @author proietfb
  */
-public class UnicastExport extends UnicastRemoteObject{
+public class RMIServer extends UnicastRemoteObject{
+
     Board currentBoard;
-    
-    public UnicastExport(Board _currentBoard) throws RemoteException{
+
+    public RMIServer(Board _currentBoard) throws RemoteException{
         super();
         currentBoard = _currentBoard;
     }
-    
-    public Board getBoard(){
-        return currentBoard;
-    }
-    
+
+
 }

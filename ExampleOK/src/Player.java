@@ -7,8 +7,8 @@
  */
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.Scanner;
-import java.util.UUID;
 
 /**
  *
@@ -16,33 +16,28 @@ import java.util.UUID;
  */
 public class Player implements Serializable{
     String name;
-    UUID id;
     int myID;
+    String myIP;
+    int myPort;
+    
+    
     boolean myTurn;
     Bet myBet;
     Players allPlayers;
     Dice myDice;
 
-    public Player(Players _allPlayers, int _myID){
-        System.out.println("Creo player");
+    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort){
+        System.out.println("Creo player con ID " + _myID + ", IP: " + _myIP + ":" + _myPort);
         myID = _myID;
+        myIP = _myIP;
+        myPort = _myPort;
         allPlayers = _allPlayers;
-        id = UUID.randomUUID();
         myTurn = false;
-
-        myDice = new Dice(5);
+        //myDice = new Dice(5);
     }
 
-    public Player(String _name, UUID _id, boolean _myTurn, Bet _myBet){
-        name = _name;
-        id = _id;
-        myTurn = _myTurn;
-        myBet = _myBet;
-    }
-
-    public void makeChoice(){
+    public void makeChoice(Board currentBoard) throws RemoteException{
         Scanner reader = new Scanner(System.in);  // Reading from System.in
-        Board currentBoard = getAllPlayers().getCurrentBoard();
         if(myTurn){ //Tocca a me fare il turno
                 Bet betOnTable = currentBoard.getCurrentBet();
                 if(betOnTable != null){
@@ -51,7 +46,7 @@ public class Player implements Serializable{
                         loop: while(reader.hasNextInt()){
                                 int choice = reader.nextInt();
                                 switch(choice){
-                                        case 0: if(doubt()){
+                                        case 0: if(doubt(currentBoard)){
                                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
                                             System.out.println("Pota");
                                             myBet = makeBet();
@@ -61,16 +56,18 @@ public class Player implements Serializable{
                                             currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
                                         }
                                         break loop;
-                                        case 1: currentBoard.setCurrentBet(makeBetConditional());  break loop;
+                                        case 1: currentBoard.setCurrentBet(makeBetConditional(currentBoard));  break loop;
                                         default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
                                 }
                                 }
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
+                    System.out.println("Pota");
                     myBet = makeBet();
                     currentBoard.setCurrentBet(myBet);
                 }
         }
+       
     }
 
 
@@ -98,12 +95,12 @@ public class Player implements Serializable{
         return myNewBet;
     }
 
-    public Bet makeBetConditional(){
+    public Bet makeBetConditional(Board currentBoard){
         int amountDice = 0;
         int valueDie = 0;
         boolean checkBet = true;
 
-        Bet currentBet = getAllPlayers().getCurrentBoard().getCurrentBet();
+        Bet currentBet = currentBoard.getCurrentBet();
         Scanner reader = new Scanner(System.in);
 
         while(checkBet){
@@ -140,8 +137,7 @@ public class Player implements Serializable{
         return myNewBet;
     }
 
-    public boolean doubt(){
-        Board currentBoard = allPlayers.getCurrentBoard();
+    public boolean doubt(Board currentBoard){
         System.out.println("Dubito! Non e' vero che sul tavolo ci sono almeno " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
         boolean result = currentBoard.checkBet();
         if(result){ //Hai dubitato giusto
@@ -155,17 +151,24 @@ public class Player implements Serializable{
     }
 
     public void resetDice(){
-        Dice myDice = this.getMyDiceObject();
         myDice.resetDice();
     }
 
-    public UUID getId() {
-        return id;
+    public String getMyIP() {
+        return myIP;
     }
 
-    public void setId(UUID _id) {
-        this.id = _id;
+    public void setMyIP(String myIP) {
+        this.myIP = myIP;
     }
+
+    public int getMyPort() {
+        return myPort;
+    }
+
+    public void setMyPort(int myPort) {
+        this.myPort = myPort;
+    }   
 
     public boolean getMyTurn() {
         return myTurn;
@@ -198,6 +201,7 @@ public class Player implements Serializable{
     public void setAllPlayers(Players _allPlayers) {
         this.allPlayers = _allPlayers;
     }
+    
 
     public Die[] getMyDice() {
         return myDice.getVectorDice();

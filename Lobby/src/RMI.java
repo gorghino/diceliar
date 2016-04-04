@@ -1,7 +1,8 @@
-package lobby;
+
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,8 +16,8 @@ import java.rmi.RemoteException;
  */
 public interface RMI extends Remote{
     
-    public void getClient() throws RemoteException;
-    
+    public ArrayList<PlayerEntry> addClient(String ipPlayer, int portPlayer) throws RemoteException;   
+    public void startListener() throws RemoteException;
     
 
 }

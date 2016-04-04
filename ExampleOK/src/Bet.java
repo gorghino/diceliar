@@ -1,4 +1,7 @@
 
+import java.io.Serializable;
+
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -9,7 +12,7 @@
  *
  * @author gorgo
  */
-public class Bet {
+public class Bet implements Serializable{
     int amountDice; //Numero dei dadi
     int valueDie; //Valore dei dadi
 
