@@ -7,7 +7,9 @@
  */
 
 import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
 /**
@@ -20,13 +22,15 @@ public class Player implements Serializable{
     String myIP;
     int myPort;
     
+    RMI rmiPointer;
+    
     
     boolean myTurn;
     Bet myBet;
     Players allPlayers;
     Dice myDice;
 
-    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort){
+    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort) throws RemoteException, NotBoundException{
         System.out.println("Creo player con ID " + _myID + ", IP: " + _myIP + ":" + _myPort);
         myID = _myID;
         myIP = _myIP;
@@ -34,6 +38,7 @@ public class Player implements Serializable{
         allPlayers = _allPlayers;
         myTurn = false;
         //myDice = new Dice(5);
+        rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
     }
 
     public void makeChoice(Board currentBoard) throws RemoteException{
@@ -46,30 +51,36 @@ public class Player implements Serializable{
                         loop: while(reader.hasNextInt()){
                                 int choice = reader.nextInt();
                                 switch(choice){
-                                        case 0: if(doubt(currentBoard)){
-                                            //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
-                                            System.out.println("Pota");
-                                            myBet = makeBet();
-                                            currentBoard.newTurn(currentBoard, this.getMyID(), myBet);
-                                        }
-                                        else{
-                                            currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
-                                        }
-                                        break loop;
-                                        case 1: currentBoard.setCurrentBet(makeBetConditional(currentBoard));  break loop;
+                                        case 0: //DUBITO
+                                            if(doubt(currentBoard)){
+                                                currentBoard.status = Board.RESET;
+                                                //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
+                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+                                                myBet = makeBet();
+                                                currentBoard.diceUpdated = 1;
+                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);
+                                            }
+                                            else{
+                                                System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
+                                                //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
+                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+                                                currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
+                                            }
+                                            break loop;
+                                        case 1: //NON DUBITO
+                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));  break loop;
                                         default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
                                 }
                                 }
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
-                    System.out.println("Pota");
+                    System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
                     myBet = makeBet();
                     currentBoard.setCurrentBet(myBet);
                 }
         }
        
     }
-
 
     public Bet makeBet(){
         boolean checkValue = true;
@@ -142,10 +153,14 @@ public class Player implements Serializable{
         boolean result = currentBoard.checkBet();
         if(result){ //Hai dubitato giusto
             System.out.println("Hai dubitato giusto");
+            currentBoard.okDoubt = true;
             return true;
         }
         else{
+            myDice.removeDie();
+            System.out.println("OH NO, Ho perso un dado!");
             System.out.println("Non avevi ragione!");
+            currentBoard.okDoubt = false;
             return false;
         }
     }
@@ -231,11 +246,12 @@ public class Player implements Serializable{
         this.myID = myID;
     }
 
+    public RMI getRmiPointer() {
+        return rmiPointer;
+    }
 
-
-
-
-
-
+    public void setRmiPointer(RMI rmiPointer) {
+        this.rmiPointer = rmiPointer;
+    }
 
 }

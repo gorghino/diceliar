@@ -35,17 +35,18 @@ public class Dice implements Serializable{
     void addDie(){}
 
     void removeDie(){
-        int arrayLength = vectorDice.length;
-        for (int i = arrayLength; i > 0; i -= 1) {
+        int arrayLength = vectorDice.length-1;
+        for (int i = arrayLength; i >= 0; i -= 1) {
             if(vectorDice[i].getValue() != 0){
                 vectorDice[i].setValue(0);
+                nDice--;
                 break;
             }
         }
     }
 
     public int[] getDiceValues(){
-        int[] diceValue = new int[5];
+        int[] diceValue = new int[nDice];
         for(int i=0; i< nDice; i+=1)
             diceValue[i] = vectorDice[i].getValue();
         return diceValue;
@@ -53,7 +54,7 @@ public class Dice implements Serializable{
 
     public int[] getDiceValuesGrouped(){
          int[] diceValue = new int[6];
-         for(int i=0; i<5; i+=1)
+         for(int i=0; i<nDice; i+=1)
              diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
 
         return diceValue;

@@ -25,7 +25,10 @@ public interface RMI extends Remote {
 
     public void notifyTurn(Board board) throws RemoteException;
     
-    public void resetDice(Players currentPlayers, RMI rmiNext) throws RemoteException;
+    public void resetDice(Players currentPlayers) throws RemoteException;
+    public void updateBoard(Board board) throws RemoteException;
+    
+    public void setRestart() throws RemoteException;
 
 
 }

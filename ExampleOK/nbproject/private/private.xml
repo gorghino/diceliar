@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/students/aguiarid/ExampleOK/src/Board.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/PlayerEntry.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/RMI.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/Player.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/DiceLiar.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/Dice.java</file>
-            <file>file:/home/students/aguiarid/ExampleOK/src/Players.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/Dice.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/Board.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/RMI.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/Player.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/DiceLiar.java</file>
+            <file>file:/home/gorgo/NetBeansProjects/ExampleOK/src/Players.java</file>
         </group>
     </open-files>
 </project-private>

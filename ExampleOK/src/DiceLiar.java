@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
 
-    public static final int START_TURN = 0;
+    public static final int START_TURN = 1;
     public static int LOCAL_PORT = 40000;
     
     public static final String SERVER_IP = "127.0.0.1";
@@ -37,8 +37,6 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
     int myID = -1;
     Board rmiBoard;
     private final Object lock;
-    private boolean ready;
-    private int diceUpdated = 1;
     
     public DiceLiar() throws RemoteException, AlreadyBoundException, NotBoundException, UnknownHostException{
         
@@ -78,12 +76,12 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
         
         shareDice(currentPlayers, rmiNext);
         
-        System.out.println("------------------DADI LOCALI---------------------------");
-        for(int j=0;j<currentPlayers.getAllId().length;j++){
-            int[] myDice = currentPlayers.getVectorPlayers()[j].getmyDiceValue();
-            for(int i=0;i<myDice.length;i++)
-                System.out.println("Player " + j + ": " + myDice[i]);
-        }
+//        System.out.println("------------------DADI LOCALI---------------------------");
+//        for(int j=0;j<currentPlayers.getAllId().length;j++){
+//            int[] myDice = currentPlayers.getVectorPlayers()[j].getmyDiceValue();
+//            for(int i=0;i<myDice.length;i++)
+//                System.out.println("Player " + j + ": " + myDice[i]);
+//        }
         
         //        System.out.println("--------------------DADI REMOTI-------------------------");
         //        for(int j=0;j<currentPlayers.getAllId().length;j++){
@@ -96,16 +94,19 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
     }
     
     private void shareDice(Players currentPlayers, RMI rmiNext) throws RemoteException{
+        System.out.println("\n---- RESET DICE SEQUENCE FROM " + myID + " -----\n");
         if(myID == 0){
             //Sono il giocatore 0, inizio il ring condividendo il set di dadi
-            System.out.println("Sono " + myID + " e passo i miei dadi al prossimo!");
-            if(!(rmiNext.setDice(myID, currentPlayers)) || diceUpdated != currentPlayers.getVectorPlayers().length){
+            //System.out.println("Sono " + myID + " e passo i miei dadi al prossimo!");
+            //System.out.println("DiceUpdate: " + rmiBoard.diceUpdated);
+            if(!(rmiNext.setDice(myID, currentPlayers)) || rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
                 synchronized (lock) {
                     try {
-                        while (!ready){
-                            System.out.println("Sono " + myID + " e aspetto la fine del ring!");
+                        while (!rmiBoard.ready){
+                            //System.out.println("Sono " + myID + " e aspetto la fine del ring!");
+                            //System.out.println(ANSI_RED + "INIT: LOCK " + lock+ ANSI_RESET);
                             lock.wait();
-                            System.out.println("Sono " + myID + " e mi sono sbloccato!");
+                            //System.out.println("Sono " + myID + " e mi sono sbloccato!");
                             rmiNext.setDice(myID, currentPlayers);
                         }
                     } catch (InterruptedException ex) {}
@@ -113,16 +114,18 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
             }
         }
         else{
+            //System.out.println("Sono " + myID + " e non tocca a me iniziare il giro di dadi");
             synchronized (lock) {
                 try {
-                    while (!ready){
-                        System.out.println("Sono " + myID + " e blocco!");
+                    while (!rmiBoard.ready){
+                        //System.out.println("Sono " + myID + " e blocco!");
+                        //System.out.println(ANSI_RED + "INIT: LOCK " + lock + ANSI_RESET);
                         lock.wait();
-                        System.out.println("Sono " + myID + " e mi sono sbloccato!");
+                        //System.out.println("Sono " + myID + " e mi sono sbloccato!");
                         rmiNext.setDice(myID, currentPlayers);
-                        if(diceUpdated != currentPlayers.getVectorPlayers().length){
-                            System.out.println("Non è l'ultimo giro");
-                            ready = false;
+                        if(rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
+                            //System.out.println("Non è l'ultimo giro");
+                            rmiBoard.ready = false;
                         }    
                     }
                 } catch (InterruptedException ex) {}
@@ -164,58 +167,141 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
     public boolean setDice(int id, Players playersArray) throws RemoteException {
         boolean lastChange = true;
         
-        if(diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length)
-            return lastChange;
+        //System.out.println("SET DICE e DiceUpdated = " + rmiBoard.diceUpdated);
         
-        System.out.println("Sono " + myID + " e mi ha sbloccato " + id);
+        if(rmiBoard.diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length){
+            //System.out.println("DADI COMPLETAMENTE AGGIORNATI");
+            return lastChange;  
+        }
+            
+        
+        //System.out.println("Sono " + myID + " e mi ha sbloccato " + id);
         for (int i=0; i<playersArray.getVectorPlayers().length;i++) {
+            
+            //if(rmiBoard.currentPlayers.vectorPlayers[i].getMyDiceObject() == null)
+                //System.out.println(i + ": RMIBoard getMyDiceObject NULL");
+            
+            //if(playersArray.getVectorPlayers()[i].getMyDiceObject() != null)
+                //System.out.println(i + ": playersArray getMyDiceObject NOT NULL");
+            
             if(rmiBoard.currentPlayers.vectorPlayers[i].getMyDiceObject() == null && playersArray.getVectorPlayers()[i].getMyDiceObject() != null){
-                System.out.println("Sono " + myID + " e aggiorno i miei dadi di " + i);         
-                diceUpdated++;
+                System.out.println(myID + ": aggiorno i miei dadi con quelli del giocatore " + i);         
+                rmiBoard.diceUpdated++;
                 rmiBoard.currentPlayers.vectorPlayers[i] = playersArray.getVectorPlayers()[i];
                 
                 lastChange = false;
 
-                if(diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length){
-                    System.out.println("Ho aggiornato " + diceUpdated + "giocatori");
+                if(rmiBoard.diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length){
+                    //System.out.println("Ho aggiornato rmiBoard diceUpdate " + rmiBoard.diceUpdated + " giocatori");
+                    
+                    System.out.println("\n------------------TUTTI I DADI---------------------------");
+                    for (int j = 0; j < rmiBoard.currentPlayers.getAllId().length; j++) {
+                        int[] myDice = rmiBoard.currentPlayers.getVectorPlayers()[j].getmyDiceValue();
+                        for (int z = 0; z < myDice.length; z++) {
+                            System.out.println("Player " + j + ": " + myDice[z]);
+                        }
+                    }
+                    
                     lastChange = true;
+                    rmiBoard.status = Board.PLAYING;
                 }
                     
             }  
         }
         //rmiBoard.currentPlayers.vectorPlayers[id].setMyDice(dice);
         synchronized (lock) {
-            ready = true;
+            rmiBoard.ready = true;
             lock.notify();
+            //System.out.println(myID + " NOTIFY");
         }
-        System.out.println(lastChange);
         return lastChange;
     }
 
     @Override
     public void notifyTurn(Board board) throws RemoteException{   
-        
         rmiBoard.setnTurn(board.getnTurn());
         rmiBoard.setCurrentBet(board.getCurrentBet());
-        if(rmiBoard.getCurrentBet() == null || board.getCurrentBet() == null)
-            System.out.println("AHHHHHHHHHHHHHHHHHHHHHH");
+        
+        //if(rmiBoard.getCurrentBet() == null || board.getCurrentBet() == null)
+           //rmiBoard.getCurrentPlayers().vectorPlayers[myID].makeChoice(rmiBoard);
+        
+        rmiBoard.setPlayingPlayer(board.getPlayingPlayer());
+        rmiBoard.getPlayingPlayer().setTurn(true);        
+        rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
         rmiBoard.setPlayingPlayer(board.getPlayingPlayer());
         
-        rmiBoard.getPlayingPlayer().setTurn(true);
+       // System.out.println("Sblocco il giocatore " + rmiBoard.myID);
         
-    
-        rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
+        rmiBoard.status = board.status;
         
-        System.out.println("Sblocco il giocatore " + rmiBoard.getPlayingPlayer().getMyID());
+        synchronized (rmiBoard.lock){
+            rmiBoard.ready = true;
+            rmiBoard.lock.notify();
+            if(rmiBoard.status == Board.PLAYING){
+                //System.out.println("NotifyTurn: Il turno CONTINUA\n");
+            }
+            //else if(rmiBoard.status == Board.RESET){
+               // System.out.println("NotifyTurn: Io " + rmiBoard.myID + " Devo resettare i dadi\n");
+            //}
+        }
+    }
+
+    @Override
+    public void resetDice(Players currentPlayers) throws RemoteException {
+        //System.out.println("-------------------------------------------------------------------------------------------");
+        //System.out.println("ID: " + myID + " RESET DICEUpDated");
+        rmiBoard.getCurrentPlayers().resetAllDice(myID);
         
-        synchronized (rmiBoard.lock) {
+        rmiBoard.diceUpdated = 1;  
+        rmiBoard.status = Board.RESET;
+        rmiBoard.setnTurn(1);
+
+        
+        System.out.println("------------------DADI LOCALI CREATI NELLA RESETDICE---------------------------");
+        int[] myDice = rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getmyDiceValue();
+        for(int i=0;i<myDice.length;i++)
+            System.out.println("Player " + myID + ": " + myDice[i]);
+        //shareDice(currentPlayers, rmiNext);
+        
+        synchronized (rmiBoard.lock){
             rmiBoard.ready = true;
             rmiBoard.lock.notify();
         }
     }
 
     @Override
-    public void resetDice(Players currentPlayers, RMI rmiNext) throws RemoteException {
-        shareDice(currentPlayers, rmiNext);
+    public void updateBoard(Board board) throws RemoteException {
+       System.out.println(ANSI_CYAN + "Il giocatore " + board.getPlayingPlayer().myID + " ha detto che sul tavolo NON ci sono almeno " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie + ANSI_RESET);
+       int[] vectorDice = board.getCurrentPlayers().getAllDice(true); // Stampo tutti i dadi
+       if(board.okDoubt){
+           System.out.println(ANSI_GREEN + "Ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Tocca lui iniziare il nuovo giro" + ANSI_RESET);
+           if( (((board.getPlayingPlayer().myID - myID)%board.getnPlayers()) + board.getnPlayers())%board.getnPlayers() == 1){
+               System.out.println(ANSI_RED + "Perdo un dado :(" + ANSI_RESET);
+               rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getMyDiceObject().removeDie();
+           }        
+       }
+       else
+           System.out.println(ANSI_RED + "Non ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Perde un dado e inizia il giocatore successivo" + ANSI_RESET);
+       
+       System.out.println("\n-------------------------------------- NUOVO TURNO -------------------------------------------\n");
+
     }
+
+    @Override
+    public void setRestart() throws RemoteException {
+        //System.out.println("QUELLO PRIMA DI ME HA ERRONEAMENTE DUBITATO");
+        rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
+        rmiBoard.setPlayingPlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[myID]);
+        rmiBoard.diceUpdated = 1;
+        rmiBoard.status = Board.INIT_RESET;
+        
+        rmiBoard.setCurrentBet(null);
+        
+        synchronized (rmiBoard.lock){
+            rmiBoard.ready = true;
+            rmiBoard.lock.notify();
+        }
+    }
+    
+    
 }

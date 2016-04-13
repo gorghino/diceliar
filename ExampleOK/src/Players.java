@@ -6,6 +6,8 @@
 
 
 import java.io.Serializable;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,7 +20,7 @@ public class Players implements Serializable{
     Player[] vectorPlayers;
     Board currentBoard;
 
-    public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray){
+    public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray) throws RemoteException, NotBoundException{
         //costruttore
         vectorPlayers = new Player[_nPlayers];
         for (int i = 0; i < _nPlayers; i += 1) {
@@ -34,7 +36,6 @@ public class Players implements Serializable{
         this.currentBoard = _currentBoard;
     }
 
-
     void addPlayer(){
 
     }
@@ -44,7 +45,7 @@ public class Players implements Serializable{
     void initDice(){
 
     }
-    public int[] getAllDice(){
+    public int[] getAllDice(boolean printValues){
         int[] allDiceVector = new int[6];
         for (int i = 0; i < vectorPlayers.length; i += 1) {
             Player player = vectorPlayers[i];
@@ -54,7 +55,8 @@ public class Players implements Serializable{
             }
         }
 
-        System.out.println(Arrays.toString(allDiceVector));
+        if(printValues)
+            System.out.println(Arrays.toString(allDiceVector));
 
         return allDiceVector;
 
@@ -76,9 +78,13 @@ public class Players implements Serializable{
         return idArray;
     }
 
-    public void resetAllDice(){
+    public void resetAllDice(int myID){
         for(Player vectorPlayer : vectorPlayers) {
-            vectorPlayer.resetDice();
+            if(vectorPlayer.myID == myID)
+                vectorPlayer.resetDice();
+            else{
+                vectorPlayer.myDice = null;
+            }
         }
     }
 
