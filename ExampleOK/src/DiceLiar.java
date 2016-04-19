@@ -47,6 +47,7 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
         lock = new Object();
         
         connectServer();
+        
         Board startBoard = initBoard();
  
         
@@ -165,7 +166,7 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
         if (args.length > 0){
             LOCAL_PORT = Integer.parseInt(args[0]);
         }
-        RMI diceliar = new DiceLiar();
+        DiceLiar diceliar = new DiceLiar();
     }
 
     @Override
