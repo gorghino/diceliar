@@ -50,8 +50,8 @@ public class Players implements Serializable{
         for (int i = 0; i < vectorPlayers.length; i += 1) {
             Player player = vectorPlayers[i];
             for(int j=0; j<6; j += 1){
-                //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped()[j] + " dadi di valore " + (j+1));
-                allDiceVector[j] += player.getmyDiceValueGrouped()[j];
+                //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped(currentBoard)[j] + " dadi di valore " + (j+1));
+                allDiceVector[j] += player.getmyDiceValueGrouped(currentBoard)[j];
             }
         }
 
@@ -89,8 +89,15 @@ public class Players implements Serializable{
     }
 
     public void printDice(){
+        String jollyString;
+        
+        if(currentBoard.oneJollyEnabled)
+            jollyString = "1 VALE Jolly";
+        else
+            jollyString = "1 VALE 1";    
+        
          for (int i=0;i<vectorPlayers.length;i++)
-               System.out.println(i + ": " + Arrays.toString(vectorPlayers[i].getmyDiceValue()) + "\t" + Arrays.toString(vectorPlayers[i].getmyDiceValueGrouped()));
+               System.out.println(i + ": " + Arrays.toString(vectorPlayers[i].getmyDiceValue()) + "\t -- "+ jollyString + " -->\t" + Arrays.toString(vectorPlayers[i].getmyDiceValueGrouped(currentBoard)));
     }
 
 }

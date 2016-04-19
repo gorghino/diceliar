@@ -56,14 +56,22 @@ public class Player implements Serializable{
                                                 currentBoard.status = Board.RESET;
                                                 //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
                                                 currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
-                                                myBet = makeBet();
+                                                
+                                                //myBet = makeBet(currentBoard);
+
                                                 currentBoard.diceUpdated = 1;
+                                                currentBoard.oneJollyEnabled = true;
                                                 currentBoard.newTurn(currentBoard, this.getMyID(), myBet);
+                                                
+                                                
                                             }
                                             else{
                                                 System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
                                                 //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
                                                 currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+                                                
+                                                myDice.removeDie();
+                                                 
                                                 currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
                                             }
                                             break loop;
@@ -75,14 +83,14 @@ public class Player implements Serializable{
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
                     System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
-                    myBet = makeBet();
+                    myBet = makeBet(currentBoard);
                     currentBoard.setCurrentBet(myBet);
                 }
         }
        
     }
 
-    public Bet makeBet(){
+    public Bet makeBet(Board currentBoard) throws RemoteException{
         boolean checkValue = true;
         int valueDie = 0;
         Scanner reader = new Scanner(System.in);  // Reading from System.in
@@ -97,8 +105,17 @@ public class Player implements Serializable{
                     System.out.println("Valore del dado non valido");
 
                 }
-              else
+              else{
+                  System.out.println("OK");
                   checkValue = false;
+              }
+              
+              if (!checkValue && valueDie == 1) {
+                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+                System.out.println("Il valore 1 non vale più come JOLLY");
+                currentBoard.oneJollyEnabled = false;
+                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+            }
         }
 
         Bet myNewBet = new Bet(amountDice, valueDie);
@@ -106,7 +123,7 @@ public class Player implements Serializable{
         return myNewBet;
     }
 
-    public Bet makeBetConditional(Board currentBoard){
+    public Bet makeBetConditional(Board currentBoard) throws RemoteException{
         int amountDice = 0;
         int valueDie = 0;
         boolean checkBet = true;
@@ -142,6 +159,13 @@ public class Player implements Serializable{
                    System.out.println("OK");
                    checkBet = false;
             }
+            
+            if(!checkBet && valueDie == 1){
+                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+                System.out.println("Il valore 1 non vale più come JOLLY");
+                currentBoard.oneJollyEnabled = false;
+                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+            }
         }
 
         Bet myNewBet = new Bet(amountDice, valueDie);
@@ -157,7 +181,6 @@ public class Player implements Serializable{
             return true;
         }
         else{
-            myDice.removeDie();
             System.out.println("OH NO, Ho perso un dado!");
             System.out.println("Non avevi ragione!");
             currentBoard.okDoubt = false;
@@ -230,8 +253,8 @@ public class Player implements Serializable{
         return myDice.getDiceValues();
     }
 
-    public int[] getmyDiceValueGrouped(){
-        return myDice.getDiceValuesGrouped();
+    public int[] getmyDiceValueGrouped(Board currentBoard){
+        return myDice.getDiceValuesGrouped(currentBoard);
     }
 
     public void setMyDice(Dice _myDice) {

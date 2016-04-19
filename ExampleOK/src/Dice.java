@@ -15,10 +15,12 @@ import java.io.Serializable;
 public class Dice implements Serializable{
     int nDice; //Numero di dadi validi
     Die[] vectorDice;
+   
 
     public Dice(int _nDice){
         //costruttore
         nDice = _nDice;
+        
 
         vectorDice = new Die[_nDice];
         for (int i = 0; i < _nDice; i += 1) {
@@ -47,15 +49,22 @@ public class Dice implements Serializable{
 
     public int[] getDiceValues(){
         int[] diceValue = new int[nDice];
-        for(int i=0; i< nDice; i+=1)
-            diceValue[i] = vectorDice[i].getValue();
+        for(int i=0; i< nDice; i+=1){
+            diceValue[i] = vectorDice[i].getValue();      
+        }
         return diceValue;
     }
 
-    public int[] getDiceValuesGrouped(){
+    public int[] getDiceValuesGrouped(Board currentBoard){
          int[] diceValue = new int[6];
-         for(int i=0; i<nDice; i+=1)
+         for(int i=0; i<nDice; i+=1){
              diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
+         }
+         if(currentBoard.oneJollyEnabled){
+            for(int i=1; i<diceValue.length; i+=1)
+                diceValue[i] += diceValue[0];
+            diceValue[0] = 0;
+         }
 
         return diceValue;
     }
@@ -75,6 +84,6 @@ public class Dice implements Serializable{
     public void setVectorDice(Die[] _vectorDice) {
         this.vectorDice = _vectorDice;
     }
-
+    
 
 }

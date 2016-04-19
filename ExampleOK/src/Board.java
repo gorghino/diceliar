@@ -40,6 +40,8 @@ public class Board implements Serializable{
     public transient final Object lock;
     public boolean ready;
     
+    public boolean oneJollyEnabled;
+    
     RMI rmiNextPlayer;
     public int diceUpdated = 1;
 
@@ -53,6 +55,8 @@ public class Board implements Serializable{
         currentPlayers = new Players(_nPlayers, _rmiPlayerArray);
         currentPlayers.getAllId();
         currentPlayers.getVectorPlayers()[0].makeChoice(this);
+        
+        oneJollyEnabled = true;
         
         status = IDLE;
      
@@ -131,6 +135,7 @@ public class Board implements Serializable{
                              }
                              
                              ready = false;
+                             oneJollyEnabled = true;
                              
                              if (myID == this.getPlayingPlayer().myID) {
                                  //Sono il giocatore 0, inizio il ring condividendo il set di dadi
@@ -140,6 +145,9 @@ public class Board implements Serializable{
                                              while (!ready) {
                                                  //System.out.println("START TR: Sono " + myID + " e aspetto la fine del ring!");
                                                  lock.wait();
+                                                 
+                                                 oneJollyEnabled = true;
+                                                 
                                                  //System.out.println("START TR: Sono " + myID + " e mi sono sbloccato!");
                                                  ready = rmiNextPlayer.setDice(myID, currentPlayers);
                                              }
@@ -158,6 +166,7 @@ public class Board implements Serializable{
                                                  ready = true;
                                                  status = Board.RESET;
                                                  diceUpdated = 1;
+                                                 oneJollyEnabled = true;
                                                  break;      
                                              }
                                              
@@ -238,10 +247,14 @@ public class Board implements Serializable{
     void newTurn(Board currentBoard, int starterIDPlayer, Bet starterBet) throws RemoteException {
 
         broadcastRMI(currentBoard, "RESET_DICE");
-        //this.getCurrentPlayers().resetAllDice(myID);   
-                
+        //this.getCurrentPlayers().resetAllDice(myID);
+        
+        if(starterIDPlayer == myID)
+            currentBoard.setCurrentBet(currentBoard.getCurrentPlayers().vectorPlayers[myID].makeBet(currentBoard));
+        else
+            currentBoard.setCurrentBet(starterBet);
         //currentPlayers.printDice();
-        currentBoard.setCurrentBet(starterBet);
+        
         //System.out.println("NEWTURN: Il nuovo turno inizia da " + starterIDPlayer);
         currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer].setTurn(true);
         
@@ -304,6 +317,8 @@ public class Board implements Serializable{
                 rmiPointer.resetDice(currentPlayers);
             else if(function.equalsIgnoreCase("NOTIFY_WINLOSE"))
                 rmiPointer.updateBoard(board);
+             else if(function.equalsIgnoreCase("ONE_IS_ONE"))
+                rmiPointer.oneIsOne(board);
         }
     }
 }

@@ -33,48 +33,23 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_CYAN = "\u001B[36m";
+   
     
     int myID = -1;
     Board rmiBoard;
     private final Object lock;
     
+    ArrayList<PlayerEntry> rmiPlayerArray;
+    RMI rmiNext;
+    
     public DiceLiar() throws RemoteException, AlreadyBoundException, NotBoundException, UnknownHostException{
         
         lock = new Object();
         
-        //INIZIALIZZAZIONE REGISTRY E SERVER ------------------------------------------------------------------------------------
-        System.out.println(ANSI_CYAN + "1: Inizializzazione Registry e Server locale" + ANSI_RESET);
-        Registry localReg = LocateRegistry.createRegistry(LOCAL_PORT);
-        localReg.bind("player", this);
-        System.out.println(ANSI_GREEN + "Registry CREATO\n" + ANSI_RESET); 
-        // ----------------------------------------------------------------------------------------------------------------------
-        
-        //CONNESSIONE CON LA LOBBY -----------------------------------------------------------------------------------------------
-        System.out.println(ANSI_CYAN + "2: Collegamento con la Lobby"+ ANSI_RESET);
-        Registry reg= LocateRegistry.getRegistry(SERVER_IP, SERVER_PORT);
-        RMI rmi = (RMI) reg.lookup("lobby");
-        System.out.println(ANSI_GREEN + "Lobby CONNESSA\n" + ANSI_RESET);
-        ArrayList<PlayerEntry> rmiPlayerArray = rmi.addClient(InetAddress.getLocalHost().getHostAddress(), LOCAL_PORT);
-        
-        for(int i=0;i<rmiPlayerArray.size();i++){
-            if(rmiPlayerArray.get(i).ip.equalsIgnoreCase(InetAddress.getLocalHost().getHostAddress()) && rmiPlayerArray.get(i).port == LOCAL_PORT)
-                myID = i;
-        }
-        System.out.println("Sono il giocatore " + myID + "\n");
-        // ------------------------------------------------------------------------------------------------------------------------
+        connectServer();
+        Board startBoard = initBoard();
  
-        Board startBoard = new Board(myID, START_TURN, rmiPlayerArray.size(), rmiPlayerArray, lock);
-        Players currentPlayers = startBoard.getCurrentPlayers();
-        currentPlayers.setCurrentBoard(startBoard);
-        rmiBoard = startBoard;        
-        currentPlayers.vectorPlayers[myID].setMyDice(new Dice(5));
         
-        //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
-        int IDPlayerRequest = (myID+1)%rmiPlayerArray.size();
-        Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
-        RMI rmiNext = (RMI) regNext.lookup("player");
-        
-        shareDice(currentPlayers, rmiNext);
         
 //        System.out.println("------------------DADI LOCALI---------------------------");
 //        for(int j=0;j<currentPlayers.getAllId().length;j++){
@@ -91,7 +66,52 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
         //        }
         
         startBoard.initGame(startBoard, rmiNext);
+        
     }
+    
+    private Board initBoard() throws RemoteException, NotBoundException{
+        Board startBoard = new Board(myID, START_TURN, rmiPlayerArray.size(), rmiPlayerArray, lock);
+        Players currentPlayers = startBoard.getCurrentPlayers();
+        currentPlayers.setCurrentBoard(startBoard);
+        rmiBoard = startBoard;        
+        currentPlayers.vectorPlayers[myID].setMyDice(new Dice(5));
+        
+        //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
+        int IDPlayerRequest = (myID+1)%rmiPlayerArray.size();
+        Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
+        rmiNext = (RMI) regNext.lookup("player");
+        
+        shareDice(currentPlayers, rmiNext);
+        
+        return startBoard;
+    }
+    
+    private void connectServer() throws RemoteException, AlreadyBoundException, NotBoundException, UnknownHostException{
+        
+        //INIZIALIZZAZIONE REGISTRY E SERVER ------------------------------------------------------------------------------------
+        System.out.println(ANSI_CYAN + "1: Inizializzazione Registry e Server locale" + ANSI_RESET);
+        Registry localReg = LocateRegistry.createRegistry(LOCAL_PORT);
+        localReg.bind("player", this);
+        System.out.println(ANSI_GREEN + "Registry CREATO\n" + ANSI_RESET);
+        // ----------------------------------------------------------------------------------------------------------------------
+
+        //CONNESSIONE CON LA LOBBY -----------------------------------------------------------------------------------------------
+        System.out.println(ANSI_CYAN + "2: Collegamento con la Lobby" + ANSI_RESET);
+        Registry reg = LocateRegistry.getRegistry(SERVER_IP, SERVER_PORT);
+        RMI rmi = (RMI) reg.lookup("lobby");
+        System.out.println(ANSI_GREEN + "Lobby CONNESSA\n" + ANSI_RESET);
+        rmiPlayerArray = rmi.addClient(InetAddress.getLocalHost().getHostAddress(), LOCAL_PORT);
+
+        for (int i = 0; i < rmiPlayerArray.size(); i++) {
+            if (rmiPlayerArray.get(i).ip.equalsIgnoreCase(InetAddress.getLocalHost().getHostAddress()) && rmiPlayerArray.get(i).port == LOCAL_PORT) {
+                myID = i;
+            }
+        }
+        System.out.println("Sono il giocatore " + myID + "\n");
+        // ------------------------------------------------------------------------------------------------------------------------
+        
+    }
+   
     
     private void shareDice(Players currentPlayers, RMI rmiNext) throws RemoteException{
         System.out.println("\n---- RESET DICE SEQUENCE FROM " + myID + " -----\n");
@@ -195,12 +215,13 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
                     //System.out.println("Ho aggiornato rmiBoard diceUpdate " + rmiBoard.diceUpdated + " giocatori");
                     
                     System.out.println("\n------------------TUTTI I DADI---------------------------");
-                    for (int j = 0; j < rmiBoard.currentPlayers.getAllId().length; j++) {
-                        int[] myDice = rmiBoard.currentPlayers.getVectorPlayers()[j].getmyDiceValue();
-                        for (int z = 0; z < myDice.length; z++) {
-                            System.out.println("Player " + j + ": " + myDice[z]);
-                        }
-                    }
+                    rmiBoard.currentPlayers.printDice();
+//                    for (int j = 0; j < rmiBoard.currentPlayers.getAllId().length; j++) {
+//                        int[] myDice = rmiBoard.currentPlayers.getVectorPlayers()[j].getmyDiceValue();
+//                        for (int z = 0; z < myDice.length; z++) {
+//                            System.out.println("Player " + j + ": " + myDice[z]);
+//                        }
+//                    }
                     
                     lastChange = true;
                     rmiBoard.status = Board.PLAYING;
@@ -274,7 +295,7 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
        System.out.println(ANSI_CYAN + "Il giocatore " + board.getPlayingPlayer().myID + " ha detto che sul tavolo NON ci sono almeno " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie + ANSI_RESET);
        int[] vectorDice = board.getCurrentPlayers().getAllDice(true); // Stampo tutti i dadi
        if(board.okDoubt){
-           System.out.println(ANSI_GREEN + "Ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Tocca lui iniziare il nuovo giro" + ANSI_RESET);
+           System.out.println(ANSI_GREEN + "Ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Tocca a lui iniziare il nuovo giro" + ANSI_RESET);
            if( (((board.getPlayingPlayer().myID - myID)%board.getnPlayers()) + board.getnPlayers())%board.getnPlayers() == 1){
                System.out.println(ANSI_RED + "Perdo un dado :(" + ANSI_RESET);
                rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getMyDiceObject().removeDie();
@@ -301,6 +322,13 @@ public class DiceLiar extends UnicastRemoteObject implements RMI, Serializable{
             rmiBoard.ready = true;
             rmiBoard.lock.notify();
         }
+    }
+
+    @Override
+    public void oneIsOne(Board board) throws RemoteException {
+        System.out.println("Uno vale uno. Non posso più usarlo come jolly fino al prossimo turno");
+        rmiBoard.oneJollyEnabled = false;
+        rmiBoard.currentPlayers.printDice();
     }
     
     
