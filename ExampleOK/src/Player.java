@@ -76,7 +76,9 @@ public class Player implements Serializable{
                                             }
                                             break loop;
                                         case 1: //NON DUBITO
-                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));  break loop;
+                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));
+                                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+                                            break loop;
                                         default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
                                 }
                                 }
@@ -85,6 +87,7 @@ public class Player implements Serializable{
                     System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
                     myBet = makeBet(currentBoard);
                     currentBoard.setCurrentBet(myBet);
+                    currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                 }
         }
        
@@ -110,7 +113,7 @@ public class Player implements Serializable{
                   checkValue = false;
               }
               
-              if (!checkValue && valueDie == 1) {
+              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
                 System.out.println("Il valore 1 non vale più come JOLLY");
                 currentBoard.oneJollyEnabled = false;
@@ -160,7 +163,7 @@ public class Player implements Serializable{
                    checkBet = false;
             }
             
-            if(!checkBet && valueDie == 1){
+            if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
                 System.out.println("Il valore 1 non vale più come JOLLY");
                 currentBoard.oneJollyEnabled = false;

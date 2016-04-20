@@ -249,10 +249,10 @@ public class Board implements Serializable{
         broadcastRMI(currentBoard, "RESET_DICE");
         //this.getCurrentPlayers().resetAllDice(myID);
         
-        if(starterIDPlayer == myID)
-            currentBoard.setCurrentBet(currentBoard.getCurrentPlayers().vectorPlayers[myID].makeBet(currentBoard));
-        else
-            currentBoard.setCurrentBet(starterBet);
+        //if(starterIDPlayer == myID)
+            //currentBoard.setCurrentBet(currentBoard.getCurrentPlayers().vectorPlayers[myID].makeBet(currentBoard));
+        //else
+        currentBoard.setCurrentBet(starterBet);
         //currentPlayers.printDice();
         
         //System.out.println("NEWTURN: Il nuovo turno inizia da " + starterIDPlayer);
@@ -283,10 +283,12 @@ public class Board implements Serializable{
                     } catch (InterruptedException ex) {}
                 }
             }
+            currentBoard.setCurrentBet(currentBoard.getCurrentPlayers().vectorPlayers[myID].makeBet(currentBoard));
+            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
             //System.out.println("Esco dal NEWTURN");
         }
         else{
-           // System.out.println("NEWTURN: Sono " + myID + " e non tocca a me iniziare il giro di dadi");      
+            //System.out.println("NEWTURN: Sono " + myID + " e non tocca a me iniziare il giro di dadi");      
             rmiNextPlayer.setRestart();
             currentBoard.status = Board.RESET;
             //System.out.println("FINE NEWTURN");
@@ -316,9 +318,11 @@ public class Board implements Serializable{
             if(function.equalsIgnoreCase("RESET_DICE"))
                 rmiPointer.resetDice(currentPlayers);
             else if(function.equalsIgnoreCase("NOTIFY_WINLOSE"))
-                rmiPointer.updateBoard(board);
-             else if(function.equalsIgnoreCase("ONE_IS_ONE"))
+                rmiPointer.checkDoubtRMI(board);
+            else if(function.equalsIgnoreCase("ONE_IS_ONE"))
                 rmiPointer.oneIsOne(board);
+            else if(function.equalsIgnoreCase("NOTIFY_MOVE"))
+                rmiPointer.notifyMove(board);
         }
     }
 }
