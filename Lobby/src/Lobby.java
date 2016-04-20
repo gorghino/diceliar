@@ -24,28 +24,31 @@ public class Lobby extends UnicastRemoteObject implements RMI {
     private final Object lock;
     ArrayList<PlayerEntry> arrayPlayers;
     private boolean ready;
-    private int INTERVAL = 10*1000;
+    private int seconds;
 
     public Lobby() throws RemoteException {
         super();
         arrayPlayers = new ArrayList<>();
         lock = new Object();
+        seconds = 10*1000;
     }
 
     public static void main(String[] args) throws RemoteException, AlreadyBoundException {
-        RMI lobbyServerInterface = new Lobby();
+        Lobby lobbyServerInterface = new Lobby();
         Registry reg = LocateRegistry.createRegistry(50000);
         reg.bind("lobby", lobbyServerInterface);
         System.out.println("Server Started...");
         
         lobbyServerInterface.startListener();
-        return;
-    }  
+    }     
     
-    @Override
-    public void startListener() throws RemoteException{
+    public void startListener(){
         try {
-            sleep(INTERVAL);
+            while(seconds > 0){
+                seconds -= 1000;
+                Thread.sleep(1000);
+            }
+           
         } catch (InterruptedException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -70,5 +73,10 @@ public class Lobby extends UnicastRemoteObject implements RMI {
             }
             return arrayPlayers;
         }
+    }
+
+    @Override
+    public int getTimer() throws RemoteException {
+        return seconds/1000;
     }
 }

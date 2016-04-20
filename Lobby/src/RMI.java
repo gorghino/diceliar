@@ -16,8 +16,8 @@ import java.util.ArrayList;
  */
 public interface RMI extends Remote{
     
+    public int getTimer() throws RemoteException;   
     public ArrayList<PlayerEntry> addClient(String ipPlayer, int portPlayer) throws RemoteException;   
-    public void startListener() throws RemoteException;
-    
+    //public void startListener() throws RemoteException;   
 
 }
