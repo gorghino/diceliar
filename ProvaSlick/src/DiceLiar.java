@@ -84,7 +84,9 @@ public class DiceLiar{
         
         System.out.println(ANSI_GREEN + "Lobby CONNESSA ... Mancano " + rmi.getTimer() + " secondi al VIA\n" + ANSI_RESET); 
         rmiTimer = rmi.getTimer(); //prendo questo valore per il timer della connect
+        System.out.println("Mi aggiungo alla Lobby\n");
         rmiPlayerArray = rmi.addClient(InetAddress.getLocalHost().getHostAddress(), LOCAL_PORT);
+        System.out.println("Mi sono aggiunto alla Lobby\n");
 
         for (int i = 0; i < rmiPlayerArray.size(); i++) {
             if (rmiPlayerArray.get(i).ip.equalsIgnoreCase(InetAddress.getLocalHost().getHostAddress()) && rmiPlayerArray.get(i).port == LOCAL_PORT) {

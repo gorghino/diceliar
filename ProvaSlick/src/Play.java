@@ -58,6 +58,7 @@ public class Play extends BasicGameState {
         this.stateID = _stateID;
     }
     
+    @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{ 
 
         
@@ -106,6 +107,7 @@ public class Play extends BasicGameState {
         
     }
     
+    @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{ // run this every frame to update game logic
        
         background.draw(0, 0);
@@ -281,6 +283,7 @@ public class Play extends BasicGameState {
         g.drawString(""+nPlayers, 50, 110);
     }
     
+    @Override
     public void update (GameContainer gc,StateBasedGame sbg,int delta) throws SlickException { // run this every frame to display graphics to the player
         
         if(initBoardBool == true){
@@ -288,11 +291,11 @@ public class Play extends BasicGameState {
             try {
                 try {
                     dl = new DiceLiar();
-                } catch (AlreadyBoundException ex) {
-                    Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (UnknownHostException ex) {
+                } catch (AlreadyBoundException | UnknownHostException ex) {
                     Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                //board = new Board(gameC.myID, turn, nPlayers, playerEntryArray, gameC.lock);
+                
                                 
                  
                 //board = new Board(gameC.myID, turn, nPlayers, playerEntryArray, gameC.lock);
@@ -308,9 +311,7 @@ public class Play extends BasicGameState {
                 //nPlayers = board.getnPlayers();
                
                 
-            } catch (RemoteException ex) {
-                Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NotBoundException ex) {
+            } catch (RemoteException | NotBoundException ex) {
                 Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

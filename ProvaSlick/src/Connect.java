@@ -44,6 +44,7 @@ public class Connect extends BasicGameState {
         this.stateID = _stateID;
     } 
     
+    @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
         
         Font awtFont = new Font("Arial", 0, 30);
@@ -55,6 +56,7 @@ public class Connect extends BasicGameState {
         
     }
     
+    @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
         g.setBackground(new Color(0, 230 , 0));
         
@@ -86,6 +88,7 @@ public class Connect extends BasicGameState {
         
     }
     
+    @Override
     public void update(GameContainer gc,StateBasedGame sbg,int delta) throws SlickException {
         
         Input input = gc.getInput();
@@ -127,11 +130,11 @@ public class Connect extends BasicGameState {
                         
                         Board startBoard;     
                     try {
+                        System.out.println("INITBOARD\n");
                         startBoard = dl.initBoard();
                         startBoard.initGame(startBoard, rmiNext); 
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NotBoundException ex) {
+                        
+                    } catch (RemoteException | NotBoundException ex) {
                         Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
                     }
                           
