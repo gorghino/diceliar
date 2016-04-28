@@ -8,4 +8,8 @@
 /RMI/build/
 /chat/nbproject/private/
 /chat/build/
-/diceLiar/dist/
+/diceLiar/dist//nbproject/private/config.properties
+/nbproject/private/private.properties
+/nbproject/private/private.xml
+/nbproject/project.properties
+/nbproject/project.xml
