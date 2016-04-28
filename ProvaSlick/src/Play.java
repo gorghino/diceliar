@@ -1,6 +1,3 @@
-
-
-
 import static java.lang.Math.abs;
 import java.util.ArrayList;
 import org.lwjgl.input.Mouse;
@@ -286,34 +283,9 @@ public class Play extends BasicGameState {
     @Override
     public void update (GameContainer gc,StateBasedGame sbg,int delta) throws SlickException { // run this every frame to display graphics to the player
         
-        if(initBoardBool == true){
-            initBoardBool = true;
-            try {
-                try {
-                    dl = new DiceLiar();
-                } catch (AlreadyBoundException | UnknownHostException ex) {
-                    Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                //board = new Board(gameC.myID, turn, nPlayers, playerEntryArray, gameC.lock);
-                
-                                
-                 
-                //board = new Board(gameC.myID, turn, nPlayers, playerEntryArray, gameC.lock);
-                
-                
-                
-                
-                Board startBoard = dl.initBoard();
-                
-                System.out.println("Ciao: "+ nPlayers);
-                
-                startBoard.initGame(startBoard, rmiNext);
-                //nPlayers = board.getnPlayers();
-               
-                
-            } catch (RemoteException | NotBoundException ex) {
-                Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if(initBoardBool == false){
+            initBoardBool =  true; 
+            board.getCurrentPlayers().printDice();
         }
         
         
@@ -380,4 +352,14 @@ public class Play extends BasicGameState {
     public int getID(){
         return 2;
     }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+    
+    
 }

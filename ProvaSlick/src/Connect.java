@@ -35,10 +35,13 @@ public class Connect extends BasicGameState {
         time = 0,
         getX,
         getY;
+    
     boolean loadPlayers = false,
             clickedPlay = false;
     
     public String takeIPAddr,takePort;
+    
+     Board startBoard;  
     
     public Connect( int _stateID) {
         this.stateID = _stateID;
@@ -46,6 +49,8 @@ public class Connect extends BasicGameState {
     
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
+        
+        
         
         Font awtFont = new Font("Arial", 0, 30);
        
@@ -58,6 +63,8 @@ public class Connect extends BasicGameState {
     
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
+
+        
         g.setBackground(new Color(0, 230 , 0));
         
         g.setColor(Color.white);
@@ -90,6 +97,7 @@ public class Connect extends BasicGameState {
     
     @Override
     public void update(GameContainer gc,StateBasedGame sbg,int delta) throws SlickException {
+
         
         Input input = gc.getInput();
         
@@ -128,18 +136,19 @@ public class Connect extends BasicGameState {
                         System.out.println("cane3");
                     }
                         
-                        Board startBoard;     
+   
                     try {
                         System.out.println("INITBOARD\n");
                         startBoard = dl.initBoard();
                         startBoard.initGame(startBoard, rmiNext); 
+                        runPlay(sbg, gc);
                         
                     } catch (RemoteException | NotBoundException ex) {
                         Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
                     }
                           
                         
-                        sbg.enterState(2,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));
+                        
                 }
             }
         }
@@ -165,4 +174,9 @@ public class Connect extends BasicGameState {
         return 1;
     }
     
+    public void runPlay(StateBasedGame sbg,GameContainer gc) throws SlickException{
+        Play playState = (Play)sbg.getState(Main.play);
+        playState.setBoard(startBoard);
+        sbg.enterState(2,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));
+    }
 }

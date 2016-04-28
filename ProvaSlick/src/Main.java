@@ -25,6 +25,7 @@ public class Main extends StateBasedGame implements Runnable{
        this.addState(new Menu(menu));
        this.addState(new Connect(connect));
        this.addState(new Play(play));
+       
 
 
     }

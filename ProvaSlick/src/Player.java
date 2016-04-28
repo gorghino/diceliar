@@ -96,34 +96,36 @@ public class Player implements Serializable{
     public Bet makeBet(Board currentBoard) throws RemoteException{
         boolean checkValue = true;
         int valueDie = 0;
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
-        System.out.println("Inserisci il numero di dadi della scommessa: ");
-        int amountDice = reader.nextInt();
-
-        while(checkValue){
-            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
-
-              if(valueDie <= 0 || valueDie > 6){
-                    System.out.println("Valore del dado non valido");
-
-                }
-              else{
-                  System.out.println("OK");
-                  checkValue = false;
-              }
-              
-              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
-                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-                System.out.println("Il valore 1 non vale più come JOLLY");
-                currentBoard.oneJollyEnabled = false;
-                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-            }
-        }
-
-        Bet myNewBet = new Bet(amountDice, valueDie);
-        reader.close();
+        Bet myNewBet = new Bet(3, 3);
         return myNewBet;
+//        Scanner reader = new Scanner(System.in);  // Reading from System.in
+//        System.out.println("Inserisci il numero di dadi della scommessa: ");
+//        int amountDice = reader.nextInt();
+//
+//        while(checkValue){
+//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
+//            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
+//
+//              if(valueDie <= 0 || valueDie > 6){
+//                    System.out.println("Valore del dado non valido");
+//
+//                }
+//              else{
+//                  System.out.println("OK");
+//                  checkValue = false;
+//              }
+//              
+//              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
+//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+//                System.out.println("Il valore 1 non vale più come JOLLY");
+//                currentBoard.oneJollyEnabled = false;
+//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+//            }
+//        }
+//
+//        myNewBet = new Bet(amountDice, valueDie);
+//        reader.close();
+//        return myNewBet;
     }
 
     public Bet makeBetConditional(Board currentBoard) throws RemoteException{

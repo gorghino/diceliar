@@ -63,6 +63,7 @@ public class Board implements Serializable{
         lock = _lock;
     }
 
+    @SuppressWarnings("empty-statement")
     void initGame(Board startBoard, RMI _rmiNextPlayer) throws RemoteException{
         int playerStarterID = 0; //startBoard.setStarter();
         rmiNextPlayer = _rmiNextPlayer;
@@ -71,7 +72,8 @@ public class Board implements Serializable{
 
         System.out.println("Inizia a giocare il giocatore numero " + playerStarterID);
         playerStarter.setTurn(true);
-
+        
+        
         gameLoop(startBoard, playerStarter);
 
     }
