@@ -42,12 +42,12 @@ public class Player implements Serializable{
     }
 
     public void makeChoice(Board currentBoard) throws RemoteException{
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
         if(myTurn){ //Tocca a me fare il turno
                 Bet betOnTable = currentBoard.getCurrentBet();
                 if(betOnTable != null){
                         System.out.println("C'e gia una scommessa: ci sono " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
                         System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
+                        Scanner reader = new Scanner(System.in);  // Reading from System.in
                         loop: while(reader.hasNextInt()){
                                 int choice = reader.nextInt();
                                 switch(choice){
@@ -61,9 +61,7 @@ public class Player implements Serializable{
 
                                                 currentBoard.diceUpdated = 1;
                                                 currentBoard.oneJollyEnabled = true;
-                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);
-                                                
-                                                
+                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
                                             }
                                             else{
                                                 System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
@@ -74,10 +72,12 @@ public class Player implements Serializable{
                                                  
                                                 currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
                                             }
+                                            reader.close();
                                             break loop;
                                         case 1: //NON DUBITO
                                             currentBoard.setCurrentBet(makeBetConditional(currentBoard));
                                             currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+                                            reader.close();
                                             break loop;
                                         default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
                                 }
@@ -122,7 +122,7 @@ public class Player implements Serializable{
         }
 
         Bet myNewBet = new Bet(amountDice, valueDie);
-
+        reader.close();
         return myNewBet;
     }
 
