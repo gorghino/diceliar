@@ -85,8 +85,9 @@ public class Menu extends BasicGameState {
                     sbg.enterState(1,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));
                 }
 
-            if((getX>550 && getX<730) && (getY>128 && getY<175)){ //Exit
-                System.exit(0);
+            if((getX>550 && getX<730) && (getY>216 && getY<266)){ //Exit
+                sbg.enterState(2,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));
+                //System.exit(0);
             }
         }
         

@@ -49,15 +49,10 @@ public class DiceLiar{
     
     public Board initBoard() throws RemoteException, NotBoundException{
         Board startBoard = new Board(gc.myID, START_TURN, rmiPlayerArray.size(), rmiPlayerArray, gc.lock);
-        System.out.println("err1");
         Players currentPlayers = startBoard.getCurrentPlayers();
-        System.out.println("err2");
         currentPlayers.setCurrentBoard(startBoard);
-        System.out.println("err3");
         gc.rmiBoard = startBoard;
-        System.out.println("err4");        
         currentPlayers.vectorPlayers[gc.myID].setMyDice(new Dice(5));
-        System.out.println("err5");
         //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
         int IDPlayerRequest = (gc.myID+1)%rmiPlayerArray.size();
         Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);

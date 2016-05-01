@@ -52,7 +52,7 @@ public class GameController extends UnicastRemoteObject implements RMI {
         //System.out.println("SET DICE e DiceUpdated = " + rmiBoard.diceUpdated);
         
         if(rmiBoard.diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length){
-            //System.out.println("DADI COMPLETAMENTE AGGIORNATI");
+            System.out.println("DADI COMPLETAMENTE AGGIORNATI");
             return lastChange;  
         }
             

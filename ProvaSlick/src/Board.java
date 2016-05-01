@@ -74,8 +74,9 @@ public class Board implements Serializable{
         playerStarter.setTurn(true);
         
         
-        gameLoop(startBoard, playerStarter);
+        //gameLoop(startBoard, playerStarter);
 
+        
     }
 
     private void gameLoop(Board board, Player player) throws RemoteException{

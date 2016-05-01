@@ -111,8 +111,10 @@ public class Connect extends BasicGameState {
             if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON)){
                 if((getX>550 && getX<730) && (getY>202 && getY<250)){ // Play
                     clickedPlay = true;
-                    takeIPAddr = ipField.getText();
-                    takePort = portField.getText();
+                    //takeIPAddr = ipField.getText();
+                    //takePort = portField.getText();
+                    takeIPAddr = "127.0.0.1";
+                    takePort = "50000";
                     System.out.println("IP: " + takeIPAddr + " Port: " + takePort);
 
 
