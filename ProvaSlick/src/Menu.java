@@ -23,7 +23,11 @@ public class Menu extends BasicGameState {
     private int stateId = -1;
     public static int buttonWidth = 180;
     public static int buttonHeigh = 50;
-    Image background;
+    
+    Image title,
+          background,
+          button;
+    
     public int getX,getY;
     Rectangle buttonPlay, buttonExit;
     
@@ -37,15 +41,17 @@ public class Menu extends BasicGameState {
     
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{
                
-        
-        background = new Image("img/diceTitle.png");
+        background = new Image("img/bgDiceLiar.png");
+        title = new Image("img/diceTitle.png");
+        button = new Image("img/button.png");
         buttonPlay = new Rectangle(550, 514, 150, 50);
         buttonExit = new Rectangle(520, 494, 150, 50);
         
     }
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{ // run this every frame to update game logic
         
-        background.draw((Main.ySize/2)+60, 0,(float)1.1);
+        background.draw(0, 0);
+        title.draw(900, 0,(float)1.1);
         g.setBackground(new Color(0, 230 , 0));
         
         g.setColor(Color.white);
@@ -55,11 +61,12 @@ public class Menu extends BasicGameState {
         g.setColor(Color.red);
         
         //connect Button
-        g.fillRect(550, 438, buttonWidth, buttonHeigh);
-
+        //g.fillRect(550, 438, buttonWidth, buttonHeigh);
+        button.draw(550, 438, buttonWidth, buttonHeigh);
         
         //Exit Button
-        g.fillRect(550, 500, buttonWidth, buttonHeigh);
+        //g.fillRect(550, 500, buttonWidth, buttonHeigh);
+        button.draw(550, 500, buttonWidth, buttonHeigh);
         
         //Button's Text
         g.setColor(Color.white);

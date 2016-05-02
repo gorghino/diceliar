@@ -25,9 +25,11 @@ public class Connect extends BasicGameState {
     GameController gameC;
     RMI rmiNext;
     
-    Image background;
+    Image background,
+          backPanel,
+          button;
     
-    TrueTypeFont font;
+    TrueTypeFont font, textFont;
     
     TextField ipField,portField;
     
@@ -50,12 +52,16 @@ public class Connect extends BasicGameState {
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
         
-        
+        background = new Image("img/bgDiceLiar.png");
+        backPanel = new Image("img/BackPanel.png");
+        button = new Image("img/button.png");
         
         Font awtFont = new Font("Arial", 0, 30);
+        Font awtFontText = new Font("Arial",0,25);
        
         font= new TrueTypeFont(awtFont, true);
-
+        textFont= new TrueTypeFont(awtFontText, true);
+        
         ipField = new TextField(gc, font, 550, 290, 600, 50);
         portField = new TextField(gc, font, 550, 386, 150, 50);
         
@@ -65,25 +71,32 @@ public class Connect extends BasicGameState {
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
 
         
-        g.setBackground(new Color(0, 230 , 0));
+        //g.setBackground(new Color(0, 230 , 0));
+        background.draw();
+        backPanel.draw(287, Main.ySize-519);
         
-        g.setColor(Color.white);
+        
+        g.setColor(Color.black);
         g.drawString("Lobby", 643, Main.ySize-689);
-        g.drawString("Insert your IP Address", 300, 300);
-        g.drawString("Insert your Port", 300, 400);
+        textFont.drawString(340, 290, "Insert your",Color.black);
+        textFont.drawString(340, 315, "IP Address",Color.black);
+        textFont.drawString(315 , 400, "Insert your Port",Color.black);
+        
+        
         
         //Play Button
-        g.setColor(Color.red);
-        g.fillRect(550, 514, Menu.buttonWidth, Menu.buttonHeigh);
+        
+        //g.fillRect(550, 514, Menu.buttonWidth, Menu.buttonHeigh);
+        button.draw(550, 514, Menu.buttonWidth, Menu.buttonHeigh);
         
         g.setColor(Color.blue);
         g.drawString(""+getX, 50, 70);
         g.drawString(""+getY, 50, 90); 
         
-        g.setColor(Color.white);
+        g.setColor(Color.black);
         ipField.render(gc, g);
         portField.render(gc, g);
-        
+        g.setColor(Color.white);
         g.drawString("Play", 620, 529);
         
         if (clickedPlay == true){

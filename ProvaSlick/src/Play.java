@@ -19,7 +19,8 @@ public class Play extends BasicGameState {
           arrowLeft,
           arrowRight,
           selectedPlayerHoriz,
-          selectedPlayerVer;
+          selectedPlayerVer,
+          button;
     
     TrueTypeFont font;
     TrueTypeFont fontTurn;
@@ -57,7 +58,7 @@ public class Play extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{ 
 
         
-        background = new Image("img/boardTEMP1.png");
+        background = new Image("img/boardTEMP3.png");
         
         boxDiceHoriz = new Image("img/BoxDiceHoriz.png");
         boxDiceVert = new Image("img/BoxDiceVert.png");
@@ -67,6 +68,8 @@ public class Play extends BasicGameState {
         
         selectedPlayerHoriz = new Image("img/SelectedPlayerHoriz.png");
         selectedPlayerVer = new Image("img/SelectedPlayerVert.png");
+        
+        button = new Image("img/button.png");
         
         dice.add(0, new Image("img/DieDel.png"));
         dice.add(1, new Image("img/Die1.png"));
@@ -284,21 +287,21 @@ public class Play extends BasicGameState {
         
         if(initChoice == true){
             //button MakeBet
-            g.setColor(Color.red);
-            g.fillRect(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
+//            g.setColor(Color.red);
+//            g.fillRect(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
+            button.draw(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
             g.drawString("Make Bet", 878, Main.ySize-375);
             
             //button Doubt
-            g.setColor(Color.red);
-            g.fillRect(825, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
+
+            button.draw(825, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
             g.drawString("Doubt", 885, Main.ySize-285);
         }
         else {
             //button Bet
-            g.setColor(Color.red);
-            g.fillRect(825, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
+            button.draw(825, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
             g.drawString("Bet", 902, Main.ySize-285);
 
@@ -329,8 +332,7 @@ public class Play extends BasicGameState {
                 }
         }
             //button leave
-            g.setColor(Color.red);
-            g.fillRect(355, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
+            button.draw(355, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
             g.drawString("Leave", 422, Main.ySize-285);
         
