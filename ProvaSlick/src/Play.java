@@ -17,7 +17,9 @@ public class Play extends BasicGameState {
           boxDiceHoriz,boxDiceHorizRot,
           boxDiceVert,boxDiceVertRot,
           arrowLeft,
-          arrowRight;
+          arrowRight,
+          selectedPlayerHoriz,
+          selectedPlayerVer;
     
     TrueTypeFont font;
     TrueTypeFont fontTurn;
@@ -27,6 +29,7 @@ public class Play extends BasicGameState {
     int[] amountDicePlayers;
     
     int getX,getY;
+    
     int nPlayers,
         initDicePlayer,
         id = 0,
@@ -37,6 +40,7 @@ public class Play extends BasicGameState {
         drawValueBet,
         lbDrawDieBet,
         lbDrawValueBet;
+    
     private boolean clickToChangeDie = false,
                     clickToChangeValue = false,
                     initChoice = true,
@@ -54,13 +58,15 @@ public class Play extends BasicGameState {
 
         
         background = new Image("img/boardTEMP1.png");
-        //buttonBet = new Rectangle(825, Main.ySize-280, Menu.buttonWidth, Menu.buttonHeigh);
         
         boxDiceHoriz = new Image("img/BoxDiceHoriz.png");
         boxDiceVert = new Image("img/BoxDiceVert.png");
         
         arrowLeft = new Image("img/ArrowLeft.png");
         arrowRight = new Image("img/ArrowRight.png");
+        
+        selectedPlayerHoriz = new Image("img/SelectedPlayerHoriz.png");
+        selectedPlayerVer = new Image("img/SelectedPlayerVert.png");
         
         dice.add(0, new Image("img/DieDel.png"));
         dice.add(1, new Image("img/Die1.png"));
@@ -118,7 +124,10 @@ public class Play extends BasicGameState {
         positionDice[7][0] =Main.ySize-101;
         positionDice[7][1] =Main.ySize-165;
         
-        int posX1=249,posX2=334,cnt=0;
+        int cnt=0;
+        
+        //if (turn == 0) //solo prova
+            selectedPlayerHoriz.draw(230, Main.ySize-240);
         
         for (int i = 0; i<nPlayers;i++){
             for (int j=0;j<initDicePlayer;j++){
