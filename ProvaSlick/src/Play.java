@@ -1,4 +1,5 @@
 import static java.lang.Math.abs;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.*;
@@ -44,14 +45,16 @@ public class Play extends BasicGameState {
     
     private boolean clickToChangeDie = false,
                     clickToChangeValue = false,
-                    initChoice = true,
                     submittedChoice = false,
                     initBoardBool = false;
     Board board;
     DiceLiar dl;
     
-    public Play(int _stateID){
+    GUIController gC;
+    
+    public Play(int _stateID, GUIController _gC){
         this.stateID = _stateID;
+        this.gC = _gC;
     }
     
     @Override
@@ -285,7 +288,7 @@ public class Play extends BasicGameState {
         
         //PANEL DX
         
-        if(initChoice == true){
+        if(getBoard().initChoice == true){
             //button MakeBet
 //            g.setColor(Color.red);
 //            g.fillRect(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
@@ -374,8 +377,19 @@ public class Play extends BasicGameState {
                     System.out.println("player " + s + " dice: "+ positionPlayerDice[s][i]);
                 }
             }
-            //board.getCurrentPlayers().printDice();          
         }
+        
+        ///////////////////// CHECK GAME STATE ////////////////////////////////
+        
+        
+        try {
+            board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+        
+        
+        ///////////////////////////////////////////////////////////////////
         
         Input input = gc.getInput();
         if(gc.getInput().isKeyPressed(Input.KEY_1)){
@@ -387,9 +401,9 @@ public class Play extends BasicGameState {
             getX = Mouse.getX();
             getY = abs(0-Mouse.getY());
             
-            if (initChoice == true){
+            if (getBoard().initChoice == true){
                 if((getX > 825 && getX < 1005) && (getY > 339 && getY < 389)){ //Make bet
-                    initChoice = false;
+                    getBoard().initChoice = false;
                 }
                 
                 if((getX > 825 && getX < 1005) && (getY > 249 && getY < 299)){ //doubt
@@ -433,6 +447,9 @@ public class Play extends BasicGameState {
                     lbDrawDieBet = drawDieBet;
                     lbDrawValueBet = drawValueBet;
                     submittedChoice = true;
+                    
+                    board.betDone = true;
+                    
                     System.out.println("Scommessa Effettuata");
                 
                 }

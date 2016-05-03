@@ -42,90 +42,124 @@ public class Player implements Serializable{
     }
 
     public void makeChoice(Board currentBoard) throws RemoteException{
+        GUIController gC = currentBoard.getgC();
         if(myTurn){ //Tocca a me fare il turno
                 Bet betOnTable = currentBoard.getCurrentBet();
+                
                 if(betOnTable != null){
-                        System.out.println("C'e gia una scommessa: ci sono " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
-                        System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
-                        Scanner reader = new Scanner(System.in);  // Reading from System.in
-                        loop: while(reader.hasNextInt()){
-                                int choice = reader.nextInt();
-                                switch(choice){
-                                        case 0: //DUBITO
-                                            if(doubt(currentBoard)){
-                                                currentBoard.status = Board.RESET;
-                                                //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
-                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
-                                                
-                                                //myBet = makeBet(currentBoard);
+                    if(gC.doubtClicked){ // HO CLICCATO DUBITO
+                        if(doubt(currentBoard)){
+                            currentBoard.status = Board.RESET;
+                            //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
+                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
 
-                                                currentBoard.diceUpdated = 1;
-                                                currentBoard.oneJollyEnabled = true;
-                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
-                                            }
-                                            else{
-                                                System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
-                                                //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
-                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
-                                                
-                                                myDice.removeDie();
-                                                 
-                                                currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
-                                            }
-                                            reader.close();
-                                            break loop;
-                                        case 1: //NON DUBITO
-                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));
-                                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
-                                            reader.close();
-                                            break loop;
-                                        default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
-                                }
-                                }
+                            //myBet = makeBet(currentBoard);
+
+                            currentBoard.diceUpdated = 1;
+                            currentBoard.oneJollyEnabled = true;
+                            currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
+                        }
+                        else{
+                            System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
+                            //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
+                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+
+                            myDice.removeDie();
+
+                            currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
+                        }
+                    }
+                    else if(gC.makeBetClicked){ // NON DUBITO E RILANCIO
+                        currentBoard.setCurrentBet(makeBetConditional(currentBoard));
+                        currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+                    }
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
                     System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
                     myBet = makeBet(currentBoard);
                     currentBoard.setCurrentBet(myBet);
                     currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
-                }
+                }      
         }
-       
     }
+//                    
+//                    System.out.println("C'e gia una scommessa: ci sono " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
+//                        System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
+//                        Scanner reader = new Scanner(System.in);  // Reading from System.in
+//                        loop: while(reader.hasNextInt()){
+//                                int choice = reader.nextInt();
+//                                switch(choice){
+//                                        case 0: //DUBITO
+//                                            if(doubt(currentBoard)){
+//                                                currentBoard.status = Board.RESET;
+//                                                //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
+//                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+//                                                
+//                                                //myBet = makeBet(currentBoard);
+//
+//                                                currentBoard.diceUpdated = 1;
+//                                                currentBoard.oneJollyEnabled = true;
+//                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
+//                                            }
+//                                            else{
+//                                                System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
+//                                                //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
+//                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+//                                                
+//                                                myDice.removeDie();
+//                                                 
+//                                                currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
+//                                            }
+//                                            reader.close();
+//                                            break loop;
+//                                        case 1: //NON DUBITO
+//                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));
+//                                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+//                                            reader.close();
+//                                            break loop;
+//                                        default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
+//                                }
+//                                }
+//                }
+//                else{ //Sono il primo giocatore a iniziare il giro
+//                    System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
+//                    myBet = makeBet(currentBoard);
+//                    currentBoard.setCurrentBet(myBet);
+//                    currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+//                }
+//        }
 
     public Bet makeBet(Board currentBoard) throws RemoteException{
         boolean checkValue = true;
         int valueDie = 0;
-        Bet myNewBet = new Bet(3, 3);
+        Scanner reader = new Scanner(System.in);  // Reading from System.in
+        System.out.println("Inserisci il numero di dadi della scommessa: ");
+        int amountDice = reader.nextInt();
+
+        while(checkValue){
+            System.out.println("Inserisci il valore dei dadi della scommessa: ");
+            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
+
+              if(valueDie <= 0 || valueDie > 6){
+                    System.out.println("Valore del dado non valido");
+
+                }
+              else{
+                  System.out.println("OK");
+                  checkValue = false;
+              }
+              
+              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
+                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+                System.out.println("Il valore 1 non vale più come JOLLY");
+                currentBoard.oneJollyEnabled = false;
+                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+            }
+        }
+
+        Bet myNewBet = new Bet(amountDice, valueDie);
+        reader.close();
         return myNewBet;
-//        Scanner reader = new Scanner(System.in);  // Reading from System.in
-//        System.out.println("Inserisci il numero di dadi della scommessa: ");
-//        int amountDice = reader.nextInt();
-//
-//        while(checkValue){
-//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-//            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
-//
-//              if(valueDie <= 0 || valueDie > 6){
-//                    System.out.println("Valore del dado non valido");
-//
-//                }
-//              else{
-//                  System.out.println("OK");
-//                  checkValue = false;
-//              }
-//              
-//              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
-//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-//                System.out.println("Il valore 1 non vale più come JOLLY");
-//                currentBoard.oneJollyEnabled = false;
-//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-//            }
-//        }
-//
-//        myNewBet = new Bet(amountDice, valueDie);
-//        reader.close();
-//        return myNewBet;
     }
 
     public Bet makeBetConditional(Board currentBoard) throws RemoteException{

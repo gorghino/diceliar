@@ -22,7 +22,7 @@ public class Connect extends BasicGameState {
     private int stateID = -1;
     
     DiceLiar dl;
-    GameController gameC;
+    RMIGameController gameC;
     RMI rmiNext;
     
     Image background,
@@ -45,9 +45,12 @@ public class Connect extends BasicGameState {
     
      Board startBoard;  
     
-    public Connect( int _stateID) {
+    GUIController gC;
+    
+    public Connect(int _stateID, GUIController _gC){
         this.stateID = _stateID;
-    } 
+        this.gC = _gC;
+    }
     
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
@@ -154,7 +157,7 @@ public class Connect extends BasicGameState {
    
                     try {
                         System.out.println("INITBOARD\n");
-                        startBoard = dl.initBoard();
+                        startBoard = dl.initBoard(gC);
                         startBoard.initGame(startBoard, rmiNext); 
                         runPlay(sbg, gc);
                         

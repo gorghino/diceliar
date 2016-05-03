@@ -37,28 +37,28 @@ public class DiceLiar{
 
     ArrayList<PlayerEntry> rmiPlayerArray;
     RMI rmiNext;
-    GameController gc;
+    RMIGameController rgc;
     
     public DiceLiar() throws RemoteException, AlreadyBoundException, NotBoundException, UnknownHostException {
-        gc = new GameController();
+        rgc = new RMIGameController();
         
         //this.connectServer();       
         //Board startBoard = initBoard();     
         //startBoard.initGame(startBoard, rmiNext);   
     }
     
-    public Board initBoard() throws RemoteException, NotBoundException{
-        Board startBoard = new Board(gc.myID, START_TURN, rmiPlayerArray.size(), rmiPlayerArray, gc.lock);
+    public Board initBoard(GUIController _gC) throws RemoteException, NotBoundException{
+        Board startBoard = new Board(rgc.myID, START_TURN, rmiPlayerArray.size(), rmiPlayerArray, rgc.lock, _gC);
         Players currentPlayers = startBoard.getCurrentPlayers();
         currentPlayers.setCurrentBoard(startBoard);
-        gc.rmiBoard = startBoard;
-        currentPlayers.vectorPlayers[gc.myID].setMyDice(new Dice(5));
+        rgc.rmiBoard = startBoard;
+        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(5));
         //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
-        int IDPlayerRequest = (gc.myID+1)%rmiPlayerArray.size();
+        int IDPlayerRequest = (rgc.myID+1)%rmiPlayerArray.size();
         Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
         rmiNext = (RMI) regNext.lookup("player");
         
-        shareDice(currentPlayers, rmiNext);
+        shareDice(currentPlayers, rmiNext);  
         
         return startBoard;
     }
@@ -68,7 +68,7 @@ public class DiceLiar{
         //INIZIALIZZAZIONE REGISTRY E SERVER ------------------------------------------------------------------------------------
         System.out.println(ANSI_CYAN + "1: Inizializzazione Registry e Server locale" + ANSI_RESET);
         Registry localReg = LocateRegistry.createRegistry(LOCAL_PORT);
-        localReg.bind("player", gc);
+        localReg.bind("player", rgc);
         System.out.println(ANSI_GREEN + "Registry CREATO\n" + ANSI_RESET);
         // ----------------------------------------------------------------------------------------------------------------------
 
@@ -79,36 +79,34 @@ public class DiceLiar{
         
         System.out.println(ANSI_GREEN + "Lobby CONNESSA ... Mancano " + rmi.getTimer() + " secondi al VIA\n" + ANSI_RESET); 
         rmiTimer = rmi.getTimer(); //prendo questo valore per il timer della connect
-        System.out.println("Mi aggiungo alla Lobby\n");
         rmiPlayerArray = rmi.addClient(InetAddress.getLocalHost().getHostAddress(), LOCAL_PORT);
-        System.out.println("Mi sono aggiunto alla Lobby\n");
 
         for (int i = 0; i < rmiPlayerArray.size(); i++) {
             if (rmiPlayerArray.get(i).ip.equalsIgnoreCase(InetAddress.getLocalHost().getHostAddress()) && rmiPlayerArray.get(i).port == LOCAL_PORT) {
-                gc.myID = i;
+                rgc.myID = i;
             }
         }
-        System.out.println("Sono il giocatore " + gc.myID + "\n");
+        System.out.println("Sono il giocatore " + rgc.myID + "\n");
         // ------------------------------------------------------------------------------------------------------------------------
-        //Board startBoard = initBoard();     
+        //Board startBoard = initBoard(); Viene fatta nella Connect
         //startBoard.initGame(startBoard, rmiNext);   
     }
     
     private void shareDice(Players currentPlayers, RMI rmiNext) throws RemoteException{
-        System.out.println("\n---- RESET DICE SEQUENCE FROM " + gc.myID + " -----\n");
-        if(gc.myID == 0){
+        System.out.println("\n---- RESET DICE SEQUENCE FROM " + rgc.myID + " -----\n");
+        if(rgc.myID == 0){
             //Sono il giocatore 0, inizio il ring condividendo il set di dadi
             //System.out.println("Sono " + myID + " e passo i miei dadi al prossimo!");
             //System.out.println("DiceUpdate: " + rmiBoard.diceUpdated);
-            if(!(rmiNext.setDice(gc.myID, currentPlayers)) || gc.rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
-                synchronized (gc.lock) {
+            if(!(rmiNext.setDice(rgc.myID, currentPlayers)) || rgc.rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
+                synchronized (rgc.lock) {
                     try {
-                        while (!gc.rmiBoard.ready){
+                        while (!rgc.rmiBoard.ready){
                             //System.out.println("Sono " + myID + " e aspetto la fine del ring!");
                             //System.out.println(ANSI_RED + "INIT: LOCK " + lock+ ANSI_RESET);
-                            gc.lock.wait();
+                            rgc.lock.wait();
                             //System.out.println("Sono " + myID + " e mi sono sbloccato!");
-                            rmiNext.setDice(gc.myID, currentPlayers);
+                            rmiNext.setDice(rgc.myID, currentPlayers);
                         }
                     } catch (InterruptedException ex) {}
                 }
@@ -116,17 +114,17 @@ public class DiceLiar{
         }
         else{
             //System.out.println("Sono " + myID + " e non tocca a me iniziare il giro di dadi");
-            synchronized (gc.lock) {
+            synchronized (rgc.lock) {
                 try {
-                    while (!gc.rmiBoard.ready){
+                    while (!rgc.rmiBoard.ready){
                         //System.out.println("Sono " + myID + " e blocco!");
                         //System.out.println(ANSI_RED + "INIT: LOCK " + lock + ANSI_RESET);
-                        gc.lock.wait();
+                        rgc.lock.wait();
                         //System.out.println("Sono " + myID + " e mi sono sbloccato!");
-                        rmiNext.setDice(gc.myID, currentPlayers);
-                        if(gc.rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
+                        rmiNext.setDice(rgc.myID, currentPlayers);
+                        if(rgc.rmiBoard.diceUpdated != currentPlayers.getVectorPlayers().length){
                             //System.out.println("Non è l'ultimo giro");
-                            gc.rmiBoard.ready = false;
+                            rgc.rmiBoard.ready = false;
                         }    
                     }
                 } catch (InterruptedException ex) {}

@@ -27,6 +27,8 @@ public class Board implements Serializable{
     
     boolean okDoubt;
     
+    boolean initChoice;
+    
     int status;
     public static int IDLE = 0;
     public static int RESET = 1;
@@ -44,8 +46,11 @@ public class Board implements Serializable{
     
     RMI rmiNextPlayer;
     public int diceUpdated = 1;
+    boolean betDone;
+    
+    GUIController gC;
 
-    public Board(int _id, int _nTurn, int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray, Object _lock) throws RemoteException, NotBoundException {
+    public Board(int _id, int _nTurn, int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray, Object _lock, GUIController _gC) throws RemoteException, NotBoundException {
         myID = _id;
         nTurn = _nTurn;
         nPlayers = _nPlayers;
@@ -59,11 +64,14 @@ public class Board implements Serializable{
         oneJollyEnabled = true;
         
         status = IDLE;
+        
+        initChoice = true;
+        
+        gC = _gC;
      
         lock = _lock;
     }
 
-    @SuppressWarnings("empty-statement")
     void initGame(Board startBoard, RMI _rmiNextPlayer) throws RemoteException{
         int playerStarterID = 0; //startBoard.setStarter();
         rmiNextPlayer = _rmiNextPlayer;
@@ -79,15 +87,19 @@ public class Board implements Serializable{
         
     }
 
-    private void gameLoop(Board board, Player player) throws RemoteException{
+    public void gameLoop(Board board, Player player) throws RemoteException{
         player = getCurrentPlayers().getVectorPlayers()[myID];
-        while(true){
             //System.out.println("INIZIO GAMELOOP - TOCCA A " + getPlayingPlayer().getMyID());
             if(myID == getPlayingPlayer().getMyID() && ( status != Board.INIT_RESET && status != Board.RESET )){
                 status = PLAYING;
                 System.out.println("* Giocatore " + player.getMyID() + " tocca a te!");
                 System.out.println("Turno: " + this.getnTurn());
-                player.makeChoice(board);
+                                       
+                if(!gC.betClicked)
+                    return;
+                else{
+                    player.makeChoice(board);
+                }
                 
                 player.setTurn(false); //Non tocca piu a questo player
 
@@ -192,7 +204,6 @@ public class Board implements Serializable{
                 ready = false;
             }
             //System.out.println("Fine GAMELOOP");
-        }
     }
 
     public boolean checkBet(){
@@ -328,4 +339,8 @@ public class Board implements Serializable{
                 rmiPointer.notifyMove(board);
         }
     }
+
+    public GUIController getgC() {
+        return gC;
+    }   
 }

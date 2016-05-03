@@ -34,9 +34,12 @@ public class Menu extends BasicGameState {
     boolean enterStatePlay = false,
             enterConnectState = true;
     
+    GUIController gC;
     
-    public Menu(int _stateID){
+    
+    public Menu(int _stateID, GUIController _gC){
         this.stateId = _stateID;
+        this.gC = _gC;
     }
     
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{

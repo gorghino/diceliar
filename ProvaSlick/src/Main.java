@@ -22,11 +22,10 @@ public class Main extends StateBasedGame implements Runnable{
     
     @Override
     public void initStatesList(GameContainer gc) throws SlickException{
-       this.addState(new Menu(menu));
-       this.addState(new Connect(connect));
-       this.addState(new Play(play));
-       
-
+       GUIController gC = new GUIController();
+       this.addState(new Menu(menu, gC));
+       this.addState(new Connect(connect, gC));
+       this.addState(new Play(play, gC));
 
     }
     public static void runGraphic() throws SlickException {
