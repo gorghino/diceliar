@@ -65,8 +65,8 @@ public class Connect extends BasicGameState {
         font= new TrueTypeFont(awtFont, true);
         textFont= new TrueTypeFont(awtFontText, true);
         
-        ipField = new TextField(gc, font, 550, 290, 600, 50);
-        portField = new TextField(gc, font, 550, 386, 150, 50);
+        ipField = new TextField(gc, font, 535, 290, 600, 50);
+        portField = new TextField(gc, font, 535, 386, 150, 50);
         
     }
     

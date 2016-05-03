@@ -61,7 +61,7 @@ public class Play extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{ 
 
         
-        background = new Image("img/boardTEMP3.png");
+        background = new Image("img/boardTEMP4.png");
         
         boxDiceHoriz = new Image("img/BoxDiceHoriz.png");
         boxDiceVert = new Image("img/BoxDiceVert.png");
@@ -82,6 +82,7 @@ public class Play extends BasicGameState {
         dice.add(5, new Image("img/Die5.png"));
         dice.add(6, new Image("img/Die6.png"));
         dice.add(7, new Image("img/DieQM.png"));
+        dice.add(8, new Image("img/DieJoker.png"));
         
         turn = 0;
                 
