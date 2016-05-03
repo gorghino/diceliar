@@ -1,3 +1,6 @@
+
+import java.io.Serializable;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -7,7 +10,7 @@
  *
  * @author gorgo
  */
-public class GUIController {
+public class GUIController implements Serializable{
     boolean initBoardBool; //Primo Update della Board Play
     
     int turn; // Numero turn
