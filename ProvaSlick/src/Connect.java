@@ -4,6 +4,7 @@ import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.gui.TextField;
 import java.awt.Font;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -12,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.util.ResourceLoader;
 
 /**
  *
@@ -60,16 +62,26 @@ public class Connect extends BasicGameState {
         button = new Image("img/button.png");
         
         Font awtFont = new Font("Arial", 0, 30);
-        Font awtFontText = new Font("Arial",0,25);
+        Font awtFontText;
        
+        try {
+            InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
+            awtFontText = Font.createFont(Font.TRUETYPE_FONT,inputStream);
+            awtFontText = awtFontText.deriveFont(36f);
+            textFont= new TrueTypeFont(awtFontText, true);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         font= new TrueTypeFont(awtFont, true);
-        textFont= new TrueTypeFont(awtFontText, true);
+        
         
         ipField = new TextField(gc, font, 535, 290, 600, 50);
         portField = new TextField(gc, font, 535, 386, 150, 50);
         
     }
-    
+        
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
 
