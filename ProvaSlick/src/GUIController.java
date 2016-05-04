@@ -11,6 +11,10 @@ import java.io.Serializable;
  * @author gorgo
  */
 public class GUIController implements Serializable{
+    Board board;
+
+
+    
     boolean initBoardBool; //Primo Update della Board Play
     
     int turn; // Numero turn
@@ -128,6 +132,10 @@ public class GUIController implements Serializable{
 
     public void setTurn(int turn) {
         this.turn = turn;
+    }
+    
+    public Board getBoard() {
+        return board;
     }
     
     

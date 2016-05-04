@@ -6,10 +6,17 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+import java.io.InputStream;
+import org.newdawn.slick.util.ResourceLoader;
+import org.newdawn.slick.gui.AbstractComponent;
+
 /**
  *
  * @author proietfb
  */
+
 public class Play extends BasicGameState {
    
     private int stateID = -1;
@@ -23,8 +30,11 @@ public class Play extends BasicGameState {
           selectedPlayerVer,
           button;
     
-    TrueTypeFont font;
-    TrueTypeFont fontTurn;
+    TrueTypeFont font,fontTurn;
+    Font awtFont,awtFontTurn;
+    
+    
+    
     ArrayList<Image> dice = new ArrayList<>();
     
     int[][] positionPlayerDice, positionDice;
@@ -88,21 +98,27 @@ public class Play extends BasicGameState {
                 
         nPlayers = 8;
         initDicePlayer = 5;
-        
-       // amountDicePlayers = new int[nPlayers][];
-        
+                
         positionPlayerDice = new int[nPlayers][initDicePlayer];
         positionDice = new int[nPlayers][2];
         
         drawDieBet=1;
         drawValueBet = 1;
         
-        Font awtFont = new Font("Verdana", 0, 50);
-        Font awtFontTurn = new Font("Verdana", 0, 35);
-        font = new TrueTypeFont(awtFont, true);
-        fontTurn = new TrueTypeFont(awtFontTurn, true);
-//        textValueDice = new TextField(gc, font, 1000, 376, 60, 60); 
-//        textValueDice.setCursorVisible(false);
+        try {
+            InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
+            
+            awtFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            awtFont = awtFont.deriveFont(55f);
+            
+            font = new TrueTypeFont(awtFont, false);
+            
+            awtFontTurn = awtFont;
+            awtFontTurn = awtFontTurn.deriveFont(32f);
+            fontTurn = new TrueTypeFont(awtFontTurn, true);
+  
+        } catch (FontFormatException | IOException e) {
+        }
         
     }
     
@@ -287,12 +303,13 @@ public class Play extends BasicGameState {
             }   
         }
         
+        fontTurn.drawString(628, Main.ySize-522, "Turn: ");
+        fontTurn.drawString(701, Main.ySize-522,""+turn,Color.black);
+        
         //PANEL DX
         
-        if(getBoard().initChoice == true){
-            //button MakeBet
-//            g.setColor(Color.red);
-//            g.fillRect(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
+        if(getBoard().initChoice == true && turn > 1 && id != getBoard().getPlayingPlayer().myID){
+
             button.draw(825, Main.ySize-390, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
             g.drawString("Make Bet", 878, Main.ySize-375);
@@ -303,7 +320,7 @@ public class Play extends BasicGameState {
             g.setColor(Color.white);
             g.drawString("Doubt", 885, Main.ySize-285);
         }
-        else {
+        else if(id == getBoard().getPlayingPlayer().myID){
             //button Bet
             button.draw(825, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
             g.setColor(Color.white);
@@ -326,13 +343,13 @@ public class Play extends BasicGameState {
             g.setColor(Color.black);
            // if (!clickToChangeTextDice) {
                 if(drawValueBet == 1)
-                    font.drawString(1012, 380, ""+drawValueBet, Color.black);
+                    font.drawString(1016, 385, ""+drawValueBet, Color.black);
                 
                 if (clickToChangeValue) {
                     if(drawValueBet < 10)
-                        font.drawString(1012, 380, ""+drawValueBet, Color.black);
+                        font.drawString(1012, 385, ""+drawValueBet, Color.black);
                     else
-                        font.drawString(995, 380, ""+drawValueBet, Color.black);
+                        font.drawString(995, 385, ""+drawValueBet, Color.black);
                 }
         }
             //button leave
@@ -352,11 +369,12 @@ public class Play extends BasicGameState {
         }
             
             
-        fontTurn.drawString(710, Main.ySize-531,""+turn,Color.black);
+        
             
         g.setColor(Color.blue);
         g.drawString(""+getX, 50, 70);
         g.drawString(""+getY, 50, 90);
+        
     }
     
     @Override
@@ -365,11 +383,16 @@ public class Play extends BasicGameState {
         if(initBoardBool == false){
             initBoardBool =  true; 
             
-            turn = board.nTurn;
+            turn = getBoard().getnTurn();
+            gC.setTurn(turn); 
+                        
             id = getBoard().myID;
-            System.out.println("my ID: "+ id );
+            gC.setId(id);
+            
             initDicePlayer = 5; //da fare
+                        
             nPlayers = getBoard().getnPlayers();
+            gC.setnPlayers(nPlayers);
             
             for (int s=0;s<nPlayers;s++){
                 amountDicePlayers = getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
@@ -386,7 +409,6 @@ public class Play extends BasicGameState {
         try {
             board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
         } catch (RemoteException ex) {
-            ex.printStackTrace();
         }
         
         
@@ -404,10 +426,12 @@ public class Play extends BasicGameState {
             
             if (getBoard().initChoice == true){
                 if((getX > 825 && getX < 1005) && (getY > 339 && getY < 389)){ //Make bet
+                    gC.setMakeBetClicked(true);
                     getBoard().initChoice = false;
                 }
                 
                 if((getX > 825 && getX < 1005) && (getY > 249 && getY < 299)){ //doubt
+                    gC.setDoubtClicked(true);
                     System.out.println("Dubito!");
                 }
             }
@@ -445,20 +469,24 @@ public class Play extends BasicGameState {
                 ///////////////////////////////////// Buttons
                 
                 if((getX > 825 && getX < 1005) && (getY > 249 && getY < 299)){ //bet
+                    gC.setBetClicked(true);
                     lbDrawDieBet = drawDieBet;
                     lbDrawValueBet = drawValueBet;
                     submittedChoice = true;
                     
                     board.betDone = true;
                     
-                    System.out.println("Scommessa Effettuata");
+                    gC.setDiceValueSelected(drawValueBet);
+                    gC.setDiceAmountSelected(drawDieBet);
+                    
                 
                 }
             }
             if((getX > 355 && getX < 535) && (getY > 249 && getY < 299)){ //leave
+                    gC.setLeaveClicked(true);
                     System.exit(0);
             }
-        }
+        }           
     }
     @Override
     public int getID(){

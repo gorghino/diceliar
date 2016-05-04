@@ -31,7 +31,9 @@ public class Connect extends BasicGameState {
           backPanel,
           button;
     
-    TrueTypeFont font, textFont;
+    TrueTypeFont font, textFont, textFontButton, textFontLobby;
+    Font awtFontText,awtFontTextButton, awtFontTextLobby;
+    
     
     TextField ipField,portField;
     
@@ -45,7 +47,7 @@ public class Connect extends BasicGameState {
     
     public String takeIPAddr,takePort;
     
-     Board startBoard;  
+    Board startBoard;  
     
     GUIController gC;
     
@@ -62,13 +64,23 @@ public class Connect extends BasicGameState {
         button = new Image("img/button.png");
         
         Font awtFont = new Font("Arial", 0, 30);
-        Font awtFontText;
+        
        
         try {
             InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
+            
             awtFontText = Font.createFont(Font.TRUETYPE_FONT,inputStream);
             awtFontText = awtFontText.deriveFont(36f);
             textFont= new TrueTypeFont(awtFontText, true);
+            
+            awtFontTextButton = awtFontText;
+            awtFontTextButton = awtFontTextButton.deriveFont(28f);
+            textFontButton= new TrueTypeFont(awtFontTextButton, true);
+            
+            awtFontTextLobby = awtFontText;
+            awtFontTextLobby = awtFontTextLobby.deriveFont(75);
+            textFontLobby = new TrueTypeFont(awtFontTextLobby, true);
+//            
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,12 +101,12 @@ public class Connect extends BasicGameState {
         //g.setBackground(new Color(0, 230 , 0));
         background.draw();
         backPanel.draw(287, Main.ySize-519);
+
+        backPanel.draw(550,Main.ySize-705,Menu.buttonWidth, 60);
         
-        
-        g.setColor(Color.black);
-        g.drawString("Lobby", 643, Main.ySize-689);
-        textFont.drawString(340, 290, "Insert your",Color.black);
-        textFont.drawString(340, 315, "IP Address",Color.black);
+        textFontLobby.drawString(600, Main.ySize-689, "Lobby", Color.black);
+        textFont.drawString(340, 285, "Insert server",Color.black);
+        textFont.drawString(340, 320, "IP Address",Color.black);
         textFont.drawString(315 , 400, "Insert your Port",Color.black);
         
         
@@ -112,7 +124,7 @@ public class Connect extends BasicGameState {
         ipField.render(gc, g);
         portField.render(gc, g);
         g.setColor(Color.white);
-        g.drawString("Play", 620, 529);
+        textFontButton.drawString(620, 529, "Play",Color.white);
         
         if (clickedPlay == true){
             g.drawString("Wait other players... ", 500, 600);
@@ -138,13 +150,16 @@ public class Connect extends BasicGameState {
         if (clickedPlay == false){
             if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON)){
                 if((getX>550 && getX<730) && (getY>202 && getY<250)){ // Play
+                    
+                    gC.setPlayConnectedClicked(true);
+                    
                     clickedPlay = true;
                     //takeIPAddr = ipField.getText();
                     //takePort = portField.getText();
                     takeIPAddr = "127.0.0.1";
                     takePort = "50000";
+                    
                     System.out.println("IP: " + takeIPAddr + " Port: " + takePort);
-
 
                     try {
                         dl = new DiceLiar();
