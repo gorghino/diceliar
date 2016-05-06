@@ -31,9 +31,7 @@ public class Connect extends BasicGameState {
           backPanel,
           button;
     
-    TrueTypeFont font, textFont, textFontButton, textFontLobby;
-    Font awtFontText,awtFontTextButton, awtFontTextLobby;
-    
+    TrueTypeFont textFont, textFontButton, textFontLobby;
     
     TextField ipField,portField;
     
@@ -50,47 +48,27 @@ public class Connect extends BasicGameState {
     Board startBoard;  
     
     GUIController gC;
+    GuiUtils gUtils;
     
-    public Connect(int _stateID, GUIController _gC){
+    public Connect(int _stateID, GUIController _gC, GuiUtils _gUtils){
         this.stateID = _stateID;
         this.gC = _gC;
+        this.gUtils = _gUtils;
     }
     
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
         
-        background = new Image("img/bgDiceLiar.png");
-        backPanel = new Image("img/BackPanel.png");
-        button = new Image("img/button.png");
+        background = gUtils.getBackground();
+        backPanel = gUtils.getBackPanel();
+        button = gUtils.getButton();
         
-        Font awtFont = new Font("Arial", 0, 30);
+        textFontButton = gUtils.getFontButton();
+        textFont = gUtils.getTextFont();
+        textFontLobby = gUtils.getTextFontLobby();
         
-       
-        try {
-            InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
-            
-            awtFontText = Font.createFont(Font.TRUETYPE_FONT,inputStream);
-            awtFontText = awtFontText.deriveFont(36f);
-            textFont= new TrueTypeFont(awtFontText, true);
-            
-            awtFontTextButton = awtFontText;
-            awtFontTextButton = awtFontTextButton.deriveFont(28f);
-            textFontButton= new TrueTypeFont(awtFontTextButton, true);
-            
-            awtFontTextLobby = awtFontText;
-            awtFontTextLobby = awtFontTextLobby.deriveFont(75);
-            textFontLobby = new TrueTypeFont(awtFontTextLobby, true);
-//            
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        font= new TrueTypeFont(awtFont, true);
-        
-        
-        ipField = new TextField(gc, font, 535, 290, 600, 50);
-        portField = new TextField(gc, font, 535, 386, 150, 50);
+        ipField = new TextField(gc, textFont, 535, Main.ySize-466, 600, 38);
+        portField = new TextField(gc, textFont, 535, Main.ySize-371, 150, 38);
         
     }
         
@@ -98,7 +76,6 @@ public class Connect extends BasicGameState {
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
 
         
-        //g.setBackground(new Color(0, 230 , 0));
         background.draw();
         backPanel.draw(287, Main.ySize-519);
 
@@ -197,6 +174,8 @@ public class Connect extends BasicGameState {
                 }
             }
         }
+        else
+            gC.setPlayConnectedClicked(false);
         
         time += delta;
         

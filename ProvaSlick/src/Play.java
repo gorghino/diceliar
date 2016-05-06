@@ -5,12 +5,6 @@ import org.lwjgl.input.Mouse;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.IOException;
-import java.io.InputStream;
-import org.newdawn.slick.util.ResourceLoader;
-import org.newdawn.slick.gui.AbstractComponent;
 
 /**
  *
@@ -22,18 +16,15 @@ public class Play extends BasicGameState {
     private int stateID = -1;
     
     Image background,
-          boxDiceHoriz,boxDiceHorizRot,
-          boxDiceVert,boxDiceVertRot,
+          boxDiceHoriz,
+          boxDiceVert,
           arrowLeft,
           arrowRight,
           selectedPlayerHoriz,
           selectedPlayerVer,
           button;
     
-    TrueTypeFont font,fontTurn;
-    Font awtFont,awtFontTurn;
-    
-    
+    TrueTypeFont fontValue,fontTurn;
     
     ArrayList<Image> dice = new ArrayList<>();
     
@@ -46,7 +37,6 @@ public class Play extends BasicGameState {
         initDicePlayer,
         id = 0,
         turn;
-    
     
     int drawDieBet,
         drawValueBet,
@@ -61,41 +51,28 @@ public class Play extends BasicGameState {
     DiceLiar dl;
     
     GUIController gC;
+    GuiUtils gUtils;
     
-    public Play(int _stateID, GUIController _gC){
+    public Play(int _stateID, GUIController _gC, GuiUtils _gUtils){
         this.stateID = _stateID;
         this.gC = _gC;
+        this.gUtils = _gUtils;
     }
     
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{ 
 
-        
-        background = new Image("img/boardTEMP4.png");
-        
-        boxDiceHoriz = new Image("img/BoxDiceHoriz.png");
-        boxDiceVert = new Image("img/BoxDiceVert.png");
-        
-        arrowLeft = new Image("img/ArrowLeft.png");
-        arrowRight = new Image("img/ArrowRight.png");
-        
-        selectedPlayerHoriz = new Image("img/SelectedPlayerHoriz.png");
-        selectedPlayerVer = new Image("img/SelectedPlayerVert.png");
-        
-        button = new Image("img/button.png");
-        
-        dice.add(0, new Image("img/DieDel.png"));
-        dice.add(1, new Image("img/Die1.png"));
-        dice.add(2, new Image("img/Die2.png"));
-        dice.add(3, new Image("img/Die3.png"));
-        dice.add(4, new Image("img/Die4.png"));
-        dice.add(5, new Image("img/Die5.png"));
-        dice.add(6, new Image("img/Die6.png"));
-        dice.add(7, new Image("img/DieQM.png"));
-        dice.add(8, new Image("img/DieJoker.png"));
+        background = gUtils.getGuiBoard();
+        boxDiceHoriz = gUtils.getBoxDiceHoriz();
+        boxDiceVert = gUtils.getBoxDiceVert();
+        arrowLeft = gUtils.getArrowLeft();
+        arrowRight = gUtils.getArrowRight();
+        selectedPlayerHoriz = gUtils.getSelectedPlayerHoriz();
+        selectedPlayerVer = gUtils.getSelectedPlayerVert();
+        button = gUtils.getButton();
+        dice = gUtils.getArrayDice();
         
         turn = 0;
-                
         nPlayers = 8;
         initDicePlayer = 5;
                 
@@ -105,21 +82,8 @@ public class Play extends BasicGameState {
         drawDieBet=1;
         drawValueBet = 1;
         
-        try {
-            InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
-            
-            awtFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtFont = awtFont.deriveFont(55f);
-            
-            font = new TrueTypeFont(awtFont, false);
-            
-            awtFontTurn = awtFont;
-            awtFontTurn = awtFontTurn.deriveFont(32f);
-            fontTurn = new TrueTypeFont(awtFontTurn, true);
-  
-        } catch (FontFormatException | IOException e) {
-        }
-        
+        fontValue = gUtils.getFontValue();
+        fontTurn = gUtils.getFontTurn();
     }
     
     @Override
@@ -303,7 +267,7 @@ public class Play extends BasicGameState {
             }   
         }
         
-        fontTurn.drawString(628, Main.ySize-522, "Turn: ");
+        fontTurn.drawString(628, Main.ySize-522, "Turn: ",Color.white);
         fontTurn.drawString(701, Main.ySize-522,""+turn,Color.black);
         
         //PANEL DX
@@ -327,30 +291,29 @@ public class Play extends BasicGameState {
             g.drawString("Bet", 902, Main.ySize-285);
 
             //Draw arrows
-            g.drawImage(arrowLeft, 705, Main.ySize-375);
-            g.drawImage(arrowRight, 845, Main.ySize-375);
-            g.drawImage(arrowLeft, 938, Main.ySize-375);
-            g.drawImage(arrowRight, 1078, Main.ySize-375);
+            g.drawImage(arrowLeft, 695, 380);
+            g.drawImage(arrowRight, 835, 380);
+            g.drawImage(arrowLeft, 932, 380);
+            g.drawImage(arrowRight, 1055, 380);
 
             //draw dice for bet
-
-            if (drawDieBet == 1)
+            
+            if(drawValueBet == 1 || drawDieBet == 1){
+                fontValue.drawString(1005, 385, ""+drawValueBet, Color.black);
                 g.drawImage(dice.get(1), 752, 371);
+            }
+
             if (clickToChangeDie)
                 g.drawImage(dice.get(drawDieBet), 752, 371);        
 
-            //draw value for quantify n° of dice
-            g.setColor(Color.black);
-           // if (!clickToChangeTextDice) {
-                if(drawValueBet == 1)
-                    font.drawString(1016, 385, ""+drawValueBet, Color.black);
+            if (clickToChangeValue == true) {
+                if(drawValueBet < 10)
+                    fontValue.drawString(1005, 385, ""+drawValueBet, Color.black);
+                else
+                    fontValue.drawString(995, 385, ""+drawValueBet, Color.black);
+            }
+
                 
-                if (clickToChangeValue) {
-                    if(drawValueBet < 10)
-                        font.drawString(1012, 385, ""+drawValueBet, Color.black);
-                    else
-                        font.drawString(995, 385, ""+drawValueBet, Color.black);
-                }
         }
             //button leave
             button.draw(355, Main.ySize-300, Menu.buttonWidth, Menu.buttonHeigh);
@@ -367,11 +330,8 @@ public class Play extends BasicGameState {
             g.drawString(lbDrawValueBet + " dice that value ", 325, Main.ySize-370);
             g.drawImage(dice.get(lbDrawDieBet), 527,Main.ySize-408);
         }
-            
-            
-        
-            
-        g.setColor(Color.blue);
+    
+        g.setColor(Color.black);
         g.drawString(""+getX, 50, 70);
         g.drawString(""+getY, 50, 90);
         
@@ -438,25 +398,25 @@ public class Play extends BasicGameState {
             else {
                 ////////////////////////////////////// Arrows
             
-                if((getX >706 && getX < 739) && (getY > 338 && getY < 373) ){ //left arrow Die
+                if((getX >697 && getX < 747) && (getY > 332 && getY < 389) ){ //left arrow Die
                     clickToChangeDie = true;
                     drawDieBet -= 1;
                     if(drawDieBet < 1)
                         drawDieBet = 6;
                 }
-                if((getX > 845 && getX < 879) && (getY> 338 && getY < 373) ){ //right arrow Die
+                if((getX > 835 && getX < 889) && (getY> 332 && getY < 389) ){ //right arrow Die
                     clickToChangeDie = true;
                     drawDieBet += 1;
                     if(drawDieBet > 6)
                         drawDieBet = 1;
                 }
-                if((getX > 938 && getX < 974) && (getY > 338 && getY < 373) ){ //right arrow Value
+                if((getX > 929 && getX < 985) && (getY > 332 && getY < 389) ){ //left arrow Value
                     clickToChangeValue = true;
                     drawValueBet -= 1;
                     if(drawValueBet < 1)
                         drawValueBet = nPlayers*initDicePlayer; //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
                 }
-                if((getX > 1080 && getX < 1111) && (getY > 338 && getY < 373) ){ //right arrow Value
+                if((getX > 1055 && getX < 1111) && (getY > 332 && getY < 389) ){ //right arrow Value
                     clickToChangeValue = true;
                     drawValueBet += 1;
                     if(drawValueBet > nPlayers*5)
@@ -486,7 +446,7 @@ public class Play extends BasicGameState {
                     gC.setLeaveClicked(true);
                     System.exit(0);
             }
-        }           
+        } 
     }
     @Override
     public int getID(){

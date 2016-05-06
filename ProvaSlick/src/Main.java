@@ -13,6 +13,8 @@ public class Main extends StateBasedGame implements Runnable{
     public static final int xSize = 1366;
     public static final int ySize = 768;
     
+    
+    
     public Main (String name){
         super(gameName);
         
@@ -22,10 +24,13 @@ public class Main extends StateBasedGame implements Runnable{
     
     @Override
     public void initStatesList(GameContainer gc) throws SlickException{
+       GuiUtils gUtils = new GuiUtils();
        GUIController gC = new GUIController();
-       this.addState(new Menu(menu, gC));
-       this.addState(new Connect(connect, gC));
-       this.addState(new Play(play, gC));
+       gUtils.importImages();
+       gUtils.importFont();
+       this.addState(new Menu(menu, gC,gUtils));
+       this.addState(new Connect(connect, gC, gUtils));
+       this.addState(new Play(play, gC, gUtils));
 
     }
     public static void runGraphic() throws SlickException {
@@ -41,15 +46,7 @@ public class Main extends StateBasedGame implements Runnable{
             e.printStackTrace();
         }
     }
-//    public static void main(String[] args) {
-//        try {
-//            runInterface();
-//        } catch (SlickException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
 
-    
     public void run() {
         try {
             Main.runGraphic();

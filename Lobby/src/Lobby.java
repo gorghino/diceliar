@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 
-
-import static java.lang.Thread.sleep;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
