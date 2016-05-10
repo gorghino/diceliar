@@ -33,6 +33,7 @@ public class GUIController implements Serializable{
     boolean leaveClicked = false;
     
     boolean betOnTable = false;
+    boolean makeChoice = false;
     
     int diceValueSelected;
     int diceAmountSelected;

@@ -109,7 +109,7 @@ public class Board implements Serializable{
 
                 //Il turno passa al giocatore successivo
                 board.setnTurn(getnTurn() + 1);
-                gC.setTurn(getnTurn() + 1);
+                gC.setTurn(getnTurn());
             
                 
                 if(status != RESET){
