@@ -33,8 +33,7 @@ public class Play extends BasicGameState {
 
     int nPlayers,
             initDicePlayer,
-            id = 0,
-            turn;
+            id = 0;
 
     int drawDieBet,
             drawValueBet,
@@ -43,7 +42,6 @@ public class Play extends BasicGameState {
 
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
-            submittedChoice = false,
             initBoardBool = false;
     Board board;
     DiceLiar dl;
@@ -73,7 +71,6 @@ public class Play extends BasicGameState {
         button = guiDefImg.getButton();
         dice = guiDefImg.getArrayDice();
 
-        turn = 0;
         nPlayers = 8;
         initDicePlayer = 5;
 
@@ -245,10 +242,10 @@ public class Play extends BasicGameState {
         }
 
         fontTurn.drawString(628, Main.ySize - 522, "Turn: ", Color.white);
-        fontTurn.drawString(701, Main.ySize - 522, "" + turn, Color.black);
+        fontTurn.drawString(701, Main.ySize - 522, "" + gC.getTurn(), Color.black);
 
         //PANEL DX
-        if (getBoard().initChoice == true && turn > 1 && id != getBoard().getPlayingPlayer().myID) {
+        if (getBoard().initChoice == true && gC.getTurn() > 1 && id != getBoard().getPlayingPlayer().myID) {
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
             //button Doubt
@@ -289,11 +286,11 @@ public class Play extends BasicGameState {
 
         /////////////////////
         //////////////////// Panel SX
-        if (submittedChoice == true) {
+        if (gC.betOnTable == true) {
             g.setColor(Color.black);
             g.drawString("Bet made by player " + id, 325, Main.ySize - 410);
-            g.drawString(lbDrawValueBet + " dice that value ", 325, Main.ySize - 370);
-            g.drawImage(dice.get(lbDrawDieBet), 527, Main.ySize - 408);
+            g.drawString(gC.getDiceAmountSelected() + " dice that value ", 325, Main.ySize - 370);
+            g.drawImage(dice.get(gC.getDiceValueSelected()), 527, Main.ySize - 408);
         }
 
         g.setColor(Color.black);
@@ -307,9 +304,6 @@ public class Play extends BasicGameState {
 
         if (initBoardBool == false) {
             initBoardBool = true;
-
-            turn = getBoard().getnTurn();
-            gC.setTurn(turn);
 
             id = getBoard().myID;
             gC.setId(id);
@@ -344,6 +338,10 @@ public class Play extends BasicGameState {
 
             getX = Mouse.getX();
             getY = abs(0 - Mouse.getY());
+            
+            if ((getX >= 0 && getX <= 100) && (getY >= 0 && getY <= 100)) {
+                gC.printValues();
+            }
 
             if (getBoard().initChoice == true) {
                 if ((getX >= 825 && getX <= 1005) && (getY >= 339 && getY <= 389)) { //Make bet
@@ -393,12 +391,11 @@ public class Play extends BasicGameState {
                     gC.setBetClicked(true);
                     lbDrawDieBet = drawDieBet;
                     lbDrawValueBet = drawValueBet;
-                    submittedChoice = true;
 
                     board.betDone = true;
 
-                    gC.setDiceValueSelected(drawValueBet);
-                    gC.setDiceAmountSelected(drawDieBet);
+                    gC.setDiceValueSelected(drawDieBet);
+                    gC.setDiceAmountSelected(drawValueBet);
 
                 }
             }

@@ -32,10 +32,28 @@ public class GUIController implements Serializable{
     boolean betClicked = false;
     boolean leaveClicked = false;
     
+    boolean betOnTable = false;
+    
     int diceValueSelected;
     int diceAmountSelected;
 
     public GUIController() {
+    }
+    
+    public void printValues() {
+        System.out.println("--------------------------------");
+        System.out.println("id: " + id);
+        System.out.println("initBoardBool: " + initBoardBool);
+        System.out.println("turn: " + turn);
+        System.out.println("nPlayers: " + nPlayers);
+        System.out.println("PlayConnectedClicked: " + PlayConnectedClicked);
+        System.out.println("makeBetClicked: " + makeBetClicked);
+        System.out.println("doubtClicked: " + doubtClicked);
+        System.out.println("betClicked: " + betClicked);
+        System.out.println("betOnTable: " + betOnTable);
+        System.out.println("diceValueSelected: " + diceValueSelected);
+        System.out.println("diceAmountSelected: " + diceAmountSelected);
+        System.out.println("--------------------------------");
     }
 
     public boolean isPlayConnectedClicked() {
@@ -137,6 +155,16 @@ public class GUIController implements Serializable{
     public Board getBoard() {
         return board;
     }
+
+    public boolean isBetOnTable() {
+        return betOnTable;
+    }
+
+    public void setBetOnTable(boolean betOnTable) {
+        this.betOnTable = betOnTable;
+    }
+    
+     
     
     
     

@@ -101,9 +101,18 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     }
 
     @Override
-    public void notifyTurn(Board board) throws RemoteException{   
+    public void notifyTurn(Board board) throws RemoteException{
+        GUIController gC = rmiBoard.getgC();
+        System.out.println("NotifyTurn in");
+        
         rmiBoard.setnTurn(board.getnTurn());
+        gC.turn = board.getnTurn();
+        
         rmiBoard.setCurrentBet(board.getCurrentBet());
+        gC.diceAmountSelected = board.getCurrentBet().getAmount();
+        gC.diceValueSelected = board.getCurrentBet().getValueDie();
+        
+        gC.setBetOnTable(true);
         
         //if(rmiBoard.getCurrentBet() == null || board.getCurrentBet() == null)
            //rmiBoard.getCurrentPlayers().vectorPlayers[myID].makeChoice(rmiBoard);
@@ -121,16 +130,18 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             rmiBoard.ready = true;
             rmiBoard.lock.notify();
             if(rmiBoard.status == Board.PLAYING){
-                //System.out.println("NotifyTurn: Il turno CONTINUA\n");
+                System.out.println("NotifyTurn: Il turno CONTINUA\n");
             }
             //else if(rmiBoard.status == Board.RESET){
                // System.out.println("NotifyTurn: Io " + rmiBoard.myID + " Devo resettare i dadi\n");
             //}
         }
+        System.out.println("NotifyTurn out");
     }
 
     @Override
     public void resetDice(Players currentPlayers) throws RemoteException {
+        GUIController gC = rmiBoard.getgC();
         //System.out.println("-------------------------------------------------------------------------------------------");
         //System.out.println("ID: " + myID + " RESET DICEUpDated");
         rmiBoard.getCurrentPlayers().resetAllDice(myID);
@@ -138,7 +149,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.diceUpdated = 1;  
         rmiBoard.status = Board.RESET;
         rmiBoard.setnTurn(1);
-
+        
+        gC.setBetOnTable(false);
         
         System.out.println("------------------DADI LOCALI CREATI NELLA RESETDICE---------------------------");
         int[] myDice = rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getmyDiceValue();
@@ -195,7 +207,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
 
     @Override
     public void notifyMove(Board board) throws RemoteException {
-        System.out.println("Il giocatore " + board.getPlayingPlayer().myID + " ha rilanciato con " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie);
+        System.out.println("NOTIFYMOVE: Il giocatore " + board.getPlayingPlayer().myID + " ha rilanciato con " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie);
     }
     
 }

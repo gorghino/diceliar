@@ -77,6 +77,8 @@ public class Board implements Serializable{
         rmiNextPlayer = _rmiNextPlayer;
         Player playerStarter = startBoard.getCurrentPlayers().getVectorPlayers()[playerStarterID];
         setPlayingPlayer(playerStarter);
+        
+        gC.setTurn(1);
 
         System.out.println("Inizia a giocare il giocatore numero " + playerStarterID);
         playerStarter.setTurn(true);
@@ -92,8 +94,8 @@ public class Board implements Serializable{
             //System.out.println("INIZIO GAMELOOP - TOCCA A " + getPlayingPlayer().getMyID());
             if(myID == getPlayingPlayer().getMyID() && ( status != Board.INIT_RESET && status != Board.RESET )){
                 status = PLAYING;
-                System.out.println("* Giocatore " + player.getMyID() + " tocca a te!");
-                System.out.println("Turno: " + this.getnTurn());
+                //System.out.println("* Giocatore " + player.getMyID() + " tocca a te!");
+                //System.out.println("Turno: " + this.getnTurn());
                                        
                 if(!gC.betClicked)
                     return;
@@ -101,10 +103,13 @@ public class Board implements Serializable{
                     player.makeChoice(board);
                 }
                 
+                gC.betClicked = false;
+                
                 player.setTurn(false); //Non tocca piu a questo player
 
                 //Il turno passa al giocatore successivo
                 board.setnTurn(getnTurn() + 1);
+                gC.setTurn(getnTurn() + 1);
             
                 
                 if(status != RESET){
@@ -112,7 +117,13 @@ public class Board implements Serializable{
                     Player nextPlayer = board.getCurrentPlayers().getVectorPlayers()[(getPlayingPlayer().getMyID() + 1) % nPlayers];
                     nextPlayer.setTurn(true);
                     board.setPlayingPlayer(board.getCurrentPlayers().getVectorPlayers()[(getPlayingPlayer().getMyID() + 1) % nPlayers]);
+                    
+                    if(rmiNextPlayer == null)
+                        System.out.println("AAAAAAAAAAAAAAAH");
+                    
                     rmiNextPlayer.notifyTurn(board);
+                    System.out.println("Passo il turno");
+                    System.out.println(board.initChoice);
                 }
                     
             }

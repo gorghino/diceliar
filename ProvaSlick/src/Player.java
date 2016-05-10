@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.Scanner;
 
 /**
  *
@@ -77,6 +76,7 @@ public class Player implements Serializable{
                 else{ //Sono il primo giocatore a iniziare il giro
                     System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
                     myBet = makeBet(currentBoard);
+                    gC.setBetOnTable(true);
                     currentBoard.setCurrentBet(myBet);
                     currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                 }      
@@ -130,85 +130,136 @@ public class Player implements Serializable{
 //        }
 
     public Bet makeBet(Board currentBoard) throws RemoteException{
+        GUIController gC = currentBoard.getgC();
         boolean checkValue = true;
         int valueDie = 0;
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
-        System.out.println("Inserisci il numero di dadi della scommessa: ");
-        int amountDice = reader.nextInt();
-
-        while(checkValue){
-            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
-
-              if(valueDie <= 0 || valueDie > 6){
-                    System.out.println("Valore del dado non valido");
-
-                }
-              else{
-                  System.out.println("OK");
-                  checkValue = false;
-              }
-              
-              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
+        
+        valueDie = gC.diceValueSelected;
+        int amountDice = gC.diceAmountSelected;
+        
+        if (valueDie == 1 && currentBoard.oneJollyEnabled) {
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
                 System.out.println("Il valore 1 non vale più come JOLLY");
                 currentBoard.oneJollyEnabled = false;
                 currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-            }
         }
-
+        
+        System.out.println("Scommetto " + amountDice + " dadi di valore " + valueDie);
         Bet myNewBet = new Bet(amountDice, valueDie);
-        reader.close();
         return myNewBet;
+        
+//        Scanner reader = new Scanner(System.in);  // Reading from System.in
+//        System.out.println("Inserisci il numero di dadi della scommessa: ");
+//        int amountDice = reader.nextInt();
+//
+//        while(checkValue){
+//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
+//            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
+//
+//              if(valueDie <= 0 || valueDie > 6){
+//                    System.out.println("Valore del dado non valido");
+//
+//                }
+//              else{
+//                  System.out.println("OK");
+//                  checkValue = false;
+//              }
+//              
+//              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
+//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+//                System.out.println("Il valore 1 non vale più come JOLLY");
+//                currentBoard.oneJollyEnabled = false;
+//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+//            }
+//        }
+//
+//        Bet myNewBet = new Bet(amountDice, valueDie);
+//        reader.close();
+//        return myNewBet;
     }
 
     public Bet makeBetConditional(Board currentBoard) throws RemoteException{
+        GUIController gC = currentBoard.getgC();
         int amountDice = 0;
         int valueDie = 0;
         boolean checkBet = true;
 
         Bet currentBet = currentBoard.getCurrentBet();
-        Scanner reader = new Scanner(System.in);
-
-        while(checkBet){
-            System.out.println("Inserisci il numero di dadi della scommessa: ");
-            amountDice = reader.nextInt();
-
-            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-            valueDie = reader.nextInt();
-
-            if(valueDie <= 0 || valueDie > 6){
-                System.out.println("Valore del dado non valido");
-                continue;
-            }
-
-
-            if(amountDice < currentBet.getAmount()){
+        
+      
+                
+        valueDie = gC.diceValueSelected;
+        amountDice = gC.diceAmountSelected;
+        
+        if(amountDice < currentBet.getAmount()){
                 System.out.println("Non puoi rilanciare a ribasso");
             }
-            else if(amountDice == currentBet.getAmount()){
-                if(valueDie > currentBet.getValueDie() && valueDie <= 6){
-                    System.out.println("OK");
-                    checkBet = false;
-                }
-                else
-                    System.out.println("Non puoi rilanciare uguale o minore");
+        else if(amountDice == currentBet.getAmount()){
+            if(valueDie > currentBet.getValueDie() && valueDie <= 6){
+                System.out.println("OK");
+                checkBet = false;
             }
-            else if(amountDice > currentBet.getAmount() && valueDie <= 6){
-                   System.out.println("OK");
-                   checkBet = false;
-            }
-            
-            if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
-                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-                System.out.println("Il valore 1 non vale più come JOLLY");
-                currentBoard.oneJollyEnabled = false;
-                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-            }
+            else
+                System.out.println("Non puoi rilanciare uguale o minore");
+        }
+        else if(amountDice > currentBet.getAmount() && valueDie <= 6){
+               System.out.println("OK");
+               checkBet = false;
         }
 
+        if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
+            //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+            System.out.println("Il valore 1 non vale più come JOLLY");
+            currentBoard.oneJollyEnabled = false;
+            currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+        }
+        
+        
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
+//        
+//        
+//        Scanner reader = new Scanner(System.in);
+//
+//        while(checkBet){
+//            System.out.println("Inserisci il numero di dadi della scommessa: ");
+//            amountDice = reader.nextInt();
+//
+//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
+//            valueDie = reader.nextInt();
+//
+//            if(valueDie <= 0 || valueDie > 6){
+//                System.out.println("Valore del dado non valido");
+//                continue;
+//            }
+//
+//
+//            if(amountDice < currentBet.getAmount()){
+//                System.out.println("Non puoi rilanciare a ribasso");
+//            }
+//            else if(amountDice == currentBet.getAmount()){
+//                if(valueDie > currentBet.getValueDie() && valueDie <= 6){
+//                    System.out.println("OK");
+//                    checkBet = false;
+//                }
+//                else
+//                    System.out.println("Non puoi rilanciare uguale o minore");
+//            }
+//            else if(amountDice > currentBet.getAmount() && valueDie <= 6){
+//                   System.out.println("OK");
+//                   checkBet = false;
+//            }
+//            
+//            if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
+//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+//                System.out.println("Il valore 1 non vale più come JOLLY");
+//                currentBoard.oneJollyEnabled = false;
+//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+//            }
+//        }
+//
+//        Bet myNewBet = new Bet(amountDice, valueDie);
+//        return myNewBet;
     }
 
     public boolean doubt(Board currentBoard){
