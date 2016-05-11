@@ -52,7 +52,7 @@ public class Player implements Serializable{
                         gC.doubtClicked = false;
                         
                         if(doubt(currentBoard)){
-                            currentBoard.status = Board.RESET;
+                            currentBoard.status = Board.INIT_RESET;
                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
                             currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
 
@@ -60,7 +60,8 @@ public class Player implements Serializable{
 
                             currentBoard.diceUpdated = 1;
                             currentBoard.oneJollyEnabled = true;
-                            currentBoard.newTurn(currentBoard, this.getMyID(), myBet); 
+                            
+                            currentBoard.newTurn(currentBoard, this.getMyID(), null); 
                             return true;
                         }
                         else{
@@ -69,6 +70,7 @@ public class Player implements Serializable{
                             currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
 
                             myDice.removeDie();
+                            gC.totalDicePlayer--;
 
                             currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
                             return true;
@@ -162,6 +164,7 @@ public class Player implements Serializable{
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
                 System.out.println("Il valore 1 non vale più come JOLLY");
                 currentBoard.oneJollyEnabled = false;
+                currentBoard.gC.oneJollyEnabled = false;
                 currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         
@@ -233,6 +236,7 @@ public class Player implements Serializable{
             //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
             System.out.println("Il valore 1 non vale più come JOLLY");
             currentBoard.oneJollyEnabled = false;
+            currentBoard.gC.oneJollyEnabled = false;
             currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         

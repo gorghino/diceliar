@@ -156,6 +156,9 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.setnTurn(1);
         gC.setTurn(1);
         
+        gC.diceAmountSelected = 0;
+        gC.diceValueSelected = 0;
+        
         rmiBoard.haveToken = false;
         
         gC.setBetOnTable(false);
@@ -164,6 +167,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         int[] myDice = rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getmyDiceValue();
         for(int i=0;i<myDice.length;i++)
             System.out.println("Player " + myID + ": " + myDice[i]);
+       
         //shareDice(currentPlayers, rmiNext);
         
 //        synchronized (rmiBoard.lock){
@@ -181,6 +185,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
            if( (((board.getPlayingPlayer().myID - myID)%board.getnPlayers()) + board.getnPlayers())%board.getnPlayers() == 1){
                System.out.println(ANSI_RED + "Perdo un dado :(" + ANSI_RESET);
                rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getMyDiceObject().removeDie();
+               rmiBoard.gC.totalDicePlayer--;
            }        
        }
        else
@@ -210,12 +215,19 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     public void oneIsOne(Board board) throws RemoteException {
         System.out.println("Uno vale uno. Non posso più usarlo come jolly fino al prossimo turno");
         rmiBoard.oneJollyEnabled = false;
+        rmiBoard.gC.oneJollyEnabled = false;
         rmiBoard.currentPlayers.printDice();
     }  
 
     @Override
     public void notifyMove(Board board) throws RemoteException {
+        GUIController gC = rmiBoard.getgC();
         System.out.println("NOTIFYMOVE: Il giocatore " + board.getPlayingPlayer().myID + " ha rilanciato con " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie);
+        gC.betOnTable = true;
+        gC.diceAmountSelected = board.getCurrentBet().amountDice;
+        gC.diceValueSelected = board.getCurrentBet().valueDie;
+        gC.idLastBet = board.getPlayingPlayer().myID;
+    
     }
     
 }

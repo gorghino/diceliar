@@ -46,7 +46,7 @@ public class Board implements Serializable{
     boolean haveToken = false;
     int roundToken = 0;
     
-    int printCount = 1;
+    int printCount = 0, printCount2 = 0;
     
     RMI rmiNextPlayer;
     public int diceUpdated = 1;
@@ -95,15 +95,15 @@ public class Board implements Serializable{
         player = getCurrentPlayers().getVectorPlayers()[myID];
             if(printCount == 0){
                 System.out.println("INIZIO GAMELOOP - TOCCA A " + getPlayingPlayer().getMyID());
-                System.out.println("Turno: " + this.getnTurn());
+                System.out.println("Turno: " + this.getnTurn() + " - Player myTurn: " +  player.myTurn);
                 printCount = 1;
             }
             if(myID == getPlayingPlayer().getMyID() && ( status != Board.INIT_RESET && status != Board.RESET )){
                 status = PLAYING;
-                if(printCount == 0){
+                if(printCount2 == 0){
                     System.out.println("* Giocatore " + player.getMyID() + " tocca a te!");
                     System.out.println("Turno: " + this.getnTurn());
-                    printCount = 1;
+                    printCount2 = 1;
                 }
                 
                 if(!player.makeChoice(board))
@@ -112,12 +112,14 @@ public class Board implements Serializable{
                 gC.betClicked = false;
                 
                 printCount = 1;
+                printCount2 = 1;
                 
-                player.setTurn(false); //Non tocca piu a questo player
-
+                
+                
                 //Il turno passa al giocatore successivo
              
-                if(status != RESET){
+                if(status != RESET && status != INIT_RESET){
+                    player.setTurn(false); //Non tocca piu a questo player
                     board.setnTurn(getnTurn() + 1);
                     gC.setTurn(getnTurn());
                     
@@ -139,9 +141,12 @@ public class Board implements Serializable{
                     System.out.println("ID: " + myID + " STATUS: RESET");
                     if (myID == this.getPlayingPlayer().myID && haveToken) { //Reset starter
                         if(roundToken == 2){
+                            gC.restartBoard = true;
+                            gC.oneJollyEnabled = true;
                             status = PLAYING;
                             roundToken = 0;
                             printCount = 0;
+                            printCount2 = 0;
                             return;
                         }
                         
@@ -160,8 +165,11 @@ public class Board implements Serializable{
                         
                         if(diceUpdated == currentPlayers.getVectorPlayers().length && roundToken == 2){
                             status = PLAYING;
+                            gC.restartBoard = true;
+                            gC.oneJollyEnabled = true;
                             roundToken = 0;
                             printCount = 0;
+                            printCount2 = 0;
                         }
                             
                     }               
@@ -176,7 +184,8 @@ public class Board implements Serializable{
                     
                     haveToken = true;
                     
-                    oneJollyEnabled = true;                 
+                    oneJollyEnabled = true;    
+                    gC.oneJollyEnabled = true;
                 }
                 else if(status == PLAYING){
                     //System.out.println("ID: " + myID + " PLAYING");
@@ -276,7 +285,7 @@ public class Board implements Serializable{
 //    }
 
     void newTurn(Board currentBoard, int starterIDPlayer, Bet starterBet) throws RemoteException {
-
+        
         broadcastRMI(currentBoard, "RESET_DICE");
         //this.getCurrentPlayers().resetAllDice(myID);
         
@@ -286,10 +295,10 @@ public class Board implements Serializable{
         currentBoard.setCurrentBet(starterBet);
         //currentPlayers.printDice();
         
-        //System.out.println("NEWTURN: Il nuovo turno inizia da " + starterIDPlayer);
+        System.out.println("NEWTURN: Il nuovo turno inizia da " + starterIDPlayer);
         currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer].setTurn(true);
         
-        //System.out.println(myID + ": SETPlayingPlayer a " + starterIDPlayer);
+        System.out.println(myID + ": SETPlayingPlayer a " + starterIDPlayer);
         currentBoard.setPlayingPlayer(currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer]);
         currentBoard.diceUpdated = 1;
         
@@ -301,8 +310,15 @@ public class Board implements Serializable{
            
         
         if(myID == currentBoard.getPlayingPlayer().myID){
-            currentBoard.setCurrentBet(currentBoard.getCurrentPlayers().vectorPlayers[myID].makeBet(currentBoard));
-            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+            currentBoard.setCurrentBet(null);
+            currentBoard.haveToken = true;
+            
+            getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
+            setPlayingPlayer(getCurrentPlayers().getVectorPlayers()[myID]);
+            diceUpdated = 1;
+            status = Board.INIT_RESET;
+            
+            //currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
             System.out.println("Esco dal NEWTURN");
         }
         else{

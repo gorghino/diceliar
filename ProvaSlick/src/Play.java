@@ -41,7 +41,6 @@ public class Play extends BasicGameState {
     int getX, getY;
 
     int nPlayers,
-            initDicePlayer,
             id = 0,
             cnt,
             updateDelta;
@@ -55,7 +54,6 @@ public class Play extends BasicGameState {
 
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
-            initBoardBool = false,
             playDiceAnimation = true;
 
     Board board;
@@ -87,9 +85,8 @@ public class Play extends BasicGameState {
         dice = guiDefImg.getArrayDice();
 
         nPlayers = 8;
-        initDicePlayer = 5;
 
-        positionPlayerDice = new int[nPlayers][initDicePlayer];
+        positionPlayerDice = new int[nPlayers][5];
         positionDice = new int[nPlayers][2];
         playerNamePosition = new int[nPlayers][2];
 
@@ -166,7 +163,7 @@ public class Play extends BasicGameState {
 
 
         for (int i = 0; i < nPlayers; i++) {
-            for (int j = 0; j < initDicePlayer; j++) {
+            for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
                     drawPlayerOneTwo(i, j);
                 } else if (i > 1 && i < 4) {
@@ -248,29 +245,12 @@ public class Play extends BasicGameState {
             playDiceAnimation = false;
         }
 
-        if (initBoardBool == false) {
-            initBoardBool = true;
-
-            id = getBoard().myID;
-            gC.setId(id);
-
-            initDicePlayer = 5; //da fare
-
-            nPlayers = getBoard().getnPlayers();
-            gC.setnPlayers(nPlayers);
-
-            for (int s = 0; s < nPlayers; s++) {
-                amountDicePlayers = getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
-                for (int i = 0; i < amountDicePlayers.length; i++) {
-                    positionPlayerDice[s][i] = amountDicePlayers[i];
-                    System.out.println("player " + s + " dice: " + positionPlayerDice[s][i]);
-                }
-            }
+        if (gC.initBoard == true || gC.restartBoard == true) {
+            restartInitBoard();
         }
 
         ///////////////////// CHECK GAME STATE ////////////////////////////////
         try {
-            System.out.println("GL");
             board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
         } catch (RemoteException ex) {
         }
@@ -320,7 +300,7 @@ public class Play extends BasicGameState {
                     clickToChangeValue = true;
                     drawValueBet -= 1;
                     if (drawValueBet < 1) {
-                        drawValueBet = nPlayers * initDicePlayer; //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
+                        drawValueBet = nPlayers * gC.totalDicePlayer; //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
                     }
                 }
                 if ((getX >= 1055 && getX <= 1111) && (getY >= 332 && getY <= 389)) { //right arrow Value
@@ -351,6 +331,32 @@ public class Play extends BasicGameState {
             }
         }
     }
+    
+    private void restartInitBoard(){
+        if(gC.restartBoard){
+            for (int s = 0; s < nPlayers; s++)
+                 for (int i = 0; i < 5; i++)
+                     positionPlayerDice[s][i] = 0;
+            gC.restartBoard = false;
+        }
+        
+        gC.initBoard = false;
+
+        id = getBoard().myID;
+        gC.setId(id);
+
+        nPlayers = getBoard().getnPlayers();
+        gC.setnPlayers(nPlayers);
+
+        for (int s = 0; s < nPlayers; s++) {
+            amountDicePlayers = getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
+            System.out.println("Player: " + s + " Lenght: " + amountDicePlayers.length);
+            for (int i = 0; i < amountDicePlayers.length; i++) {
+                positionPlayerDice[s][i] = amountDicePlayers[i];
+                System.out.println("player " + s + " dice: " + positionPlayerDice[s][i]);
+            }
+        }
+    }
 
     private void drawPlayerOneTwo(int iterI, int iterJ) {
         if (cnt <= 1) {
@@ -370,7 +376,12 @@ public class Play extends BasicGameState {
                     animationDie2.draw(positionDice[iterI][0] + 171, Main.ySize - 187);
                     animationDie3.draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 187);
                 } else {
-                    dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][0], Main.ySize - 187);
+                    //System.out.println(positionPlayerDice[iterI][iterJ] + " - " + gC.oneJollyEnabled);
+                    if(positionPlayerDice[iterI][iterJ] == 1 && gC.oneJollyEnabled)
+                        dice.get(8).draw(positionDice[iterI][0], Main.ySize - 187);
+                    else
+                        dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][0], Main.ySize - 187);
+
                     positionDice[iterI][0] += 171;
                 }
 
@@ -378,7 +389,11 @@ public class Play extends BasicGameState {
                 animationDie4.draw(positionDice[iterI][1], Main.ySize - 97);
                 animationDie5.draw(positionDice[iterI][1] + 173, Main.ySize - 97);
             } else {
-                dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][1], Main.ySize - 97);
+                if(positionPlayerDice[iterI][iterJ] == 1 && gC.oneJollyEnabled)
+                     dice.get(8).draw(positionDice[iterI][1], Main.ySize - 97);
+                else
+                    dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][1], Main.ySize - 97);
+                
                 positionDice[iterI][1] += 173;
             }
         } else if (iterJ < 3) {

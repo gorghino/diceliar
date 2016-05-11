@@ -31,7 +31,8 @@ public class Connect extends BasicGameState {
     int waitConnections, getX, getY;
     
     boolean loadPlayers = false,
-            clickedPlay = false;
+            clickedPlay = false,
+            clickedPlaySkip = true;
     
     public String takeIPAddr, takePort;
     
@@ -83,7 +84,7 @@ public class Connect extends BasicGameState {
         ipField.render(gc, g);
         portField.render(gc, g);
         
-        if (clickedPlay == true)
+        if (clickedPlaySkip == false)
             textFont.drawString(500, 600,"Connected. Wait  other players... ",Color.white);
         
         
@@ -103,12 +104,18 @@ public class Connect extends BasicGameState {
 
         }
         if (clickedPlay == false){
-            if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON)){
-                if((getX >= 550 && getX <= 730) && (getY >= 202 && getY <= 250)){ // Play
+            if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) || clickedPlaySkip == false){
+                if((getX >= 550 && getX <= 730) && (getY >= 202 && getY <= 250) || clickedPlaySkip == false){ // Play
                     
                     gC.setPlayConnectedClicked(true);
                     
+                    if(clickedPlaySkip){
+                        clickedPlaySkip = false;
+                        return;
+                    }
+                    
                     clickedPlay = true;
+                    
                     //takeIPAddr = ipField.getText();
                     //takePort = portField.getText();
                     takeIPAddr = "127.0.0.1";

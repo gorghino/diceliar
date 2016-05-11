@@ -39,6 +39,13 @@ public class GUIController implements Serializable{
     
     int diceValueSelected;
     int diceAmountSelected;
+    
+    boolean initBoard = true;
+    boolean restartBoard = false;
+    
+    int totalDicePlayer = 5;
+    
+    boolean oneJollyEnabled = true;
 
     public GUIController() {
     }
