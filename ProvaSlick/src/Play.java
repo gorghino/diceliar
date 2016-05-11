@@ -21,7 +21,8 @@ public class Play extends BasicGameState {
             arrowRight,
             selectedPlayerHoriz,
             selectedPlayerVer,
-            button;
+            button,
+            backPanel;
 
     TrueTypeFont fontValue, fontTurn;
 
@@ -43,7 +44,10 @@ public class Play extends BasicGameState {
     int nPlayers,
             id = 0,
             cnt,
-            updateDelta;
+            guiTurn,
+            guiNextTurn,
+            updateDiceAnimation,
+            updateNewGamePanel;
 
     int drawDieBet,
             drawValueBet,
@@ -54,6 +58,7 @@ public class Play extends BasicGameState {
 
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
+            newGame = false,
             playDiceAnimation = true;
 
     Board board;
@@ -63,7 +68,9 @@ public class Play extends BasicGameState {
     GuiDefineImages guiDefImg;
     GuiDefineButtons gDrawButtons;
     GuiDefineFont gDefFont;
-
+    
+    int move;
+    
     public Play(GUIController _gC, GuiDefineImages _guiDefImg, GuiDefineButtons _gDrawButtons, GuiDefineFont _gDefFont) {
         this.gC = _gC;
         this.guiDefImg = _guiDefImg;
@@ -83,6 +90,8 @@ public class Play extends BasicGameState {
         selectedPlayerVer = guiDefImg.getSelectedPlayerVert();
         button = guiDefImg.getButton();
         dice = guiDefImg.getArrayDice();
+        backPanel = guiDefImg.getBackPanel();
+        
 
         nPlayers = 8;
 
@@ -92,6 +101,8 @@ public class Play extends BasicGameState {
 
         drawDieBet = 1;
         drawValueBet = 1;
+        
+        move =0;
 
         fontValue = gDefFont.getFontValue();
         fontTurn = gDefFont.getFontTurn();
@@ -150,17 +161,13 @@ public class Play extends BasicGameState {
 //        playerNamePosition[7][0]=;
 //        playerNamePosition[7][1]=;
         
-        
-        rotatedFont.drawString(playerNamePosition[1][0], playerNamePosition[1][1], "Player 8", Color.black);
-
-        selectedPlayerHoriz.draw(230, Main.ySize - 240);//solo prova
+        selectedPlayerHoriz.draw(230, Main.ySize - 240);
 
         cnt = 0;
 
         //DRAW PLAYERS
         dimXHor = 240;
         dimYVer = 377;
-
 
         for (int i = 0; i < nPlayers; i++) {
             for (int j = 0; j < 5; j++) {
@@ -179,15 +186,26 @@ public class Play extends BasicGameState {
         fontTurn.drawString(628, Main.ySize - 522, "Turn: ", Color.white);
         fontTurn.drawString(701, Main.ySize - 522, "" + gC.getTurn(), Color.black);
         
-        fontTurn.drawString(850, Main.ySize-471, "Panel Bet", Color.black);
+        
+        
 
         //PANEL DX
+        fontTurn.drawString(850, Main.ySize-471, "Panel Bet", Color.black);
+        
         if (gC.makeChoice && gC.getTurn() > 1 && id == getBoard().getPlayingPlayer().myID) {
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 885, Main.ySize - 285, "Doubt", Color.white);
-
+            
+            selectedPlayerHoriz.draw(230, Main.ySize - 240);
+            
+//            if (move <= 455)
+//                selectedPlayerHoriz.draw(230+move, Main.ySize - 240);
+//            else
+//                selectedPlayerHoriz.draw(230+450, Main.ySize - 240);
+            
+            
         } else if (id == getBoard().getPlayingPlayer().myID) {
            
             //button Bet
@@ -223,13 +241,26 @@ public class Play extends BasicGameState {
 
         /////////////////////
         //////////////////// Panel SX
+        
+        fontTurn.drawString(269, Main.ySize-471, "Last Bet made by: ", Color.black);
+        
         if (gC.betOnTable == true) {
             g.setColor(Color.black);
-            g.drawString("Bet made by player " + gC.idLastBet, 325, Main.ySize - 410);
-            g.drawString(gC.getDiceAmountSelected() + " dice that value ", 325, Main.ySize - 370);
+            fontTurn.drawString(480, Main.ySize-471, "Player "+ gC.idLastBet, Color.black);
+            fontTurn.drawString(325, Main.ySize - 370, gC.getDiceAmountSelected() + " dice that value ", Color.black);
             g.drawImage(dice.get(gC.getDiceValueSelected()), 527, Main.ySize - 408);
         }
-
+        
+       
+        //Overwrite Panels
+        
+        //New Game
+        
+        if (newGame == true){
+            backPanel.draw(300, Main.ySize-400);
+        }
+        
+        
         g.setColor(Color.black);
         g.drawString("" + getX, 50, 70);
         g.drawString("" + getY, 50, 90);
@@ -238,13 +269,23 @@ public class Play extends BasicGameState {
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
+        
+        
+        
+        if (gC.betClicked == true)
+            move += 20;
+        
+        updateDiceAnimation += delta;
+        updateNewGamePanel += delta;
 
-        updateDelta += delta;
-
-        if (updateDelta >= 6000) {
+        if (updateDiceAnimation >= 6000) {
             playDiceAnimation = false;
         }
-
+        
+        if (updateNewGamePanel >= 6000){
+            newGame = false;
+        }
+        
         if (gC.initBoard == true || gC.restartBoard == true) {
             restartInitBoard();
         }
@@ -322,6 +363,8 @@ public class Play extends BasicGameState {
 
                     gC.setDiceValueSelected(drawDieBet);
                     gC.setDiceAmountSelected(drawValueBet);
+                    
+                    
 
                 }
             }
@@ -339,7 +382,7 @@ public class Play extends BasicGameState {
                      positionPlayerDice[s][i] = 0;
             gC.restartBoard = false;
         }
-        
+        newGame = true;
         gC.initBoard = false;
 
         id = getBoard().myID;
