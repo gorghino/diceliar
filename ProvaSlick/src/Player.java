@@ -40,13 +40,17 @@ public class Player implements Serializable{
         rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
     }
 
-    public void makeChoice(Board currentBoard) throws RemoteException{
+    public boolean makeChoice(Board currentBoard) throws RemoteException{
         GUIController gC = currentBoard.getgC();
         if(myTurn){ //Tocca a me fare il turno
-                Bet betOnTable = currentBoard.getCurrentBet();
-                
+                Bet betOnTable = currentBoard.getCurrentBet();        
                 if(betOnTable != null){
+                    gC.makeChoice = true;
                     if(gC.doubtClicked){ // HO CLICCATO DUBITO
+                        
+                        gC.makeChoice = false;
+                        gC.doubtClicked = false;
+                        
                         if(doubt(currentBoard)){
                             currentBoard.status = Board.RESET;
                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
@@ -56,7 +60,8 @@ public class Player implements Serializable{
 
                             currentBoard.diceUpdated = 1;
                             currentBoard.oneJollyEnabled = true;
-                            currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
+                            currentBoard.newTurn(currentBoard, this.getMyID(), myBet); 
+                            return true;
                         }
                         else{
                             System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
@@ -66,21 +71,37 @@ public class Player implements Serializable{
                             myDice.removeDie();
 
                             currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
+                            return true;
                         }
                     }
                     else if(gC.makeBetClicked){ // NON DUBITO E RILANCIO
+                        
+                        gC.makeChoice = false;
+                        
+                        if(gC.betClicked == false)
+                            return false;
+      
+                        gC.makeBetClicked = false;
                         currentBoard.setCurrentBet(makeBetConditional(currentBoard));
                         currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+                        return true;
                     }
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
-                    System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
+                    //System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
+                    
+                    if(gC.betClicked == false)
+                        return false;
+                    
                     myBet = makeBet(currentBoard);
                     gC.setBetOnTable(true);
                     currentBoard.setCurrentBet(myBet);
                     currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
+                    return true;
                 }      
         }
+        
+        return false;
     }
 //                    
 //                    System.out.println("C'e gia una scommessa: ci sono " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
@@ -145,6 +166,7 @@ public class Player implements Serializable{
         }
         
         System.out.println("Scommetto " + amountDice + " dadi di valore " + valueDie);
+        gC.idLastBet = myID;
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
         
@@ -214,7 +236,7 @@ public class Player implements Serializable{
             currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         
-        
+        gC.idLastBet = myID;
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
 //        

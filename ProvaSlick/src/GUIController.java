@@ -35,6 +35,8 @@ public class GUIController implements Serializable{
     boolean betOnTable = false;
     boolean makeChoice = false;
     
+    int idLastBet;
+    
     int diceValueSelected;
     int diceAmountSelected;
 
@@ -48,6 +50,7 @@ public class GUIController implements Serializable{
         System.out.println("turn: " + turn);
         System.out.println("nPlayers: " + nPlayers);
         System.out.println("PlayConnectedClicked: " + PlayConnectedClicked);
+        System.out.println("makeChoice: " + makeChoice);
         System.out.println("makeBetClicked: " + makeBetClicked);
         System.out.println("doubtClicked: " + doubtClicked);
         System.out.println("betClicked: " + betClicked);

@@ -49,6 +49,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     public boolean setDice(int id, Players playersArray) throws RemoteException {
         boolean lastChange = true;
         
+        rmiBoard.haveToken = true;
+        
         //System.out.println("SET DICE e DiceUpdated = " + rmiBoard.diceUpdated);
         
         if(rmiBoard.diceUpdated == rmiBoard.currentPlayers.getVectorPlayers().length){
@@ -86,7 +88,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
 //                    }
                     
                     lastChange = true;
-                    rmiBoard.status = Board.PLAYING;
+                    //rmiBoard.status = Board.PLAYING;
                 }
                     
             }  
@@ -113,6 +115,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.diceValueSelected = board.getCurrentBet().getValueDie();
         
         gC.setBetOnTable(true);
+        gC.idLastBet = board.myID;
         
         //if(rmiBoard.getCurrentBet() == null || board.getCurrentBet() == null)
            //rmiBoard.getCurrentPlayers().vectorPlayers[myID].makeChoice(rmiBoard);
@@ -148,7 +151,12 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         
         rmiBoard.diceUpdated = 1;  
         rmiBoard.status = Board.RESET;
+        
+        System.out.println("ID: " + rmiBoard.myID + "Imposto Turno 1");
         rmiBoard.setnTurn(1);
+        gC.setTurn(1);
+        
+        rmiBoard.haveToken = false;
         
         gC.setBetOnTable(false);
         
@@ -158,10 +166,10 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             System.out.println("Player " + myID + ": " + myDice[i]);
         //shareDice(currentPlayers, rmiNext);
         
-        synchronized (rmiBoard.lock){
-            rmiBoard.ready = true;
-            rmiBoard.lock.notify();
-        }
+//        synchronized (rmiBoard.lock){
+//            rmiBoard.ready = true;
+//            rmiBoard.lock.notify();
+//        }
     }
 
     @Override
@@ -184,7 +192,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
 
     @Override
     public void setRestart() throws RemoteException {
-        //System.out.println("QUELLO PRIMA DI ME HA ERRONEAMENTE DUBITATO");
+        System.out.println("SETRESTART - QUELLO PRIMA DI ME HA ERRONEAMENTE DUBITATO");
         rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
         rmiBoard.setPlayingPlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[myID]);
         rmiBoard.diceUpdated = 1;
@@ -192,10 +200,10 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         
         rmiBoard.setCurrentBet(null);
         
-        synchronized (rmiBoard.lock){
-            rmiBoard.ready = true;
-            rmiBoard.lock.notify();
-        }
+//        synchronized (rmiBoard.lock){
+//            rmiBoard.ready = true;
+//            rmiBoard.lock.notify();
+//        }
     }
 
     @Override

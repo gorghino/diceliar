@@ -52,7 +52,9 @@ public class DiceLiar{
             System.out.println("LA MADONNA\n");
         }
         
-        shareDice(currentPlayers, rmiNext);  
+        shareDice(currentPlayers, rmiNext);
+        
+        startBoard.haveToken = false;
         
         return startBoard;
     }
@@ -123,7 +125,6 @@ public class DiceLiar{
                     }
                 } catch (InterruptedException ex) {}
             }
-            
         }
     }
 

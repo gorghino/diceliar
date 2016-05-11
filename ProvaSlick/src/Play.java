@@ -6,6 +6,7 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import static java.lang.Math.abs;
+import static org.lwjgl.opengl.GL11.glRotatef;
 
 /**
  *
@@ -24,25 +25,39 @@ public class Play extends BasicGameState {
 
     TrueTypeFont fontValue, fontTurn;
 
+    UnicodeFont rotatedFont;
+
     ArrayList<Image> dice = new ArrayList<>();
 
-    int[][] positionPlayerDice, positionDice;
+    Animation animationDie1,
+            animationDie2,
+            animationDie3,
+            animationDie4,
+            animationDie5;
+
+    int[][] positionPlayerDice, positionDice, playerNamePosition;
     int[] amountDicePlayers;
 
     int getX, getY;
 
     int nPlayers,
             initDicePlayer,
-            id = 0;
+            id = 0,
+            cnt,
+            updateDelta;
 
     int drawDieBet,
             drawValueBet,
             lbDrawDieBet,
             lbDrawValueBet;
+    
+    int dimXHor, dimYVer;
 
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
-            initBoardBool = false;
+            initBoardBool = false,
+            playDiceAnimation = true;
+
     Board board;
     DiceLiar dl;
 
@@ -76,21 +91,33 @@ public class Play extends BasicGameState {
 
         positionPlayerDice = new int[nPlayers][initDicePlayer];
         positionDice = new int[nPlayers][2];
+        playerNamePosition = new int[nPlayers][2];
 
         drawDieBet = 1;
         drawValueBet = 1;
 
         fontValue = gDefFont.getFontValue();
         fontTurn = gDefFont.getFontTurn();
+
+        rotatedFont = gDefFont.getRotatedFont();
+
+        Image[] anDie1 = {dice.get(5), dice.get(3), dice.get(4), dice.get(1), dice.get(3), dice.get(2)};
+        Image[] anDie2 = {dice.get(6), dice.get(1), dice.get(5), dice.get(4), dice.get(2), dice.get(3)};
+        Image[] anDie3 = {dice.get(2), dice.get(6), dice.get(3), dice.get(5), dice.get(4), dice.get(1)};
+        Image[] anDie4 = {dice.get(4), dice.get(2), dice.get(1), dice.get(3), dice.get(5), dice.get(6)};
+        Image[] anDie5 = {dice.get(2), dice.get(5), dice.get(6), dice.get(4), dice.get(1), dice.get(3)};
+
+        animationDie1 = new Animation(anDie1, 100, true);
+        animationDie2 = new Animation(anDie2, 100, true);
+        animationDie3 = new Animation(anDie3, 100, true);
+        animationDie4 = new Animation(anDie4, 100, true);
+        animationDie5 = new Animation(anDie5, 100, true);
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException { // run this every frame to update game logic
 
         background.draw(0, 0);
-
-        //DRAW PLAYERS
-        int dimXHor = 240, dimYVer = 377;
 
         positionDice[0][0] = 249;
         positionDice[0][1] = 334;
@@ -100,152 +127,65 @@ public class Play extends BasicGameState {
         positionDice[2][1] = Main.ySize - 163;
         positionDice[3][0] = Main.ySize - 470;
         positionDice[3][1] = Main.ySize - 537;
-        positionDice[4][0] = 699;
-        positionDice[4][1] = 784;
-        positionDice[5][0] = 250;
-        positionDice[5][1] = 334;
+        positionDice[4][0] = positionDice[1][0];
+        positionDice[4][1] = positionDice[1][1];
+        positionDice[5][0] = positionDice[0][0];
+        positionDice[5][1] = positionDice[0][1];
         positionDice[6][0] = Main.ySize - 474;
         positionDice[6][1] = Main.ySize - 539;
         positionDice[7][0] = Main.ySize - 101;
         positionDice[7][1] = Main.ySize - 165;
-
-        int cnt = 0;
+        
+        playerNamePosition[0][0]=408;
+        playerNamePosition[0][1]=Main.ySize-226;
+        playerNamePosition[1][0]= 859;
+        playerNamePosition[1][1]= playerNamePosition[0][1]; 
+//        playerNamePosition[2][0]=;
+//        playerNamePosition[2][1]=;
+//        playerNamePosition[3][0]=;
+//        playerNamePosition[3][1]=;
+//        playerNamePosition[4][0]=;
+//        playerNamePosition[4][1]=;
+//        playerNamePosition[5][0]=;
+//        playerNamePosition[5][1]=;
+//        playerNamePosition[6][0]=;
+//        playerNamePosition[6][1]=;
+//        playerNamePosition[7][0]=;
+//        playerNamePosition[7][1]=;
+        
+        
+        rotatedFont.drawString(playerNamePosition[1][0], playerNamePosition[1][1], "Player 8", Color.black);
 
         selectedPlayerHoriz.draw(230, Main.ySize - 240);//solo prova
+
+        cnt = 0;
+
+        //DRAW PLAYERS
+        dimXHor = 240;
+        dimYVer = 377;
+
 
         for (int i = 0; i < nPlayers; i++) {
             for (int j = 0; j < initDicePlayer; j++) {
                 if (i <= 1) {
-                    if (cnt <= 1) {
-                        g.drawImage(boxDiceHoriz, dimXHor, Main.ySize - 213);
-                        dimXHor += 450;
-                        cnt++;
-                    }
-                    if (i == id) {
-                        if (j < 3) {
-                            g.drawImage(dice.get(positionPlayerDice[i][j]), positionDice[i][0], Main.ySize - 187);
-                            positionDice[i][0] += 171;
-                        } else {
-                            g.drawImage(dice.get(positionPlayerDice[i][j]), positionDice[i][1], Main.ySize - 97);
-                            positionDice[i][1] += 173;
-                        }
-                    } else if (j < 3) {
-                        g.drawImage(dice.get(7), positionDice[i][0], Main.ySize - 187);
-                        positionDice[i][0] += 171;
-                    } else {
-                        g.drawImage(dice.get(7), positionDice[i][1], Main.ySize - 97);
-                        positionDice[i][1] += 173;
-                    }
+                    drawPlayerOneTwo(i, j);
                 } else if (i > 1 && i < 4) {
-                    if (cnt <= 3) {
-                        g.drawImage(boxDiceVert, 1153, Main.ySize - dimYVer);
-                        dimYVer += 374;
-                        dimXHor = 240;
-                        cnt++;
-                    }
-                    if (i == id) {
-                        if (j < 3) {
-                            dice.get(positionPlayerDice[0][4]).setRotation(-90);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), 1175, positionDice[i][0]);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][0] -= 134;
-                        } else {
-                            dice.get(positionPlayerDice[0][4]).setRotation(-90);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), 1265, positionDice[i][1]);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][1] -= 136;
-
-                        }
-                    } else if (j < 3) {
-                        dice.get(positionPlayerDice[0][4]).setRotation(-90);
-                        g.drawImage(dice.get(7), 1175, positionDice[i][0]);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][0] -= 134;
-                    } else {
-                        dice.get(positionPlayerDice[0][4]).setRotation(-90);
-                        g.drawImage(dice.get(7), 1265, positionDice[i][1]);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][1] -= 136;
-
-                    }
-
+                    drawPlayerThreeFour(i, j);
                 } else if (i > 3 && i < 6) {
-                    if (cnt <= 5) {
-                        boxDiceHoriz.setRotation(180);
-                        g.drawImage(boxDiceHoriz, dimXHor, Main.ySize - 768);
-                        boxDiceHoriz.setRotation(0);
-                        dimXHor += 450;
-                        dimYVer = 377;
-                        cnt++;
-                    }
-                    if (i == id) {
-                        if (j < 3) {
-                            dice.get(positionPlayerDice[0][4]).setRotation(180);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), positionDice[i][0], Main.ySize - 653);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][0] += 171;
-                        } else {
-                            dice.get(positionPlayerDice[0][4]).setRotation(180);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), positionDice[i][1], Main.ySize - 743);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][1] += 173;
-
-                        }
-                    } else if (j < 3) {
-                        dice.get(positionPlayerDice[0][4]).setRotation(180);
-                        g.drawImage(dice.get(7), positionDice[i][0], Main.ySize - 653);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][0] += 171;
-                    } else {
-                        dice.get(positionPlayerDice[0][4]).setRotation(180);
-                        g.drawImage(dice.get(7), positionDice[i][1], Main.ySize - 743);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][1] += 173;
-
-                    }
-
+                    drawPlayerFiveSix(i, j);
                 } else {
-                    if (cnt <= 7) {
-                        boxDiceVert.setRotation(180);
-                        g.drawImage(boxDiceVert, 0, Main.ySize - dimYVer);
-                        boxDiceVert.setRotation(0);
-                        dimYVer += 374;
-                    }
-                    if (i == id) {
-                        if (j < 3) {
-                            dice.get(positionPlayerDice[0][4]).setRotation(90);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), 115, positionDice[i][0]);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][0] -= 134;
-                        } else {
-                            dice.get(positionPlayerDice[0][4]).setRotation(90);
-                            g.drawImage(dice.get(positionPlayerDice[0][4]), 25, positionDice[i][1]);
-                            dice.get(positionPlayerDice[0][4]).setRotation(0);
-                            positionDice[i][1] -= 136;
-
-                        }
-                    } else if (j < 3) {
-                        dice.get(positionPlayerDice[0][4]).setRotation(90);
-                        g.drawImage(dice.get(7), 115, positionDice[i][0]);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][0] -= 134;
-                    } else {
-                        dice.get(positionPlayerDice[0][4]).setRotation(90);
-                        g.drawImage(dice.get(7), 25, positionDice[i][1]);
-                        dice.get(positionPlayerDice[0][4]).setRotation(0);
-                        positionDice[i][1] -= 136;
-
-                    }
-
+                    drawPlayerSevenEight(i, j);
                 }
             }
         }
 
         fontTurn.drawString(628, Main.ySize - 522, "Turn: ", Color.white);
         fontTurn.drawString(701, Main.ySize - 522, "" + gC.getTurn(), Color.black);
+        
+        fontTurn.drawString(850, Main.ySize-471, "Panel Bet", Color.black);
 
         //PANEL DX
-        if (getBoard().initChoice == true && gC.getTurn() > 1 && id != getBoard().getPlayingPlayer().myID) {
+        if (gC.makeChoice && gC.getTurn() > 1 && id == getBoard().getPlayingPlayer().myID) {
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
             //button Doubt
@@ -288,7 +228,7 @@ public class Play extends BasicGameState {
         //////////////////// Panel SX
         if (gC.betOnTable == true) {
             g.setColor(Color.black);
-            g.drawString("Bet made by player " + id, 325, Main.ySize - 410);
+            g.drawString("Bet made by player " + gC.idLastBet, 325, Main.ySize - 410);
             g.drawString(gC.getDiceAmountSelected() + " dice that value ", 325, Main.ySize - 370);
             g.drawImage(dice.get(gC.getDiceValueSelected()), 527, Main.ySize - 408);
         }
@@ -301,6 +241,12 @@ public class Play extends BasicGameState {
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
+
+        updateDelta += delta;
+
+        if (updateDelta >= 6000) {
+            playDiceAnimation = false;
+        }
 
         if (initBoardBool == false) {
             initBoardBool = true;
@@ -324,6 +270,7 @@ public class Play extends BasicGameState {
 
         ///////////////////// CHECK GAME STATE ////////////////////////////////
         try {
+            System.out.println("GL");
             board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
         } catch (RemoteException ex) {
         }
@@ -343,10 +290,9 @@ public class Play extends BasicGameState {
                 gC.printValues();
             }
 
-            if (getBoard().initChoice == true) {
+            if (gC.makeChoice) {
                 if ((getX >= 825 && getX <= 1005) && (getY >= 339 && getY <= 389)) { //Make bet
                     gC.setMakeBetClicked(true);
-                    getBoard().initChoice = false;
                 }
 
                 if ((getX >= 825 && getX <= 1005) && (getY >= 249 && getY <= 299)) { //doubt
@@ -404,6 +350,178 @@ public class Play extends BasicGameState {
                 System.exit(0);
             }
         }
+    }
+
+    private void drawPlayerOneTwo(int iterI, int iterJ) {
+        if (cnt <= 1) {
+            boxDiceHoriz.draw(dimXHor, Main.ySize - 213);
+            fontTurn.drawString(408, Main.ySize-226, "Player "+iterI, Color.black);
+            if (dimXHor < 690) {
+                dimXHor += 450;
+            } else {
+                dimXHor = 240;
+            }
+            cnt++;
+        }
+        if (iterI == id) {
+            if (iterJ < 3) {
+                if (playDiceAnimation == true) {
+                    animationDie1.draw(positionDice[iterI][0], Main.ySize - 187);
+                    animationDie2.draw(positionDice[iterI][0] + 171, Main.ySize - 187);
+                    animationDie3.draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 187);
+                } else {
+                    dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][0], Main.ySize - 187);
+                    positionDice[iterI][0] += 171;
+                }
+
+            } else if (playDiceAnimation == true) {
+                animationDie4.draw(positionDice[iterI][1], Main.ySize - 97);
+                animationDie5.draw(positionDice[iterI][1] + 173, Main.ySize - 97);
+            } else {
+                dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][1], Main.ySize - 97);
+                positionDice[iterI][1] += 173;
+            }
+        } else if (iterJ < 3) {
+            dice.get(7).draw(positionDice[iterI][0], Main.ySize - 187);
+            positionDice[iterI][0] += 171;
+        } else {
+            dice.get(7).draw(positionDice[iterI][1], Main.ySize - 97);
+            positionDice[iterI][1] += 173;
+        }
+    }
+
+    private void drawPlayerThreeFour(int iterI, int iterJ) {
+        if (cnt <= 3) {
+            boxDiceVert.draw(1153, Main.ySize - dimYVer);
+            dimYVer += 374;
+            dimYVer = 240;
+            cnt++;
+        }
+        if (iterI == id) {
+            if (iterJ < 3) {
+                if (playDiceAnimation == true) {
+                    animationDie1.draw(1175, positionDice[iterI][0]);
+                    animationDie2.draw(1175, positionDice[iterI][0] - 134);
+                    animationDie3.draw(1175, positionDice[iterI][0] - (134 * 2));
+
+                } else {
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(-90);
+                    dice.get(positionPlayerDice[iterI][iterJ]).draw(1175, positionDice[iterI][0]);
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                    positionDice[iterI][0] -= 134;
+                }
+            } else if (playDiceAnimation == true) {
+                animationDie4.draw(1265, positionDice[iterI][1]);
+                animationDie5.draw(1265, positionDice[iterI][1] - 136);
+            } else {
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(-90);
+                dice.get(positionPlayerDice[iterI][iterJ]).draw(1265, positionDice[iterI][1]);
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                positionDice[iterI][1] -= 136;
+            }
+        } else if (iterJ < 3) {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(-90);
+            dice.get(7).draw(1175, positionDice[iterI][0]);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][0] -= 134;
+        } else {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(-90);
+            dice.get(7).draw(1265, positionDice[iterI][1]);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][1] -= 136;
+
+        }
+    }
+
+    private void drawPlayerFiveSix(int iterI, int iterJ) {
+        if (cnt <= 5) {
+            boxDiceHoriz.setRotation(180);
+            boxDiceHoriz.draw(dimXHor, Main.ySize - 768);
+            boxDiceHoriz.setRotation(0);
+            dimXHor += 450;
+            dimYVer = 377;
+            cnt++;
+        }
+        if (iterI == id) {
+            if (iterJ < 3) {
+                if (playDiceAnimation == true) {
+                    animationDie1.draw(positionDice[iterI][0], Main.ySize - 653);
+                    animationDie2.draw(positionDice[iterI][0] + 171, Main.ySize - 653);
+                    animationDie3.draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 653);
+
+                } else {
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(180);
+                    dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][0], Main.ySize - 653);
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                    positionDice[iterI][0] += 171;
+                }
+            } else if (playDiceAnimation == true) {
+                animationDie4.draw(positionDice[iterI][1], Main.ySize - 743);
+                animationDie5.draw(positionDice[iterI][1] + 173, Main.ySize - 743);
+            } else {
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(180);
+                dice.get(positionPlayerDice[iterI][iterJ]).draw(positionDice[iterI][1], Main.ySize - 743);
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                positionDice[iterI][1] += 173;
+            }
+        } else if (iterJ < 3) {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(180);
+            dice.get(7).draw(positionDice[iterI][0], Main.ySize - 653);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][0] += 171;
+        } else {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(180);
+            dice.get(7).draw(positionDice[iterI][1], Main.ySize - 743);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][1] += 173;
+
+        }
+
+    }
+
+    private void drawPlayerSevenEight(int iterI, int iterJ) {
+        if (cnt <= 7) {
+            boxDiceVert.setRotation(180);
+            boxDiceVert.draw(0, Main.ySize - dimYVer);
+            boxDiceVert.setRotation(0);
+            dimYVer += 374;
+        }
+        if (iterI == id) {
+            if (iterJ < 3) {
+
+                if (playDiceAnimation == true) {
+                    animationDie1.draw(115, positionDice[iterI][0]);
+                    animationDie2.draw(115, positionDice[iterI][0] - 134);
+                    animationDie3.draw(115, positionDice[iterI][0] - (134 * 2));
+
+                } else {
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(90);
+                    dice.get(positionPlayerDice[iterI][iterJ]).draw(115, positionDice[iterI][0]);
+                    dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                    positionDice[iterI][0] -= 134;
+                }
+            } else if (playDiceAnimation == true) {
+                animationDie4.draw(25, positionDice[iterI][1]);
+                animationDie5.draw(25, positionDice[iterI][1] - 136);
+            } else {
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(90);
+                dice.get(positionPlayerDice[iterI][iterJ]).draw(25, positionDice[iterI][1]);
+                dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+                positionDice[iterI][1] -= 136;
+            }
+        } else if (iterJ < 3) {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(90);
+            dice.get(7).draw(115, positionDice[iterI][0]);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][0] -= 134;
+        } else {
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(90);
+            dice.get(7).draw(25, positionDice[iterI][1]);
+            dice.get(positionPlayerDice[iterI][iterJ]).setRotation(0);
+            positionDice[iterI][1] -= 136;
+
+        }
+
     }
 
     @Override
