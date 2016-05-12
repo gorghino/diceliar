@@ -28,6 +28,7 @@ public class DiceLiar{
    
     public int rmiTimer;
 
+
     ArrayList<PlayerEntry> rmiPlayerArray;
     RMI rmiNext;
     RMIGameController rgc;
@@ -127,7 +128,10 @@ public class DiceLiar{
             }
         }
     }
-
+    
+    public int getRmiTimer() {
+        return rmiTimer;
+    }
     /**
      * @param args the command line arguments
      * @throws java.rmi.RemoteException
@@ -144,8 +148,6 @@ public class DiceLiar{
         //rungraphic.run();
         Main threadGR = new Main(Main.gameName);
         new Thread(threadGR).start();
-       
-        
         
     }
     

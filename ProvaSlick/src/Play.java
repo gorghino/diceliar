@@ -183,6 +183,8 @@ public class Play extends BasicGameState {
             }
         }
 
+        
+        //TURN PANEL
         fontTurn.drawString(628, Main.ySize - 522, "Turn: ", Color.white);
         fontTurn.drawString(701, Main.ySize - 522, "" + gC.getTurn(), Color.black);
         
@@ -252,12 +254,13 @@ public class Play extends BasicGameState {
         }
         
        
-        //Overwrite Panels
+        //OVERWRITE PANELS
         
         //New Game
         
         if (newGame == true){
-            backPanel.draw(300, Main.ySize-400);
+            backPanel.draw(245, Main.ySize-524);
+            fontValue.drawString(590, Main.ySize-416, "New Game", Color.black);
         }
         
         
@@ -274,17 +277,18 @@ public class Play extends BasicGameState {
         
         if (gC.betClicked == true)
             move += 20;
-        
-        updateDiceAnimation += delta;
-        updateNewGamePanel += delta;
 
-        if (updateDiceAnimation >= 6000) {
-            playDiceAnimation = false;
+        if (gC.getTurn() == 1) {
+            updateNewGamePanel += delta;
+            updateDiceAnimation += delta;
         }
-        
-        if (updateNewGamePanel >= 6000){
+        if (updateDiceAnimation >= 6000 && updateNewGamePanel >= 6000) {
+            updateDiceAnimation = 0;
+            updateNewGamePanel = 0;
+            playDiceAnimation = false;
             newGame = false;
         }
+        
         
         if (gC.initBoard == true || gC.restartBoard == true) {
             restartInitBoard();
@@ -405,13 +409,13 @@ public class Play extends BasicGameState {
         if (cnt <= 1) {
             boxDiceHoriz.draw(dimXHor, Main.ySize - 213);
             fontTurn.drawString(408, Main.ySize-226, "Player "+iterI, Color.black);
-            if (dimXHor < 690) {
+            if (dimXHor < 690)
                 dimXHor += 450;
-            } else {
+            else
                 dimXHor = 240;
-            }
             cnt++;
         }
+        
         if (iterI == id) {
             if (iterJ < 3) {
                 if (playDiceAnimation == true) {
@@ -439,9 +443,10 @@ public class Play extends BasicGameState {
                 
                 positionDice[iterI][1] += 173;
             }
-        } else if (iterJ < 3) {
+        } else if (iterJ < 3) { 
             dice.get(7).draw(positionDice[iterI][0], Main.ySize - 187);
             positionDice[iterI][0] += 171;
+            
         } else {
             dice.get(7).draw(positionDice[iterI][1], Main.ySize - 97);
             positionDice[iterI][1] += 173;
@@ -452,7 +457,7 @@ public class Play extends BasicGameState {
         if (cnt <= 3) {
             boxDiceVert.draw(1153, Main.ySize - dimYVer);
             dimYVer += 374;
-            dimYVer = 240;
+            dimXHor = 240;
             cnt++;
         }
         if (iterI == id) {

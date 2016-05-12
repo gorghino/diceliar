@@ -86,6 +86,7 @@ public class Connect extends BasicGameState {
         
         if (clickedPlaySkip == false)
             textFont.drawString(500, 600,"Connected. Wait  other players... ",Color.white);
+            
         
         
         g.setColor(Color.black);
