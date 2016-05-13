@@ -6,12 +6,12 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import static java.lang.Math.abs;
-import static org.lwjgl.opengl.GL11.glRotatef;
 
 /**
  *
  * @author proietfb
  */
+
 public class Play extends BasicGameState {
 
     Image background,
@@ -25,8 +25,6 @@ public class Play extends BasicGameState {
             backPanel;
 
     TrueTypeFont fontValue, fontTurn;
-
-    UnicodeFont rotatedFont;
 
     ArrayList<Image> dice = new ArrayList<>();
 
@@ -44,8 +42,6 @@ public class Play extends BasicGameState {
     int nPlayers,
             id = 0,
             cnt,
-            guiTurn,
-            guiNextTurn,
             updateDiceAnimation,
             updateNewGamePanel;
 
@@ -59,6 +55,7 @@ public class Play extends BasicGameState {
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
             newGame = false,
+            winTurn = false,
             playDiceAnimation = true;
 
     Board board;
@@ -68,9 +65,7 @@ public class Play extends BasicGameState {
     GuiDefineImages guiDefImg;
     GuiDefineButtons gDrawButtons;
     GuiDefineFont gDefFont;
-    
-    int move;
-    
+  
     public Play(GUIController _gC, GuiDefineImages _guiDefImg, GuiDefineButtons _gDrawButtons, GuiDefineFont _gDefFont) {
         this.gC = _gC;
         this.guiDefImg = _guiDefImg;
@@ -101,13 +96,10 @@ public class Play extends BasicGameState {
 
         drawDieBet = 1;
         drawValueBet = 1;
-        
-        move =0;
 
         fontValue = gDefFont.getFontValue();
         fontTurn = gDefFont.getFontTurn();
 
-        rotatedFont = gDefFont.getRotatedFont();
 
         Image[] anDie1 = {dice.get(5), dice.get(3), dice.get(4), dice.get(1), dice.get(3), dice.get(2)};
         Image[] anDie2 = {dice.get(6), dice.get(1), dice.get(5), dice.get(4), dice.get(2), dice.get(3)};
@@ -144,31 +136,17 @@ public class Play extends BasicGameState {
         positionDice[7][0] = Main.ySize - 101;
         positionDice[7][1] = Main.ySize - 165;
         
-        playerNamePosition[0][0]=408;
-        playerNamePosition[0][1]=Main.ySize-226;
-        playerNamePosition[1][0]= 859;
-        playerNamePosition[1][1]= playerNamePosition[0][1]; 
-//        playerNamePosition[2][0]=;
-//        playerNamePosition[2][1]=;
-//        playerNamePosition[3][0]=;
-//        playerNamePosition[3][1]=;
-//        playerNamePosition[4][0]=;
-//        playerNamePosition[4][1]=;
-//        playerNamePosition[5][0]=;
-//        playerNamePosition[5][1]=;
-//        playerNamePosition[6][0]=;
-//        playerNamePosition[6][1]=;
-//        playerNamePosition[7][0]=;
-//        playerNamePosition[7][1]=;
         
-        selectedPlayerHoriz.draw(230, Main.ySize - 240);
+        drawSelectorPlayer();
 
         cnt = 0;
 
         //DRAW PLAYERS
         dimXHor = 240;
         dimYVer = 377;
-
+        
+        drawPlayerName(); //disegna i nomi dei giocatori
+        
         for (int i = 0; i < nPlayers; i++) {
             for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
@@ -182,14 +160,10 @@ public class Play extends BasicGameState {
                 }
             }
         }
-
         
         //TURN PANEL
         fontTurn.drawString(628, Main.ySize - 522, "Turn: ", Color.white);
         fontTurn.drawString(701, Main.ySize - 522, "" + gC.getTurn(), Color.black);
-        
-        
-        
 
         //PANEL DX
         fontTurn.drawString(850, Main.ySize-471, "Panel Bet", Color.black);
@@ -201,12 +175,6 @@ public class Play extends BasicGameState {
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 885, Main.ySize - 285, "Doubt", Color.white);
             
             selectedPlayerHoriz.draw(230, Main.ySize - 240);
-            
-//            if (move <= 455)
-//                selectedPlayerHoriz.draw(230+move, Main.ySize - 240);
-//            else
-//                selectedPlayerHoriz.draw(230+450, Main.ySize - 240);
-            
             
         } else if (id == getBoard().getPlayingPlayer().myID) {
            
@@ -229,7 +197,7 @@ public class Play extends BasicGameState {
                 g.drawImage(dice.get(drawDieBet), 752, 371);
             }
 
-            if (clickToChangeValue == true) {
+            if (clickToChangeValue) {
                 if (drawValueBet < 10) {
                     fontValue.drawString(1005, 385, "" + drawValueBet, Color.black);
                 } else {
@@ -244,11 +212,11 @@ public class Play extends BasicGameState {
         /////////////////////
         //////////////////// Panel SX
         
-        fontTurn.drawString(269, Main.ySize-471, "Last Bet made by: ", Color.black);
+        fontTurn.drawString(269, Main.ySize-471, "Last Bet was made by: ", Color.black);
         
         if (gC.betOnTable == true) {
             g.setColor(Color.black);
-            fontTurn.drawString(480, Main.ySize-471, "Player "+ gC.idLastBet, Color.black);
+            fontTurn.drawString(534, Main.ySize-471, "Player "+ gC.idLastBet, Color.black);
             fontTurn.drawString(325, Main.ySize - 370, gC.getDiceAmountSelected() + " dice that value ", Color.black);
             g.drawImage(dice.get(gC.getDiceValueSelected()), 527, Main.ySize - 408);
         }
@@ -262,6 +230,15 @@ public class Play extends BasicGameState {
             backPanel.draw(245, Main.ySize-524);
             fontValue.drawString(590, Main.ySize-416, "New Game", Color.black);
         }
+
+        else if (winTurn == true){  //win turn
+            backPanel.draw(245, Main.ySize-524);
+            fontValue.drawString(590, Main.ySize-416, "Player " + "" +" won", Color.black);
+        }
+        
+        
+        
+        
         
         
         g.setColor(Color.black);
@@ -272,21 +249,23 @@ public class Play extends BasicGameState {
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
-        
-        
-        
-        if (gC.betClicked == true)
-            move += 20;
-
+                
         if (gC.getTurn() == 1) {
             updateNewGamePanel += delta;
             updateDiceAnimation += delta;
         }
-        if (updateDiceAnimation >= 6000 && updateNewGamePanel >= 6000) {
+        if (updateDiceAnimation >= 6000) {
             updateDiceAnimation = 0;
-            updateNewGamePanel = 0;
+            
             playDiceAnimation = false;
+            
+        }
+        else if(updateNewGamePanel >= 3000){
             newGame = false;
+            updateNewGamePanel = 0;
+        }
+        else if(gC.getTurn() == 1 && amountDicePlayers.length < nPlayers * 5){
+            winTurn = false;
         }
         
         
@@ -297,8 +276,7 @@ public class Play extends BasicGameState {
         ///////////////////// CHECK GAME STATE ////////////////////////////////
         try {
             board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
-        } catch (RemoteException ex) {
-        }
+        } catch (RemoteException ex) {}
 
         ///////////////////////////////////////////////////////////////////
         Input input = gc.getInput();
@@ -386,7 +364,8 @@ public class Play extends BasicGameState {
                      positionPlayerDice[s][i] = 0;
             gC.restartBoard = false;
         }
-        newGame = true;
+        winTurn = true;
+        newGame = true; // Start delle animazioni e del pannello del nuovo turno
         gC.initBoard = false;
 
         id = getBoard().myID;
@@ -403,12 +382,34 @@ public class Play extends BasicGameState {
                 System.out.println("player " + s + " dice: " + positionPlayerDice[s][i]);
             }
         }
+    }    
+    
+    private void drawSelectorPlayer(){
+        //selectedPlayerHoriz.draw(230, Main.ySize - 240);
+        
     }
-
+    
+        
+    private void drawPlayerName(){
+        playerNamePosition[0][0]=408;
+        playerNamePosition[0][1]=Main.ySize-226;
+        playerNamePosition[1][0] = 865;
+        playerNamePosition[1][1] = playerNamePosition[0][1];
+        
+        playerNamePosition[4][0]=playerNamePosition[1][0];
+        playerNamePosition[4][1]=Main.ySize-566;
+        playerNamePosition[5][0]=playerNamePosition[0][0];
+        playerNamePosition[5][1]=playerNamePosition[4][1];
+        
+        for (int i = 0 ;i<nPlayers;i++){
+            fontTurn.drawString(playerNamePosition[i][0], playerNamePosition[i][1], "Player "+i, Color.black);
+        }
+    }
+    
+    
     private void drawPlayerOneTwo(int iterI, int iterJ) {
         if (cnt <= 1) {
-            boxDiceHoriz.draw(dimXHor, Main.ySize - 213);
-            fontTurn.drawString(408, Main.ySize-226, "Player "+iterI, Color.black);
+            boxDiceHoriz.draw(dimXHor, Main.ySize - 213);            
             if (dimXHor < 690)
                 dimXHor += 450;
             else

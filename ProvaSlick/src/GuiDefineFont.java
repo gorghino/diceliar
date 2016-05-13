@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.util.ResourceLoader;
 
 /**
@@ -18,17 +17,12 @@ public class GuiDefineFont {
 
     Font awtFont, awtFontButton, awtFontText, awtFontTextButton, awtFontTextLobby, awtFontValue, awtFontTurn;
     
-    UnicodeFont rotatedFont;
-    
     public GuiDefineFont(){}
     
     public void importFont() throws SlickException {
 
         try {
             InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
-            
-            rotatedFont = new UnicodeFont("font/VarsityPlaybook-DEMO.ttf",32,false,false);
-            
             
             //Menu
             awtFont = Font.createFont(java.awt.Font.TRUETYPE_FONT, inputStream);
@@ -75,9 +69,6 @@ public class GuiDefineFont {
         return fontTurn;
     }
 
-    public UnicodeFont getRotatedFont() {
-        return rotatedFont;
-    }
     
     
 }
