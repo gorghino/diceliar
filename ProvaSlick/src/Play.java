@@ -6,6 +6,7 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import static java.lang.Math.abs;
+import org.lwjgl.opengl.GL11;
 
 /**
  *
@@ -230,11 +231,11 @@ public class Play extends BasicGameState {
             backPanel.draw(245, Main.ySize-524);
             fontValue.drawString(590, Main.ySize-416, "New Game", Color.black);
         }
-
-        else if (winTurn == true){  //win turn
-            backPanel.draw(245, Main.ySize-524);
-            fontValue.drawString(590, Main.ySize-416, "Player " + "" +" won", Color.black);
-        }
+//
+//        else if (winTurn == true){  //win turn
+//            backPanel.draw(245, Main.ySize-524);
+//            fontValue.drawString(590, Main.ySize-416, "Player " + "" +" won", Color.black);
+//        }
         
         
         
@@ -242,6 +243,7 @@ public class Play extends BasicGameState {
         
         
         g.setColor(Color.black);
+        //GL11.glRotatef(90, 0, 0, 1);
         g.drawString("" + getX, 50, 70);
         g.drawString("" + getY, 50, 90);
 
