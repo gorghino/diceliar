@@ -179,17 +179,31 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     @Override
     public void checkDoubtRMI(Board board) throws RemoteException {
        System.out.println(ANSI_CYAN + "Il giocatore " + board.getPlayingPlayer().myID + " ha detto che sul tavolo NON ci sono almeno " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie + ANSI_RESET);
+       System.out.println(ANSI_RED + "Io sono: " + myID + ANSI_RESET);
+       
        int[] vectorDice = board.getCurrentPlayers().getAllDice(true); // Stampo tutti i dadi
        if(board.okDoubt){
            System.out.println(ANSI_GREEN + "Ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Tocca a lui iniziare il nuovo giro" + ANSI_RESET);
+           
            if( (((board.getPlayingPlayer().myID - myID)%board.getnPlayers()) + board.getnPlayers())%board.getnPlayers() == 1){
                System.out.println(ANSI_RED + "Perdo un dado :(" + ANSI_RESET);
+                System.out.println(ANSI_CYAN + "Io sono: " + myID + ANSI_RESET);
                rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getMyDiceObject().removeDie();
-               rmiBoard.gC.totalDicePlayer--;
-           }        
+               rmiBoard.gC.totalDicePlayer[rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].myID]--;
+           }
+           else{
+                System.out.println("Io sono: " + myID );
+                rmiBoard.gC.totalDicePlayer[rmiBoard.gC.idLastBet]--;
+           }
+               
        }
-       else
+       else{
            System.out.println(ANSI_RED + "Non ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Perde un dado e inizia il giocatore successivo" + ANSI_RESET);
+           System.out.println(ANSI_GREEN + "Io sono: " + myID + ANSI_RESET + "e ha perso " + board.getPlayingPlayer().myID );
+           
+           rmiBoard.gC.totalDicePlayer[board.getPlayingPlayer().myID]--;
+           
+       }
        
        System.out.println("\n-------------------------------------- NUOVO TURNO -------------------------------------------\n");
 

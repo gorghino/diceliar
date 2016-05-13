@@ -1,5 +1,6 @@
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /*
  * To change this template, choose Tools | Templates
@@ -35,6 +36,8 @@ public class GUIController implements Serializable{
     boolean betOnTable = false;
     boolean makeChoice = false;
     
+    int playingPlayer = 0;
+    
     int idLastBet;
     
     int diceValueSelected;
@@ -43,13 +46,14 @@ public class GUIController implements Serializable{
     boolean initBoard = true;
     boolean restartBoard = false;
     
-    int totalDicePlayer = 5;
+    int[] totalDicePlayer;
     
     boolean oneJollyEnabled = true;
     boolean errorRibasso = false;
     boolean errorAmountMinore = false;
 
     public GUIController() {
+        totalDicePlayer = new int[]{5,5,5,5,5,5,5,5};
     }
     
     public void printValues() {
@@ -66,6 +70,7 @@ public class GUIController implements Serializable{
         System.out.println("betOnTable: " + betOnTable);
         System.out.println("diceValueSelected: " + diceValueSelected);
         System.out.println("diceAmountSelected: " + diceAmountSelected);
+        System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
         System.out.println("--------------------------------");
     }
 

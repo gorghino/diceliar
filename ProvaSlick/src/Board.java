@@ -79,6 +79,7 @@ public class Board implements Serializable{
         rmiNextPlayer = _rmiNextPlayer;
         Player playerStarter = startBoard.getCurrentPlayers().getVectorPlayers()[playerStarterID];
         setPlayingPlayer(playerStarter);
+        gC.playingPlayer = playerStarter.myID;
         
         gC.setTurn(1);
 
@@ -128,6 +129,7 @@ public class Board implements Serializable{
                     Player nextPlayer = board.getCurrentPlayers().getVectorPlayers()[(getPlayingPlayer().getMyID() + 1) % nPlayers];
                     nextPlayer.setTurn(true);
                     board.setPlayingPlayer(board.getCurrentPlayers().getVectorPlayers()[(getPlayingPlayer().getMyID() + 1) % nPlayers]);
+                    gC.playingPlayer = (getPlayingPlayer().getMyID() + 1) % nPlayers;
                     
                     rmiNextPlayer.notifyTurn(board);
                     System.out.println("Passo il turno");
@@ -179,7 +181,10 @@ public class Board implements Serializable{
                     System.out.println("!! START TR: Sono " + myID + " e devo far partire il token ring !!");
                     ready = true;
                     status = Board.RESET;
+                    
                     this.setPlayingPlayer(board.getCurrentPlayers().vectorPlayers[myID]);
+                    gC.playingPlayer = myID;
+                    
                     diceUpdated = 1;
                     
                     haveToken = true;
@@ -300,6 +305,8 @@ public class Board implements Serializable{
         
         System.out.println(myID + ": SETPlayingPlayer a " + starterIDPlayer);
         currentBoard.setPlayingPlayer(currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer]);
+        gC.playingPlayer = starterIDPlayer;
+        
         currentBoard.diceUpdated = 1;
         
         //broadcastRMI(currentBoard, "NOTIFY_WINLOSE");           
@@ -315,6 +322,7 @@ public class Board implements Serializable{
             
             getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
             setPlayingPlayer(getCurrentPlayers().getVectorPlayers()[myID]);
+            gC.playingPlayer = myID;
             diceUpdated = 1;
             status = Board.INIT_RESET;
             

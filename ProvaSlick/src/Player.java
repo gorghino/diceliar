@@ -74,11 +74,12 @@ public class Player implements Serializable{
                             currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
 
                             myDice.removeDie();
+                            //gC.totalDicePlayer[myID]--;
+                            
                             if(myDice.vectorDice.length == 0){
                                 currentBoard.getCurrentPlayers().removePlayer(this);
                                 System.out.println("Ho perso :(");
                             }
-                            gC.totalDicePlayer--;
 
                             currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
                             return true;
@@ -88,11 +89,32 @@ public class Player implements Serializable{
                         
                         gC.makeChoice = false;
                         
-                        if(gC.betClicked == false)
+                        if(gC.betClicked == false){
                             return false;
+                        }
+                        
+                        System.out.println(DiceLiar.ANSI_RED + "fatta!" + DiceLiar.ANSI_RESET);
+                            
       
                         gC.makeBetClicked = false;
+                        
+                        Bet tempBet = currentBoard.getCurrentBet();
+                        
                         currentBoard.setCurrentBet(makeBetConditional(currentBoard));
+                        
+                        if(currentBoard.getCurrentBet() == null){
+                            currentBoard.setCurrentBet(tempBet);
+                            
+                            gC.diceValueSelected = tempBet.valueDie;
+                            gC.diceAmountSelected = tempBet.amountDice;
+                            gC.betClicked = false;
+                            gC.makeBetClicked = true;
+                            
+                            return false;
+                        }
+                        
+                        System.out.println("Scommesso!");
+                        
                         currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                         return true;
                     }
@@ -225,6 +247,7 @@ public class Player implements Serializable{
         if(amountDice < currentBet.getAmount()){
                 System.out.println("Non puoi rilanciare a ribasso");
                 gC.errorRibasso = true;
+                return null;
         }
         else if(amountDice == currentBet.getAmount()){
             if(valueDie > currentBet.getValueDie() && valueDie <= 6){
@@ -234,6 +257,7 @@ public class Player implements Serializable{
             else{
                 System.out.println("Non puoi rilanciare uguale o minore");
                 gC.errorAmountMinore = true;
+                return null;
             }
         }
         else if(amountDice > currentBet.getAmount() && valueDie <= 6){

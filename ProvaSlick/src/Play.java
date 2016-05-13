@@ -35,7 +35,7 @@ public class Play extends BasicGameState {
             animationDie4,
             animationDie5;
 
-    int[][] positionPlayerDice, positionDice, playerNamePosition;
+    int[][] positionPlayerDice, positionDice, playerNamePosition, selectorPosition;
     int[] amountDicePlayers;
 
     int getX, getY;
@@ -52,6 +52,8 @@ public class Play extends BasicGameState {
             lbDrawValueBet;
     
     int dimXHor, dimYVer;
+    
+    int[] countDice;
 
     private boolean clickToChangeDie = false,
             clickToChangeValue = false,
@@ -72,6 +74,8 @@ public class Play extends BasicGameState {
         this.guiDefImg = _guiDefImg;
         this.gDrawButtons = _gDrawButtons;
         this.gDefFont = _gDefFont;
+        
+        countDice = new int[5];
     }
 
     @Override
@@ -94,12 +98,15 @@ public class Play extends BasicGameState {
         positionPlayerDice = new int[nPlayers][5];
         positionDice = new int[nPlayers][2];
         playerNamePosition = new int[nPlayers][2];
+        selectorPosition = new int[nPlayers][2];
 
         drawDieBet = 1;
         drawValueBet = 1;
 
         fontValue = gDefFont.getFontValue();
         fontTurn = gDefFont.getFontTurn();
+        
+        
 
 
         Image[] anDie1 = {dice.get(5), dice.get(3), dice.get(4), dice.get(1), dice.get(3), dice.get(2)};
@@ -141,6 +148,7 @@ public class Play extends BasicGameState {
         drawSelectorPlayer();
 
         cnt = 0;
+        countDice = new int[]{0,0,0,0,0,0,0,0};
 
         //DRAW PLAYERS
         dimXHor = 240;
@@ -231,15 +239,22 @@ public class Play extends BasicGameState {
             backPanel.draw(245, Main.ySize-524);
             fontValue.drawString(590, Main.ySize-416, "New Game", Color.black);
         }
+        
+        if (gC.errorAmountMinore){
+            backPanel.draw(245, Main.ySize-524);
+            fontValue.drawString(590, Main.ySize-416, "Non puoi rilanciare uguale o minore", Color.black);
+        }
+        
+        if (gC.errorRibasso){
+            backPanel.draw(245, Main.ySize-524);
+            fontValue.drawString(590, Main.ySize-416, "Non puoi rilanciare a ribass", Color.black);
+        }
 //
 //        else if (winTurn == true){  //win turn
 //            backPanel.draw(245, Main.ySize-524);
 //            fontValue.drawString(590, Main.ySize-416, "Player " + "" +" won", Color.black);
 //        }
-        
-        
-        
-        
+              
         
         
         g.setColor(Color.black);
@@ -256,19 +271,31 @@ public class Play extends BasicGameState {
             updateNewGamePanel += delta;
             updateDiceAnimation += delta;
         }
-        if (updateDiceAnimation >= 6000) {
+        
+        if (updateDiceAnimation >= 6000 && gC.getTurn() == 1) {
             updateDiceAnimation = 0;
-            
-            playDiceAnimation = false;
-            
+            updateNewGamePanel = 0;
+            playDiceAnimation = false;    
         }
-        else if(updateNewGamePanel >= 3000){
+        
+        if(updateNewGamePanel >= 3000){
             newGame = false;
+            gC.errorAmountMinore = false;
+            gC.errorRibasso = false;
             updateNewGamePanel = 0;
         }
-        else if(gC.getTurn() == 1 && amountDicePlayers.length < nPlayers * 5){
-            winTurn = false;
+        
+        if(gC.errorAmountMinore){
+            updateNewGamePanel += delta;
         }
+        
+        if(gC.errorRibasso){
+            updateNewGamePanel += delta;
+        }
+            
+//        else if(gC.getTurn() == 1 && amountDicePlayers.length < nPlayers * 5){
+//            winTurn = false;
+//        }
         
         
         if (gC.initBoard == true || gC.restartBoard == true) {
@@ -325,13 +352,13 @@ public class Play extends BasicGameState {
                     clickToChangeValue = true;
                     drawValueBet -= 1;
                     if (drawValueBet < 1) {
-                        drawValueBet = nPlayers * gC.totalDicePlayer; //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
+                        drawValueBet = nPlayers * sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
                     }
                 }
                 if ((getX >= 1055 && getX <= 1111) && (getY >= 332 && getY <= 389)) { //right arrow Value
                     clickToChangeValue = true;
                     drawValueBet += 1;
-                    if (drawValueBet > nPlayers * 5) {
+                    if (drawValueBet > nPlayers * sumOf(gC.totalDicePlayer)) {
                         drawValueBet = 1;
                     }
                 }
@@ -386,8 +413,32 @@ public class Play extends BasicGameState {
         }
     }    
     
-    private void drawSelectorPlayer(){
-        //selectedPlayerHoriz.draw(230, Main.ySize - 240);
+private void drawSelectorPlayer(){
+        selectorPosition[0][0]=230;
+        selectorPosition[0][1]=Main.ySize-240;
+        selectorPosition[1][0]=680;
+        selectorPosition[1][1]=selectorPosition[0][1];
+        selectorPosition[2][0]=1127;
+        selectorPosition[2][1]=Main.ySize-388;
+        selectorPosition[3][0]=selectorPosition[2][0];
+        selectorPosition[3][1]=Main.ySize-762;
+        selectorPosition[4][0]=selectorPosition[1][0];
+        selectorPosition[4][1]=Main.ySize-762;
+        selectorPosition[5][0]=selectorPosition[0][0];
+        selectorPosition[5][1]=Main.ySize-762;
+        selectorPosition[6][0]=3;
+        selectorPosition[6][1]=selectorPosition[3][1];
+        selectorPosition[7][0]=3;
+        selectorPosition[7][1]=selectorPosition[2][1];
+        
+        for (int i = 0; i<nPlayers;i++){
+            if (i == board.getPlayingPlayer().myID){
+                if (i == 0 || i == 1 || i== 4 || i == 5)
+                    selectedPlayerHoriz.draw(selectorPosition[i][0], selectorPosition[i][1]);
+                else
+                    selectedPlayerVer.draw(selectorPosition[i][0], selectorPosition[i][1]);
+            }
+        }
         
     }
     
@@ -446,13 +497,27 @@ public class Play extends BasicGameState {
                 
                 positionDice[iterI][1] += 173;
             }
-        } else if (iterJ < 3) { 
-            dice.get(7).draw(positionDice[iterI][0], Main.ySize - 187);
-            positionDice[iterI][0] += 171;
+        } else if (iterJ < 3) {
+            if(countDice[iterI] < gC.totalDicePlayer[iterI]){
+                dice.get(7).draw(positionDice[iterI][0], Main.ySize - 187);
+                positionDice[iterI][0] += 171;
+                countDice[iterI]++;
+            }
+            else{
+                dice.get(0).draw(positionDice[iterI][0], Main.ySize - 187);
+                positionDice[iterI][0] += 171;
+            }
             
         } else {
-            dice.get(7).draw(positionDice[iterI][1], Main.ySize - 97);
-            positionDice[iterI][1] += 173;
+            if(countDice[iterI] < gC.totalDicePlayer[iterI]){
+                dice.get(7).draw(positionDice[iterI][1], Main.ySize - 97);
+                positionDice[iterI][1] += 173;
+                countDice[iterI]++;
+            }
+            else{
+                dice.get(0).draw(positionDice[iterI][1], Main.ySize - 97);
+                positionDice[iterI][1] += 173;
+            }
         }
     }
 
@@ -589,6 +654,12 @@ public class Play extends BasicGameState {
         }
 
     }
+    
+    public static int sumOf(int... integers) {
+    int total = 0;
+    for (int i = 0; i < integers.length; total += integers[i++]);
+    return total;
+    }   
 
     @Override
     public int getID() {
