@@ -31,6 +31,7 @@ public interface RMI extends Remote {
     public void notifyMove(Board board) throws RemoteException;
     public void oneIsOne(Board board) throws RemoteException;
     
+    public boolean heartbeat() throws RemoteException;
     
     public void setRestart() throws RemoteException;
 

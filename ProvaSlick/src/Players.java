@@ -10,7 +10,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 /**
  *
  * @author proietfb
@@ -36,19 +35,25 @@ public class Players implements Serializable{
         this.currentBoard = _currentBoard;
     }
 
-    void addPlayer(){
-
+    void removePlayer(Player playerToRemove){
+        int prev = playerToRemove.findPrevPlayer();
+        int next = playerToRemove.findNextPlayer();
+        
+        vectorPlayers[prev].IDNext = next; //Faccio puntare al precedente, il registro RMI del successivo
+        
+        System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + "invia a " + next + Board.ANSI_RESET);
+        
+        vectorPlayers[playerToRemove.myID].playerOut = true;
     }
-    void removePlayer(){
-
-    }
-    void initDice(){
-
-    }
+    
     public int[] getAllDice(boolean printValues){
         int[] allDiceVector = new int[6];
         for (int i = 0; i < vectorPlayers.length; i += 1) {
             Player player = vectorPlayers[i];
+            
+            if(player.playerOut)
+                continue;
+            
             for(int j=0; j<6; j += 1){
                 //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped(currentBoard)[j] + " dadi di valore " + (j+1));
                 allDiceVector[j] += player.getmyDiceValueGrouped(currentBoard)[j];
@@ -80,6 +85,9 @@ public class Players implements Serializable{
 
     public void resetAllDice(int myID){
         for(Player vectorPlayer : vectorPlayers) {
+            if(vectorPlayer.playerOut)
+                continue;
+            
             if(vectorPlayer.myID == myID)
                 vectorPlayer.resetDice();
             else{

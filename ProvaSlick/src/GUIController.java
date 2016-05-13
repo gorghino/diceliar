@@ -46,6 +46,8 @@ public class GUIController implements Serializable{
     int totalDicePlayer = 5;
     
     boolean oneJollyEnabled = true;
+    boolean errorRibasso = false;
+    boolean errorAmountMinore = false;
 
     public GUIController() {
     }

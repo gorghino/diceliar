@@ -226,8 +226,14 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.betOnTable = true;
         gC.diceAmountSelected = board.getCurrentBet().amountDice;
         gC.diceValueSelected = board.getCurrentBet().valueDie;
-        gC.idLastBet = board.getPlayingPlayer().myID;
-    
+        gC.idLastBet = board.getPlayingPlayer().myID; 
     }
+
+    @Override
+    public boolean heartbeat() throws RemoteException {
+        return true;
+    }
+    
+    
     
 }

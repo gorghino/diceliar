@@ -23,6 +23,10 @@ public class Player implements Serializable{
     
     RMI rmiPointer;
     
+    boolean playerOut = false;
+    
+    int IDPrev;
+    int IDNext; 
     
     boolean myTurn;
     Bet myBet;
@@ -70,6 +74,10 @@ public class Player implements Serializable{
                             currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
 
                             myDice.removeDie();
+                            if(myDice.vectorDice.length == 0){
+                                currentBoard.getCurrentPlayers().removePlayer(this);
+                                System.out.println("Ho perso :(");
+                            }
                             gC.totalDicePlayer--;
 
                             currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
@@ -210,22 +218,23 @@ public class Player implements Serializable{
         boolean checkBet = true;
 
         Bet currentBet = currentBoard.getCurrentBet();
-        
-      
-                
+             
         valueDie = gC.diceValueSelected;
         amountDice = gC.diceAmountSelected;
         
         if(amountDice < currentBet.getAmount()){
                 System.out.println("Non puoi rilanciare a ribasso");
-            }
+                gC.errorRibasso = true;
+        }
         else if(amountDice == currentBet.getAmount()){
             if(valueDie > currentBet.getValueDie() && valueDie <= 6){
                 System.out.println("OK");
                 checkBet = false;
             }
-            else
+            else{
                 System.out.println("Non puoi rilanciare uguale o minore");
+                gC.errorAmountMinore = true;
+            }
         }
         else if(amountDice > currentBet.getAmount() && valueDie <= 6){
                System.out.println("OK");
@@ -301,6 +310,65 @@ public class Player implements Serializable{
             System.out.println("Non avevi ragione!");
             currentBoard.okDoubt = false;
             return false;
+        }
+    }
+    
+        
+    public int findNextPlayer(){
+        //for (int i = 0; i < vectorPlayers.length; i += 1) {  
+            int i = myID;
+            
+            int countOthers = 1;
+            
+            int nextCandidate = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+            
+            while(true){
+                try {
+                    if(getAllPlayers().vectorPlayers[nextCandidate].rmiPointer.heartbeat()){   
+                        //getAllPlayers().vectorPlayers[i].IDNext = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+                        System.out.println(DiceLiar.ANSI_GREEN + "NEXT: " + i + ": TROVATO! Il player " + nextCandidate + " è raggiungibile" + Board.ANSI_RESET);
+                        return getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+                    }
+                } catch (RemoteException ex) {
+                    System.out.println(Board.ANSI_RED + "NEXT: " + i + ": ATTENZIONE! Il player " + nextCandidate + " non è più raggiungibile" + Board.ANSI_RESET);
+                    countOthers++;
+                    if(countOthers == getAllPlayers().vectorPlayers.length){
+                        System.out.println(Board.ANSI_RED + "NEXT: " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + Board.ANSI_RESET);
+                        return -1;
+                    }
+                    System.out.println(DiceLiar.ANSI_CYAN + "NEXT: " + i + ": Chiedo al player " + (i+countOthers)%getAllPlayers().vectorPlayers.length + " se è vivo" + Board.ANSI_RESET);
+                    nextCandidate = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+                }
+                
+            }  
+            //vectorPlayers[i].IDNext= vectorPlayers[(i-1)%vectorPlayers.length].myID;
+        //}
+    }
+    
+    public int findPrevPlayer() {
+        int i = myID;
+
+        int countOthers = 1;
+        int prevCandidate = getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
+
+        while (true) {
+            try {
+                if (getAllPlayers().vectorPlayers[prevCandidate].rmiPointer.heartbeat()) {
+                    //getAllPlayers().vectorPlayers[i].IDPrev = getAllPlayers().vectorPlayers[(i - countOthers) % getAllPlayers().vectorPlayers.length].myID;
+                    System.out.println(DiceLiar.ANSI_GREEN + "PREV: " + i + ": TROVATO! Il player " + prevCandidate + " è raggiungibile" + Board.ANSI_RESET);
+                    return getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
+
+                }
+            } catch (RemoteException ex) {
+                System.out.println(Board.ANSI_RED + "PREV: " + i + ": ATTENZIONE! Il player " + prevCandidate + " non è più raggiungibile" + Board.ANSI_RESET);
+                countOthers++;
+                if (countOthers == getAllPlayers().vectorPlayers.length) {
+                    System.out.println(Board.ANSI_RED + "PREV: " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + Board.ANSI_RESET);
+                    return -1;
+                }
+                System.out.println(DiceLiar.ANSI_CYAN + "PREV: " + i + ": Chiedo al player " + (((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length + " se è vivo" + Board.ANSI_RESET);
+                prevCandidate = getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
+            }
         }
     }
 
