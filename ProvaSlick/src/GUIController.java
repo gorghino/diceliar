@@ -51,7 +51,7 @@ public class GUIController implements Serializable{
     boolean oneJollyEnabled = true;
     boolean errorRibasso = false;
     boolean errorAmountMinore = false;
-
+    
     public GUIController() {
         totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
     }
@@ -182,7 +182,7 @@ public class GUIController implements Serializable{
     public void setBetOnTable(boolean betOnTable) {
         this.betOnTable = betOnTable;
     }
-  
+
      
     
     

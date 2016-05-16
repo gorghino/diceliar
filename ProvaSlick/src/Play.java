@@ -256,8 +256,9 @@ public class Play extends BasicGameState {
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
-                
-        if (gC.getTurn() == 1 ) {
+        
+        
+        if (gC.getTurn() == 1) {
             updateNewGamePanel += delta;
             updateDiceAnimation += delta;
         }

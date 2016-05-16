@@ -127,7 +127,7 @@ public class Connect extends BasicGameState {
                     try {
                         dl = new DiceLiar();
                         dl.connectServer(takeIPAddr, takePort);
-                                                
+                            
                         System.out.println("INITBOARD\n");
                         startBoard = dl.initBoard(gC);
                         startBoard.initGame(startBoard, dl.rmiNext);
