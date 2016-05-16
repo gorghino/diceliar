@@ -53,8 +53,9 @@ public class GUIController implements Serializable{
     boolean errorAmountMinore = false;
 
     public GUIController() {
-        totalDicePlayer = new int[]{5,5,5,5,5,5,5,5};
+        totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
     }
+
     
     public void printValues() {
         System.out.println("--------------------------------");
@@ -181,7 +182,7 @@ public class GUIController implements Serializable{
     public void setBetOnTable(boolean betOnTable) {
         this.betOnTable = betOnTable;
     }
-    
+  
      
     
     

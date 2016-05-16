@@ -10,7 +10,8 @@ import org.newdawn.slick.SlickException;
 public class GuiDefineImages {
 
     Image backPanel,button, menuTitle, background, guiBoard, boxDiceHoriz,boxDiceVert,
-            arrowLeft,arrowRight, selectedPlayerHoriz, selectedPlayerVert;
+            arrowLeft,arrowRight, selectedPlayerHoriz, selectedPlayerVert, player2Text,
+            player3Text,player6Text,player7Text, playerRemovedHoriz,playerRemovedVert;
 
     ArrayList<Image> arrayDice = new ArrayList<>();
 
@@ -18,7 +19,7 @@ public class GuiDefineImages {
 
     public void importImages() throws SlickException {
         background = new Image("img/bgDiceLiar.png");
-        guiBoard = new Image("img/boardTEMP4.png");
+        guiBoard = new Image("img/board.png");
         menuTitle = new Image("img/diceTitle.png");
         button = new Image("img/button.png");
         backPanel = new Image("img/BackPanel.png");
@@ -28,6 +29,12 @@ public class GuiDefineImages {
         arrowRight = new Image("img/ArrowRight.png");
         selectedPlayerHoriz = new Image("img/SelectedPlayerHoriz.png");
         selectedPlayerVert = new Image("img/SelectedPlayerVert.png");
+        player2Text = new Image("img/Player2.png");
+        player3Text = new Image("img/Player3.png");
+        player6Text = new Image("img/Player6.png");
+        player7Text = new Image("img/Player7.png");
+        playerRemovedHoriz = new Image("img/PlayerRemovedHoriz.png");
+        playerRemovedVert = new Image("img/PlayerRemovedVert.png");
 
         arrayDice.add(0, new Image("img/DieDel.png"));
         arrayDice.add(1, new Image("img/Die1.png"));
@@ -84,6 +91,15 @@ public class GuiDefineImages {
         return selectedPlayerVert;
     }
 
+    public Image getPlayerRemovedHoriz() {
+        return playerRemovedHoriz;
+    }
+
+    public Image getPlayerRemovedVert() {
+        return playerRemovedVert;
+    }
+    
+    
     public ArrayList<Image> getArrayDice() {
         return arrayDice;
     }
