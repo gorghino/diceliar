@@ -1,0 +1,58 @@
+\documentclass{llncs}
+%
+\usepackage{makeidx}  % allows for indexgeneration
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+
+% LINEE GUIDA DOCUMENTAZIONE (DAL SITO DEL PROF)
+%La relazione di 10 - 12 pagine, da consegnare una settimana prima dell'esame
+
+\newcommand{\exedout}{%
+	\rule{0.8\textwidth}{0.5\textwidth}%
+}
+\begin{document}
+	\mainmatter              % start of the contributions
+	%
+	\title{Liar's Dice\\Sistemi Distribuiti AA 2015/2016}
+	%
+	\author{Davide Aguiari, Fabio Proietti}
+	%
+	\institute{Università di Bologna, Dipartimento di Scienze dell'Informazione
+		\email{davide.aguiari@studio.unibo.it\\fabio.proietti@studio.unibo.it}}
+	\maketitle
+	%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{abstract}%-Sommario (non più di dieci righe): riassume di cosa tratta la relazione.
+		Liar's Dice è un gioco da tavolo nato nel sud America e basato su un meccanismo di scommesse e bluff. Dopo una breve introduzione, andremo a spiegare quali sono state le scelte progettuali utilizzate per implementare questo passatempo, incluse l'architettura della rete, le librerie implementative e gli aspetti legati alla usabilità e correttezza del sistema.
+		
+	\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\section{Introduzione}%-Introduzione: in cui si inquadra il problema affrontato, chiarendo gli obiettivi, riassumendo lo stato dell'arte, e descrivendo la struttura della relazione.
+		La nostra idea di progetto è stata quella di sviluppare la versione multiplayer del  famosissimo gioco da tavolo, con un approccio di rete totalmente distribuito (peer-to-peer) e attribuendo particolare attenzione all'affidabilità del sistema. \\
+		Liar's Dice \cite{wikiDice} è originario del sudamerica e importato in Europa dai \textit{conquistadores} nel XV secolo. Il gioco è conosciuto anche con i nomi di \textit{Perudo}, \textit{Dudo} o, grazie anche al film Pirati dei Caraibi, come \textit{Pirate's dice}.\footnote[1]{\url{https://www.youtube.com/watch?v=piGg5ZrmoQA}}\\
+		Le successive sezioni tratteranno la logica del gioco, gli aspetti progettuali, le scelte implementative adottate, la valutazione dopo la fase di test, e per finire alcune considerazioni conclusive sul sistema e possibili miglioramenti futuri.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%		 
+	\section{Logica del Sistema}
+		Per rendere più semplice la compresione progettuale del sistema, in questa sezione spiegheremo più in dettaglio le regole del gioco.  
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	\section{Aspetti Progettuali}%-Aspetti progettuali: in cui si illustra il progetto svolto; in particolare si discutono i problemi specifici affrontati, le soluzioni valutate e proposte, e l'architettura astratta del sistema sviluppato.
+	
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	\section{Aspetti Implementativi}%-Aspetti implementativi: dettagli sulle scelte implementative, ed architettura specifica implementata. Inserire almeno il diagramma delle classi e uno delle interazioni secondo lo standard UML.
+	
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	\section{Valutazione e Conclusioni}%-Valutazione: confronto delle soluzioni proposte con soluzioni analoghe allo stato dell'arte.
+	%-Conclusioni: commenti conclusivi su possibili miglioramenti di quanto discusso, e possibili linee di intervento futuro.
+	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{thebibliography}{}
+		\bibitem{wikiDice} \url{https://en.wikipedia.org/wiki/Liar's\_dice}
+		\bibitem{}
+	\end{thebibliography}
+\end{document}

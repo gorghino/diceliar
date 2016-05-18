@@ -107,11 +107,11 @@ public class Play extends BasicGameState {
         fontValue = gDefFont.getFontValue();
         fontTurn = gDefFont.getFontTurn();
         
-        Image[] anDie1 = {dice.get(5), dice.get(3), dice.get(4), dice.get(1), dice.get(3), dice.get(2)};
-        Image[] anDie2 = {dice.get(6), dice.get(1), dice.get(5), dice.get(4), dice.get(2), dice.get(3)};
-        Image[] anDie3 = {dice.get(2), dice.get(6), dice.get(3), dice.get(5), dice.get(4), dice.get(1)};
-        Image[] anDie4 = {dice.get(4), dice.get(2), dice.get(1), dice.get(3), dice.get(5), dice.get(6)};
-        Image[] anDie5 = {dice.get(2), dice.get(5), dice.get(6), dice.get(4), dice.get(1), dice.get(3)};
+        Image[] anDie1 = {dice.get(5), dice.get(8), dice.get(4), dice.get(1), dice.get(3), dice.get(2)};
+        Image[] anDie2 = {dice.get(6), dice.get(1), dice.get(5), dice.get(4), dice.get(2), dice.get(8)};
+        Image[] anDie3 = {dice.get(2), dice.get(6), dice.get(3), dice.get(8), dice.get(4), dice.get(1)};
+        Image[] anDie4 = {dice.get(4), dice.get(2), dice.get(8), dice.get(3), dice.get(5), dice.get(6)};
+        Image[] anDie5 = {dice.get(2), dice.get(5), dice.get(6), dice.get(4), dice.get(8), dice.get(3)};
 
         animationDie1 = new Animation(anDie1, 100, true);
         animationDie2 = new Animation(anDie2, 100, true);
@@ -207,10 +207,10 @@ public class Play extends BasicGameState {
             }
 
             if (clickToChangeValue == true) {
-                if (drawValueBet < 10) 
+                //if (drawValueBet < 10) 
                     fontValue.drawString(1005, 385, "" + drawValueBet, Color.black);
-                else 
-                    fontValue.drawString(992, 385, "" + drawValueBet, Color.black);
+               // else 
+               //     fontValue.drawString(992, 385, "" + drawValueBet, Color.black);
                 
             }
 
@@ -340,7 +340,7 @@ public class Play extends BasicGameState {
                     if (drawValueBet < 1) {
                         drawValueBet = nPlayers * sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
                     }
-                    clickToChangeValue = false;
+                    //clickToChangeValue = false;
                 }
                 if ((getX >= 1055 && getX <= 1111) && (getY >= 332 && getY <= 389)) { //right arrow Value
                     clickToChangeValue = true;
@@ -348,7 +348,7 @@ public class Play extends BasicGameState {
                     if (drawValueBet > nPlayers * sumOf(gC.totalDicePlayer)) {
                         drawValueBet = 1;
                     }
-                    clickToChangeValue = false;
+                    //clickToChangeValue = false;
                 }
 
                 //////////////////////////////////////
