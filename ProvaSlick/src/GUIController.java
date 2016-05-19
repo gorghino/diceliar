@@ -75,6 +75,7 @@ public class GUIController implements Serializable{
         System.out.println("diceAmountSelected: " + diceAmountSelected);
         System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
         System.out.println("TotalDice: " + sumOf(totalDicePlayer));
+        System.out.println("Playing Player: " + playingPlayer);
         System.out.println("--------------------------------");
     }
     
@@ -83,6 +84,11 @@ public class GUIController implements Serializable{
         for (int i = 0; i < integers.length; total += integers[i++]);
         return total;
     }   
+
+    public void setPlayingPlayer(int _playingPlayer) {
+        System.out.println("Aggiorno PP da " + this.playingPlayer + " a " + _playingPlayer);
+        this.playingPlayer = _playingPlayer;
+    }
 
     public boolean isPlayConnectedClicked() {
         return PlayConnectedClicked;

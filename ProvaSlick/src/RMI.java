@@ -35,5 +35,7 @@ public interface RMI extends Remote {
     
     public void setRestart() throws RemoteException;
 
+    public void signalCrash(Board board) throws RemoteException;
+
 
 }

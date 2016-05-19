@@ -161,11 +161,10 @@ public class Play extends BasicGameState {
         selectorPosition[6][1]=selectorPosition[3][1];
         selectorPosition[7][0]=3;
         selectorPosition[7][1]=selectorPosition[2][1];
-        
-        
+               
          
         
-        selectedPlayerHoriz.draw(selectorPosition[board.getPlayingPlayer().myID][0], selectorPosition[board.getPlayingPlayer().myID][1]);
+        selectedPlayerHoriz.draw(selectorPosition[gC.playingPlayer][0], selectorPosition[gC.playingPlayer][1]);
         
         drawPlayerName(); //disegna i nomi dei giocatori
         
@@ -424,8 +423,12 @@ public class Play extends BasicGameState {
 
         
         gC.totalDicePlayer = new int[nPlayers];
-        for (int i = 0; i<nPlayers;i++){  
-            gC.totalDicePlayer[i] = getBoard().getCurrentPlayers().vectorPlayers[i].myDice.nDice;         
+        
+        for (int i = 0; i<nPlayers;i++){
+            if(getBoard().getCurrentPlayers().vectorPlayers[i].playerOut)
+                gC.totalDicePlayer[i] = 0;
+            else
+                gC.totalDicePlayer[i] = getBoard().getCurrentPlayers().vectorPlayers[i].myDice.nDice;         
         }
         
 

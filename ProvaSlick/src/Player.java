@@ -25,6 +25,8 @@ public class Player implements Serializable{
     
     RMI rmiPointer;
     
+    RMI rmiNextPlayer;
+    
     boolean playerOut = false;
     
     int IDPrev;
@@ -42,6 +44,11 @@ public class Player implements Serializable{
         myPort = _myPort;
         allPlayers = _allPlayers;
         myTurn = false;
+        
+        IDNext = ((((myID + 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
+        IDPrev = ((((myID - 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
+       
+
         try {
             //myDice = new Dice(5);
             rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
@@ -71,7 +78,7 @@ public class Player implements Serializable{
                         if(doubt(currentBoard)){
                             currentBoard.status = Board.INIT_RESET;
                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
-                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+                            currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             //myBet = makeBet(currentBoard);
 
@@ -82,9 +89,9 @@ public class Player implements Serializable{
                             return true;
                         }
                         else{
-                            System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
+                            System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + this.IDNext);
                             //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
-                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
+                            currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             myDice.removeDie();
                             //gC.totalDicePlayer[myID]--;
@@ -94,7 +101,7 @@ public class Player implements Serializable{
                                 System.out.println("Ho perso :(");
                             }
 
-                            currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
+                            currentBoard.newTurn(currentBoard, this.IDNext, null);
                             return true;
                         }
                     }
@@ -148,52 +155,6 @@ public class Player implements Serializable{
         
         return false;
     }
-//                    
-//                    System.out.println("C'e gia una scommessa: ci sono " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
-//                        System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
-//                        Scanner reader = new Scanner(System.in);  // Reading from System.in
-//                        loop: while(reader.hasNextInt()){
-//                                int choice = reader.nextInt();
-//                                switch(choice){
-//                                        case 0: //DUBITO
-//                                            if(doubt(currentBoard)){
-//                                                currentBoard.status = Board.RESET;
-//                                                //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
-//                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
-//                                                
-//                                                //myBet = makeBet(currentBoard);
-//
-//                                                currentBoard.diceUpdated = 1;
-//                                                currentBoard.oneJollyEnabled = true;
-//                                                currentBoard.newTurn(currentBoard, this.getMyID(), myBet);  
-//                                            }
-//                                            else{
-//                                                System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + (this.getMyID() + 1) % currentBoard.getnPlayers());
-//                                                //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
-//                                                currentBoard.broadcastRMI(currentBoard, "NOTIFY_WINLOSE");
-//                                                
-//                                                myDice.removeDie();
-//                                                 
-//                                                currentBoard.newTurn(currentBoard, (this.getMyID() + 1) % currentBoard.getnPlayers(), null);
-//                                            }
-//                                            reader.close();
-//                                            break loop;
-//                                        case 1: //NON DUBITO
-//                                            currentBoard.setCurrentBet(makeBetConditional(currentBoard));
-//                                            currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
-//                                            reader.close();
-//                                            break loop;
-//                                        default: System.out.println("Valore non ammesso"); System.out.println("(0) Dubiti\n(1) Non dubiti e fai una nuova scommessa");
-//                                }
-//                                }
-//                }
-//                else{ //Sono il primo giocatore a iniziare il giro
-//                    System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
-//                    myBet = makeBet(currentBoard);
-//                    currentBoard.setCurrentBet(myBet);
-//                    currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
-//                }
-//        }
 
     public Bet makeBet(Board currentBoard){
         GUIController gC = currentBoard.getgC();
@@ -216,34 +177,6 @@ public class Player implements Serializable{
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
         
-//        Scanner reader = new Scanner(System.in);  // Reading from System.in
-//        System.out.println("Inserisci il numero di dadi della scommessa: ");
-//        int amountDice = reader.nextInt();
-//
-//        while(checkValue){
-//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-//            valueDie = reader.nextInt(); // Scans the next token of the input as an int.
-//
-//              if(valueDie <= 0 || valueDie > 6){
-//                    System.out.println("Valore del dado non valido");
-//
-//                }
-//              else{
-//                  System.out.println("OK");
-//                  checkValue = false;
-//              }
-//              
-//              if (!checkValue && valueDie == 1 && currentBoard.oneJollyEnabled) {
-//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-//                System.out.println("Il valore 1 non vale più come JOLLY");
-//                currentBoard.oneJollyEnabled = false;
-//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-//            }
-//        }
-//
-//        Bet myNewBet = new Bet(amountDice, valueDie);
-//        reader.close();
-//        return myNewBet;
     }
 
     public Bet makeBetConditional(Board currentBoard){
@@ -289,49 +222,7 @@ public class Player implements Serializable{
         gC.idLastBet = myID;
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
-//        
-//        
-//        Scanner reader = new Scanner(System.in);
-//
-//        while(checkBet){
-//            System.out.println("Inserisci il numero di dadi della scommessa: ");
-//            amountDice = reader.nextInt();
-//
-//            System.out.println("Inserisci il valore dei dadi della scommessa: ");
-//            valueDie = reader.nextInt();
-//
-//            if(valueDie <= 0 || valueDie > 6){
-//                System.out.println("Valore del dado non valido");
-//                continue;
-//            }
-//
-//
-//            if(amountDice < currentBet.getAmount()){
-//                System.out.println("Non puoi rilanciare a ribasso");
-//            }
-//            else if(amountDice == currentBet.getAmount()){
-//                if(valueDie > currentBet.getValueDie() && valueDie <= 6){
-//                    System.out.println("OK");
-//                    checkBet = false;
-//                }
-//                else
-//                    System.out.println("Non puoi rilanciare uguale o minore");
-//            }
-//            else if(amountDice > currentBet.getAmount() && valueDie <= 6){
-//                   System.out.println("OK");
-//                   checkBet = false;
-//            }
-//            
-//            if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
-//                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-//                System.out.println("Il valore 1 non vale più come JOLLY");
-//                currentBoard.oneJollyEnabled = false;
-//                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
-//            }
-//        }
-//
-//        Bet myNewBet = new Bet(amountDice, valueDie);
-//        return myNewBet;
+
     }
 
     public boolean doubt(Board currentBoard){
@@ -352,7 +243,6 @@ public class Player implements Serializable{
     
         
     public int findNextPlayer(){
-        //for (int i = 0; i < vectorPlayers.length; i += 1) {  
             int i = myID;
             
             int countOthers = 1;
@@ -378,8 +268,6 @@ public class Player implements Serializable{
                 }
                 
             }  
-            //vectorPlayers[i].IDNext= vectorPlayers[(i-1)%vectorPlayers.length].myID;
-        //}
     }
     
     public int findPrevPlayer() {

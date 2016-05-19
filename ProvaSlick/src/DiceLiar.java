@@ -43,15 +43,12 @@ public class DiceLiar{
         Players currentPlayers = startBoard.getCurrentPlayers();
         currentPlayers.setCurrentBoard(startBoard);
         rgc.rmiBoard = startBoard;
-        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(2));
+        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(5));
         //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
         int IDPlayerRequest = (rgc.myID+1)%rmiPlayerArray.size();
         Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
         System.out.println("Imposto rmiNext\n");
         rmiNext = (RMI) regNext.lookup("player");
-        if(rmiNext == null){
-            System.out.println("LA MADONNA\n");
-        }
         
         shareDice(currentPlayers, rmiNext);
         

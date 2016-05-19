@@ -40,6 +40,13 @@ public class Players implements Serializable{
             int prev = playerToRemove.findPrevPlayer();
             int next = playerToRemove.findNextPlayer();
             vectorPlayers[prev].IDNext = next; //Faccio puntare al precedente, il registro RMI del successivo
+            
+            vectorPlayers[prev].rmiNextPlayer = vectorPlayers[next].rmiPointer;
+            
+            vectorPlayers[playerToRemove.myID].playerOut = true;
+            
+            currentBoard.broadcastRMI(currentBoard, "SIGNAL_CRASH");
+            
             System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + "invia a " + next + Board.ANSI_RESET);
         }
         
@@ -108,6 +115,17 @@ public class Players implements Serializable{
         
          for (int i=0;i<vectorPlayers.length;i++)
                System.out.println(i + ": " + Arrays.toString(vectorPlayers[i].getmyDiceValue()) + "\t -- "+ jollyString + " -->\t" + Arrays.toString(vectorPlayers[i].getmyDiceValueGrouped(currentBoard)));
+    }
+    
+    public int getPlayersAlive(){
+        int j=0;
+        
+        for (Player vectorPlayer : vectorPlayers)
+            if (!vectorPlayer.playerOut)
+                j++;
+        
+        return j;
+    
     }
 
 }
