@@ -43,7 +43,7 @@ public class DiceLiar{
         Players currentPlayers = startBoard.getCurrentPlayers();
         currentPlayers.setCurrentBoard(startBoard);
         rgc.rmiBoard = startBoard;
-        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(5));
+        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(2));
         //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
         int IDPlayerRequest = (rgc.myID+1)%rmiPlayerArray.size();
         Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
@@ -90,6 +90,7 @@ public class DiceLiar{
     }
     
     private void shareDice(Players currentPlayers, RMI rmiNext) throws RemoteException{
+        //TODO ------------------------------------------------------------------------------------------------------------------------------- DA RIFARE
         System.out.println("\n---- RESET DICE SEQUENCE FROM " + rgc.myID + " -----\n");
         if(rgc.myID == 0){
             //Sono il giocatore 0, inizio il ring condividendo il set di dadi
@@ -134,12 +135,12 @@ public class DiceLiar{
     }
     /**
      * @param args the command line arguments
-     * @throws java.rmi.RemoteException
      * @throws java.rmi.AlreadyBoundException
      * @throws java.rmi.NotBoundException
      * @throws java.net.UnknownHostException
+     * @throws org.newdawn.slick.SlickException
      */
-    public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException, UnknownHostException, SlickException{  
+    public static void main(String[] args) throws AlreadyBoundException, NotBoundException, UnknownHostException, SlickException{  
         if (args.length > 0){
             LOCAL_PORT = Integer.parseInt(args[0]);
         }

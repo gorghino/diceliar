@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,22 +35,33 @@ public class Player implements Serializable{
     Players allPlayers;
     Dice myDice;
 
-    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort) throws RemoteException, NotBoundException{
+    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort) throws NotBoundException{
         System.out.println("Creo player con ID " + _myID + ", IP: " + _myIP + ":" + _myPort);
         myID = _myID;
         myIP = _myIP;
         myPort = _myPort;
         allPlayers = _allPlayers;
         myTurn = false;
-        //myDice = new Dice(5);
-        rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
+        try {
+            //myDice = new Dice(5);
+            rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
+        } catch (RemoteException ex) {
+            System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR NELLA CREAZIONE DI UN GIOCATORE" + DiceLiar.ANSI_RESET);
+            Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public boolean makeChoice(Board currentBoard) throws RemoteException{
+    public boolean makeChoice(Board currentBoard){
         GUIController gC = currentBoard.getgC();
         if(myTurn){ //Tocca a me fare il turno
                 Bet betOnTable = currentBoard.getCurrentBet();        
                 if(betOnTable != null){
+                    
+                    if (betOnTable.valueDie == 6 && betOnTable.amountDice == GUIController.sumOf(gC.totalDicePlayer)) {
+                        System.out.println("MASSIMO!!");
+                        gC.isBetMax = true;
+                    }
+                    
                     gC.makeChoice = true;
                     if(gC.doubtClicked){ // HO CLICCATO DUBITO
                         
@@ -76,8 +89,8 @@ public class Player implements Serializable{
                             myDice.removeDie();
                             //gC.totalDicePlayer[myID]--;
                             
-                            if(myDice.vectorDice.length == 0){
-                                currentBoard.getCurrentPlayers().removePlayer(this);
+                            if(myDice.nDice == 0){
+                                currentBoard.getCurrentPlayers().removePlayer(this, false);
                                 System.out.println("Ho perso :(");
                             }
 
@@ -182,7 +195,7 @@ public class Player implements Serializable{
 //                }
 //        }
 
-    public Bet makeBet(Board currentBoard) throws RemoteException{
+    public Bet makeBet(Board currentBoard){
         GUIController gC = currentBoard.getgC();
         boolean checkValue = true;
         int valueDie = 0;
@@ -233,7 +246,7 @@ public class Player implements Serializable{
 //        return myNewBet;
     }
 
-    public Bet makeBetConditional(Board currentBoard) throws RemoteException{
+    public Bet makeBetConditional(Board currentBoard){
         GUIController gC = currentBoard.getgC();
         int amountDice = 0;
         int valueDie = 0;

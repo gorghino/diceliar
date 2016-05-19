@@ -38,6 +38,8 @@ public class GUIController implements Serializable{
     
     int playingPlayer = 0;
     
+    boolean isBetMax = false;
+    
     int idLastBet;
     
     int diceValueSelected;
@@ -72,8 +74,15 @@ public class GUIController implements Serializable{
         System.out.println("diceValueSelected: " + diceValueSelected);
         System.out.println("diceAmountSelected: " + diceAmountSelected);
         System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
+        System.out.println("TotalDice: " + sumOf(totalDicePlayer));
         System.out.println("--------------------------------");
     }
+    
+    public static int sumOf(int... integers) {
+        int total = 0;
+        for (int i = 0; i < integers.length; total += integers[i++]);
+        return total;
+    }   
 
     public boolean isPlayConnectedClicked() {
         return PlayConnectedClicked;

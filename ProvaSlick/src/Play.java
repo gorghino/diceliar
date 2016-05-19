@@ -143,11 +143,31 @@ public class Play extends BasicGameState {
         positionDice[7][1] = Main.ySize - 165;
         
         
-        drawSelectorPlayer(); //disegna il selettore nel giocatore corrente
+        selectorPosition[0][0]=230;
+        selectorPosition[0][1]=Main.ySize-240;
+        
+        selectorPosition[1][0]=680;
+        selectorPosition[1][1]=selectorPosition[0][1];
+        
+        selectorPosition[2][0]=1127;
+        selectorPosition[2][1]=Main.ySize-388;
+        selectorPosition[3][0]=selectorPosition[2][0];
+        selectorPosition[3][1]=Main.ySize-762;
+        selectorPosition[4][0]=selectorPosition[1][0];
+        selectorPosition[4][1]=Main.ySize-762;
+        selectorPosition[5][0]=selectorPosition[0][0];
+        selectorPosition[5][1]=Main.ySize-762;
+        selectorPosition[6][0]=3;
+        selectorPosition[6][1]=selectorPosition[3][1];
+        selectorPosition[7][0]=3;
+        selectorPosition[7][1]=selectorPosition[2][1];
+        
+        
+         
+        
+        selectedPlayerHoriz.draw(selectorPosition[board.getPlayingPlayer().myID][0], selectorPosition[board.getPlayingPlayer().myID][1]);
         
         drawPlayerName(); //disegna i nomi dei giocatori
-
-
         
         //DRAW PLAYERS
    
@@ -178,12 +198,12 @@ public class Play extends BasicGameState {
         fontTurn.drawString(850, Main.ySize-471, "Panel Bet", Color.black);
         
         if (gC.makeChoice && gC.getTurn() > 1 && id == getBoard().getPlayingPlayer().myID) {
-            //button Doubt
-            gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
+            //button MakeBet
+            if(!gC.isBetMax)
+                gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 885, Main.ySize - 285, "Doubt", Color.white);
-            
-            selectedPlayerHoriz.draw(230, Main.ySize - 240);
+           
             
         } else if (id == getBoard().getPlayingPlayer().myID) {
            
@@ -248,6 +268,15 @@ public class Play extends BasicGameState {
         }
         
         
+        //this.getBoard().currentPlayers.vectorPlayers[1].playerOut = true;
+        
+        
+        //CHECK PLAYER OUT
+        for(int i=0;i<this.nPlayers;i++)
+            if(this.getBoard().currentPlayers.vectorPlayers[i].playerOut)
+                playerRemovedHoriz.draw(selectorPosition[i][0], selectorPosition[i][1]);
+        
+        
         g.setColor(Color.black);
         g.drawString("" + getX, 50, 70);
         g.drawString("" + getY, 50, 90);
@@ -288,10 +317,7 @@ public class Play extends BasicGameState {
             restartInitBoard();
         }
 
-        ///////////////////// CHECK GAME STATE ////////////////////////////////
-        try {
-            board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
-        } catch (RemoteException ex) {}
+        board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
 
         ///////////////////////////////////////////////////////////////////
         Input input = gc.getInput();
@@ -309,13 +335,12 @@ public class Play extends BasicGameState {
             }
 
             if (gC.makeChoice) {
-                if ((getX >= 825 && getX <= 1005) && (getY >= 339 && getY <= 389)) { //Make bet
+                if ((getX >= 825 && getX <= 1005) && (getY >= 339 && getY <= 389) && !gC.isBetMax) { //Make bet
                     gC.setMakeBetClicked(true);
                 }
 
                 if ((getX >= 825 && getX <= 1005) && (getY >= 249 && getY <= 299)) { //doubt
                     gC.setDoubtClicked(true);
-                    System.out.println("Dubito!");
                 }
             } else {
                 ////////////////////////////////////// Arrows
@@ -338,14 +363,14 @@ public class Play extends BasicGameState {
                     clickToChangeValue = true;
                     drawValueBet -= 1;
                     if (drawValueBet < 1) {
-                        drawValueBet = nPlayers * sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
+                        drawValueBet = sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
                     }
                     //clickToChangeValue = false;
                 }
                 if ((getX >= 1055 && getX <= 1111) && (getY >= 332 && getY <= 389)) { //right arrow Value
                     clickToChangeValue = true;
                     drawValueBet += 1;
-                    if (drawValueBet > nPlayers * sumOf(gC.totalDicePlayer)) {
+                    if (drawValueBet > sumOf(gC.totalDicePlayer)) {
                         drawValueBet = 1;
                     }
                     //clickToChangeValue = false;
@@ -375,12 +400,19 @@ public class Play extends BasicGameState {
     }
     
     private void restartInitBoard(){
+        
         if(gC.restartBoard){
             for (int s = 0; s < nPlayers; s++)
                  for (int i = 0; i < 5; i++)
                      positionPlayerDice[s][i] = 0;
+            
+            this.drawValueBet = 1;
+            this.drawDieBet = 1;
+            
+            gC.isBetMax = false;
             gC.restartBoard = false;
         }
+        
         newGame = true; // Start delle animazioni e del pannello del nuovo turno
         gC.initBoard = false;
 
@@ -389,20 +421,19 @@ public class Play extends BasicGameState {
 
         nPlayers = getBoard().getnPlayers();
         gC.setnPlayers(nPlayers);
-        System.out.println("Total Dice Player before: " + Arrays.toString(gC.totalDicePlayer));
+
+        
         gC.totalDicePlayer = new int[nPlayers];
-        for (int i = 0; i<nPlayers;i++){
-            
-            gC.totalDicePlayer[i] = 5;
-            
+        for (int i = 0; i<nPlayers;i++){  
+            gC.totalDicePlayer[i] = getBoard().getCurrentPlayers().vectorPlayers[i].myDice.nDice;         
         }
-        System.out.println("Total Dice Player After: " + Arrays.toString(gC.totalDicePlayer));
+        
+
         for (int s = 0; s < nPlayers; s++) {
             amountDicePlayers = getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
-            System.out.println("Player: " + s + " Lenght: " + amountDicePlayers.length);
+
             for (int i = 0; i < amountDicePlayers.length; i++) {
                 positionPlayerDice[s][i] = amountDicePlayers[i];
-                System.out.println("player " + s + " dice: " + positionPlayerDice[s][i]);
             }
         }
     }    

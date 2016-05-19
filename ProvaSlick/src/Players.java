@@ -7,7 +7,6 @@
 
 import java.io.Serializable;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 /**
@@ -19,7 +18,7 @@ public class Players implements Serializable{
     Player[] vectorPlayers;
     Board currentBoard;
 
-    public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray) throws RemoteException, NotBoundException{
+    public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray) throws NotBoundException{
         //costruttore
         vectorPlayers = new Player[_nPlayers];
         for (int i = 0; i < _nPlayers; i += 1) {
@@ -35,13 +34,16 @@ public class Players implements Serializable{
         this.currentBoard = _currentBoard;
     }
 
-    void removePlayer(Player playerToRemove){
-        int prev = playerToRemove.findPrevPlayer();
-        int next = playerToRemove.findNextPlayer();
+    void removePlayer(Player playerToRemove, boolean isCrashed){
         
-        vectorPlayers[prev].IDNext = next; //Faccio puntare al precedente, il registro RMI del successivo
+        if(isCrashed){
+            int prev = playerToRemove.findPrevPlayer();
+            int next = playerToRemove.findNextPlayer();
+            vectorPlayers[prev].IDNext = next; //Faccio puntare al precedente, il registro RMI del successivo
+            System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + "invia a " + next + Board.ANSI_RESET);
+        }
         
-        System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + "invia a " + next + Board.ANSI_RESET);
+        System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);
         
         vectorPlayers[playerToRemove.myID].playerOut = true;
     }
