@@ -306,36 +306,36 @@ public class Play extends BasicGameState {
                 forceRefresh = false;
                 time = 0;
             }
-
-            if (updateNewGamePanel >= 3000) {
-                newGame = false;
-                gC.errorAmountMinore = false;
-                gC.errorRibasso = false;
-                updateNewGamePanel = 0;
-                forceRefresh = false;
-                time = 0;
-            }
-
-            if (gC.errorAmountMinore) {
-                updateNewGamePanel += time;
-            }
-
-            if (gC.errorRibasso) {
-                updateNewGamePanel += time;
-            }
+//
+//            if (updateNewGamePanel >= 3000) {
+//                newGame = false;
+//                gC.errorAmountMinore = false;
+//                gC.errorRibasso = false;
+//                updateNewGamePanel = 0;
+//                forceRefresh = false;
+//            }
+//
+//            if (gC.errorAmountMinore) {
+//                updateNewGamePanel += time;
+//            }
+//
+//            if (gC.errorRibasso) {
+//                updateNewGamePanel += time;
+//            }
         }
         
         if (gC.initBoard == true || gC.restartBoard == true) {
-                restartInitBoard();
-                if(forceRefresh){
-                    System.out.println("REFRESHHHHHHHHHHHHHHHHHHH");
-                    return;
-                }
+            restartInitBoard();
         }
 
         if (gC.playDiceAnimation){
-            System.out.println("DICE ANIMATION");
             return;
+        }
+        else
+            System.out.println("FINE ANIMAZIONE");
+        
+        if(forceRefresh){
+           return;
         }
 
         board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
