@@ -327,12 +327,16 @@ public class Play extends BasicGameState {
         
         if (gC.initBoard == true || gC.restartBoard == true) {
                 restartInitBoard();
-                if(forceRefresh)
+                if(forceRefresh){
+                    System.out.println("REFRESHHHHHHHHHHHHHHHHHHH");
                     return;
+                }
         }
 
-        if (gC.playDiceAnimation)
+        if (gC.playDiceAnimation){
+            System.out.println("DICE ANIMATION");
             return;
+        }
 
         board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
 
@@ -419,6 +423,8 @@ public class Play extends BasicGameState {
     }
 
     private void restartInitBoard() {
+        
+        System.out.println(DiceLiar.ANSI_GREEN + "INIT BOARD!!!" + DiceLiar.ANSI_RESET);
 
         if (gC.restartBoard) {
             System.out.println(DiceLiar.ANSI_GREEN + "RESET BOARD!!!" + DiceLiar.ANSI_RESET);
@@ -435,8 +441,6 @@ public class Play extends BasicGameState {
             gC.restartBoard = false;
 
             forceRefresh = true;
-
-            getBoard().getCurrentPlayers().printDice();
         }
 
         forceRefresh = true;
