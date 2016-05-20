@@ -32,6 +32,7 @@ public interface RMI extends Remote {
     public void oneIsOne(Board board) throws RemoteException;
     
     public boolean heartbeat() throws RemoteException;
+    public void checkPlayerCrash(Board board) throws RemoteException;
     
     public void setRestart() throws RemoteException;
 

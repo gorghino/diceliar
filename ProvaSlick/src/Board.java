@@ -48,6 +48,8 @@ public class Board implements Serializable{
     boolean haveToken = false;
     int roundToken = 0;
     
+    int lockCount = 0;
+    
     int printCount = 0, printCount2 = 0;
     
     public int diceUpdated = 1;
@@ -99,6 +101,8 @@ public class Board implements Serializable{
                 System.out.println("Turno: " + this.getnTurn() + " - Player myTurn: " +  player.myTurn);
                 printCount = 1;
             }
+           
+            
             if(myID == getPlayingPlayer().getMyID() && ( status != Board.INIT_RESET && status != Board.RESET )){
                 status = PLAYING;
                 if(printCount2 == 0){
@@ -132,35 +136,47 @@ public class Board implements Serializable{
                     board.setPlayingPlayer(nextPlayer);
                     gC.setPlayingPlayer(nextPlayer.myID);
                     
+                    gC.betOnTable = true;
+                    gC.diceAmountSelected = board.getCurrentBet().amountDice;
+                    gC.diceValueSelected = board.getCurrentBet().valueDie;
+                    gC.idLastBet = myID;
+     
                     try {
                         this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.notifyTurn(board);
-                        
+  
                     } catch (RemoteException ex) {
                         System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + currentPlayers.vectorPlayers[myID].IDNext + "non è raggiungibile." + DiceLiar.ANSI_RESET);
-                        currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true);
+                        currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true, true);
                         
-                    } finally { 
                         try {
+                            System.out.println(DiceLiar.ANSI_RED + " FINALLY " + DiceLiar.ANSI_RESET);
                             // TODO: ------------------------------------------- CONTROLLARE SE SONO OK NUOVE INFO NOTIFYTURN
                             this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.notifyTurn(board);
-                        } catch (RemoteException ex) {
+                        } catch (RemoteException ex2) {
                             System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR IN FINALLY CODE" + DiceLiar.ANSI_RESET);
                             Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        
                     }
-                    
-                    System.out.println("Passo il turno");
                 }
+                
+                synchronized (lock) {
+                    System.out.println("SBLOCCO TUTTI\n");
+                    ready = true;
+                    lock.notifyAll();
+                    }
+                System.out.println("Passo il turno");
                     
             }
             else{
-                //System.out.println("Gameloop else in");
+                System.out.println("Gameloop else in. Status: " + status);
                 
                 if(status == RESET){
                     System.out.println("ID: " + myID + " STATUS: RESET");
                     if (myID == this.getPlayingPlayer().myID && haveToken) { //Reset starter
                         if(roundToken == 2){
                             gC.restartBoard = true;
+                            gC.playDiceAnimation = true;
                             gC.oneJollyEnabled = true;
                             status = PLAYING;
                             roundToken = 0;
@@ -176,11 +192,10 @@ public class Board implements Serializable{
                             this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setDice(myID, currentPlayers);
                         } catch (RemoteException ex) {
                            System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + currentPlayers.vectorPlayers[myID].IDNext + "non è raggiungibile." + DiceLiar.ANSI_RESET);
-                            currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true);
-                        } finally {
+                            currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true, true);
                             try {
                                 this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setDice(myID, currentPlayers);
-                            } catch (RemoteException ex) {
+                            } catch (RemoteException ex2) {
                                 System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR IN FINALLY CODE" + DiceLiar.ANSI_RESET);
                                 Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -196,12 +211,11 @@ public class Board implements Serializable{
                                 this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setDice(myID, currentPlayers);
                             } catch (RemoteException ex) {
                                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + currentPlayers.vectorPlayers[myID].IDNext + "non è raggiungibile." + DiceLiar.ANSI_RESET);
-                                currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true);
-                            } finally {
+                                currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true, true);
                                 try {
                                     System.out.println("Rimando i dadi dopo il crash del mio successivo");
                                     this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setDice(myID, currentPlayers);
-                                } catch (RemoteException ex) {
+                                } catch (RemoteException ex2) {
                                     System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR IN FINALLY CODE" + DiceLiar.ANSI_RESET);
                                     Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
                                 }
@@ -215,6 +229,7 @@ public class Board implements Serializable{
                         if(diceUpdated == currentPlayers.getPlayersAlive() && roundToken == 2){
                             status = PLAYING;
                             gC.restartBoard = true;
+                            gC.playDiceAnimation = true;
                             gC.oneJollyEnabled = true;
                             roundToken = 0;
                             printCount = 0;
@@ -226,7 +241,6 @@ public class Board implements Serializable{
                 else if(status == INIT_RESET){
                     //System.out.println("ID: " + myID + " STATUS: INIT_RESET");
                     //System.out.println("!! START TR: Sono " + myID + " e devo far partire il token ring !!");
-                    ready = true;
                     status = Board.RESET;
                     
                     this.setPlayingPlayer(board.getCurrentPlayers().vectorPlayers[myID]);
@@ -239,9 +253,39 @@ public class Board implements Serializable{
                     oneJollyEnabled = true;    
                     gC.oneJollyEnabled = true;
                 }
-                else if(status == PLAYING){
-                    //System.out.println("ID: " + myID + " PLAYING");
+                else if(status == IDLE || status == PLAYING){
+                    try {
+                        System.out.println("Non tocca a me. Mi blocco sul giocatore " + getPlayingPlayer().myID);
+                        
+                        this.getPlayingPlayer().rmiPointer.checkPlayerCrash(this);
+                        System.out.println("ID: " + myID + "MI SBLOCCO DENTRO BOARD");
+                        System.out.println(getPlayingPlayer().getMyID() + " <-- playing , status --> " +  status);
+                        
+                        printCount = 0;
+                        ready = false;
+                        
+                    } catch (RemoteException ex) {
+                        System.out.println(DiceLiar.ANSI_RED + "!! CRASH DEL PLAYING PLAYER RILEVATO. Il giocatore " + currentPlayers.vectorPlayers[getPlayingPlayer().myID] + "non è raggiungibile." + DiceLiar.ANSI_RESET);
+                        int newPlaying = currentPlayers.removePlayer(currentPlayers.vectorPlayers[getPlayingPlayer().myID], true, false);
+                        
+                        if(newPlaying == myID){
+                            //Sono il nuovo PlayingPlayer
+                            System.out.println(DiceLiar.ANSI_CYAN + "ID: " + myID + " sono il nuovo platingPlayer" + DiceLiar.ANSI_RESET);
+                            setPlayingPlayer(currentPlayers.vectorPlayers[myID]);
+                            getPlayingPlayer().setTurn(true);
+                            gC.setPlayingPlayer(currentPlayers.vectorPlayers[myID].myID);
+                            gC.turn = board.getnTurn();
+                        }
+                        else{
+                            //Aggiorno il playing su cui bloccarmi
+                            setPlayingPlayer(currentPlayers.vectorPlayers[newPlaying]);
+                            gC.setPlayingPlayer(currentPlayers.vectorPlayers[newPlaying].myID);
+                            getPlayingPlayer().setTurn(true);
+                            gC.turn = board.getnTurn();
+                        }
+                    }
                 }
+                gC.printValues();
             }
     }
  
@@ -261,9 +305,6 @@ public class Board implements Serializable{
         gC.setPlayingPlayer(starterIDPlayer);
         
         currentBoard.diceUpdated = 1;
-        
-        diceUpdated = 1;
-        ready = false;
            
         
         if(myID == currentBoard.getPlayingPlayer().myID){
@@ -280,14 +321,14 @@ public class Board implements Serializable{
         }
         else{
             try {
+                System.out.println("Segnalo SET RESTART");
                 this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setRestart();
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + currentPlayers.vectorPlayers[myID].IDNext + "non è raggiungibile." + DiceLiar.ANSI_RESET);
-                currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true);
-            } finally {
+                currentPlayers.removePlayer(currentPlayers.vectorPlayers[currentPlayers.vectorPlayers[myID].IDNext], true, true);
                 try {
                     this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.setRestart();
-                } catch (RemoteException ex) {
+                } catch (RemoteException ex2) {
                     System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR IN FINALLY CODE" + DiceLiar.ANSI_RESET);
                     Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -310,28 +351,30 @@ public class Board implements Serializable{
                     rmiPointer.resetDice(currentPlayers);
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true);
+                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
             }
             else if(function.equalsIgnoreCase("CHECK_DOUBT"))
                 try {
                     rmiPointer.checkDoubtRMI(board);
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true);
+                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
             }
             else if(function.equalsIgnoreCase("ONE_IS_ONE"))
                 try {
                     rmiPointer.oneIsOne(board);
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true);
+                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
             }
             else if(function.equalsIgnoreCase("NOTIFY_MOVE"))
                 try {
+                     if(this.currentPlayers.vectorPlayers[myID].myID == vectorPlayer.myID)
+                         continue;
                     rmiPointer.notifyMove(board);
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true);
+                currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
             }
         }
         
@@ -345,7 +388,7 @@ public class Board implements Serializable{
                     rmiPointer.signalCrash(board);
                 } catch (RemoteException ex) {
                    System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                   currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true);
+                   currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
                 }
             }
         }

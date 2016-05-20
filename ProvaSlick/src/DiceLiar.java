@@ -52,6 +52,7 @@ public class DiceLiar{
         
         shareDice(currentPlayers, rmiNext);
         
+        startBoard.ready = false;
         startBoard.haveToken = false;
         
         return startBoard;

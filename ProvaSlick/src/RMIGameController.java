@@ -96,7 +96,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     @Override
     public void notifyTurn(Board board) throws RemoteException{
         GUIController gC = rmiBoard.getgC();
-        System.out.println("NotifyTurn in");
+        System.out.println("RMI ID: " + board.myID + " NotifyTurn in");
         
         rmiBoard.setnTurn(board.getnTurn());
         gC.turn = board.getnTurn();
@@ -122,17 +122,6 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
        // System.out.println("Sblocco il giocatore " + rmiBoard.myID);
         
         rmiBoard.status = board.status;
-        
-        synchronized (rmiBoard.lock){
-            rmiBoard.ready = true;
-            rmiBoard.lock.notify();
-            if(rmiBoard.status == Board.PLAYING){
-                System.out.println("NotifyTurn: Il turno CONTINUA\n");
-            }
-            //else if(rmiBoard.status == Board.RESET){
-               // System.out.println("NotifyTurn: Io " + rmiBoard.myID + " Devo resettare i dadi\n");
-            //}
-        }
         System.out.println("NotifyTurn out");
     }
 
@@ -172,20 +161,20 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
        if(board.okDoubt){
            System.out.println(ANSI_GREEN + "Ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Tocca a lui iniziare il nuovo giro" + ANSI_RESET);
            
-           if(board.getPlayingPlayer().IDNext == rmiBoard.myID){
+           System.out.println(DiceLiar.ANSI_RED + "Io sono " + rmiBoard.myID + " e ha dubitato " + board.getPlayingPlayer().myID + " e il suo prev è " + board.getPlayingPlayer().IDPrev + DiceLiar.ANSI_RESET);
+           if(board.getPlayingPlayer().IDPrev == rmiBoard.myID){
                System.out.println(ANSI_RED + "Perdo un dado :(" + ANSI_RESET);
                //System.out.println(ANSI_CYAN + "Io sono: " + myID + ANSI_RESET);
                rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].getMyDiceObject().removeDie();
                rmiBoard.gC.totalDicePlayer[rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].myID]--;
                
                if(rmiBoard.gC.totalDicePlayer[rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].myID] == 0)
-                    rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[myID], false);
+                    rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[myID], false, false);
            }
            else{
-                //System.out.println("Io sono: " + myID );
                 rmiBoard.gC.totalDicePlayer[rmiBoard.gC.idLastBet]--;
                 if(rmiBoard.gC.totalDicePlayer[rmiBoard.gC.idLastBet] == 0)
-                    rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().vectorPlayers[rmiBoard.gC.idLastBet], false);
+                    rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().vectorPlayers[rmiBoard.gC.idLastBet], false, false);
            }
                
        }
@@ -193,8 +182,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
            System.out.println(ANSI_RED + "Non ha ragione, ce ne sono " + vectorDice[board.getCurrentBet().valueDie-1] + "! Perde un dado e inizia il giocatore successivo" + ANSI_RESET);
            //System.out.println(ANSI_GREEN + "Io sono: " + myID + ANSI_RESET + "e ha perso " + board.getPlayingPlayer().myID );
            
-           rmiBoard.gC.totalDicePlayer[board.getPlayingPlayer().myID]--;
-           
+           rmiBoard.gC.totalDicePlayer[board.getPlayingPlayer().myID]--;  
        }
        
        System.out.println("\n-------------------------------------- NUOVO TURNO -------------------------------------------\n");
@@ -203,7 +191,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
 
     @Override
     public void setRestart() throws RemoteException {
-        //System.out.println("SETRESTART - QUELLO PRIMA DI ME HA ERRONEAMENTE DUBITATO");
+        System.out.println("SETRESTART - QUELLO PRIMA DI ME HA ERRONEAMENTE DUBITATO");
         rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
         rmiBoard.setPlayingPlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[myID]);
         rmiBoard.diceUpdated = 1;
@@ -232,7 +220,9 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.betOnTable = true;
         gC.diceAmountSelected = board.getCurrentBet().amountDice;
         gC.diceValueSelected = board.getCurrentBet().valueDie;
-        
+           
+        rmiBoard.currentBet = board.currentBet;
+        rmiBoard.setPlayingPlayer(board.currentPlayers.vectorPlayers[board.getPlayingPlayer().IDNext]);
         gC.setPlayingPlayer(board.getPlayingPlayer().IDNext);
         
         gC.idLastBet = board.getPlayingPlayer().myID; 
@@ -247,10 +237,25 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
     public void signalCrash(Board board) throws RemoteException {
         for(int i=0; i<board.currentPlayers.vectorPlayers.length; i++){
             if(rmiBoard.currentPlayers.vectorPlayers[i].playerOut != board.currentPlayers.vectorPlayers[i].playerOut){
-                System.out.println("ID: " + rmiBoard.myID + DiceLiar.ANSI_RED + "!! SIGNAL CRASH: IL GIOCATORE " + i + " E' CRASHATO" + DiceLiar.ANSI_RESET);
-                rmiBoard.currentPlayers.removePlayer(rmiBoard.currentPlayers.vectorPlayers[i], false);
+                System.out.println("ID: " + rmiBoard.myID + DiceLiar.ANSI_RED + " !! SIGNAL CRASH: IL GIOCATORE " + i + " E' CRASHATO" + DiceLiar.ANSI_RESET);
+                rmiBoard.currentPlayers.removePlayer(rmiBoard.currentPlayers.vectorPlayers[i], true, false);
             }
         }
+    }
+
+    @Override
+    public void checkPlayerCrash(Board currentBoard) throws RemoteException {
+        synchronized (rmiBoard.lock) {
+            try {
+                while (!rmiBoard.ready){ System.out.println(currentBoard.myID + " MI BLOCCO!"); rmiBoard.lock.wait(); System.out.println(currentBoard.myID + " MI SBLOCCO e ready: " + rmiBoard.ready); }
+                rmiBoard.lockCount++;
+                if(rmiBoard.lockCount == rmiBoard.getCurrentPlayers().getPlayersAlive() - 1){
+                    rmiBoard.ready = false;
+                    rmiBoard.lockCount = 0;
+                }
+                System.out.println(currentBoard.myID + " MI SBLOCCO");
+            } catch (InterruptedException ex) {}
+        } 
     }
     
     

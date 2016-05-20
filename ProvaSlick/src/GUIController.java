@@ -23,6 +23,7 @@ public class GUIController implements Serializable{
     
     int initDicePlayer; //Numero iniziale di dadi del giocatore
     int nPlayers; // Numero giocatori attivi
+   
        
     
     // Check button Clicked
@@ -40,6 +41,8 @@ public class GUIController implements Serializable{
     
     boolean isBetMax = false;
     
+    boolean playDiceAnimation;
+    
     int idLastBet;
     
     int diceValueSelected;
@@ -56,6 +59,7 @@ public class GUIController implements Serializable{
     
     public GUIController() {
         totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
+        playDiceAnimation = false;
     }
 
     

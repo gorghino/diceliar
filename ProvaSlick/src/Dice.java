@@ -33,8 +33,12 @@ public class Dice implements Serializable{
             vectorDice[i].resetValue();
         }
     }
-
-    void addDie(){}
+    
+    public void deleteDice() {
+        for (int i = 0; i < nDice; i += 1) {
+            vectorDice[i].value = 0;
+        }
+    }
 
     void removeDie(){
         int arrayLength = vectorDice.length-1;
