@@ -13,8 +13,6 @@ import java.util.Arrays;
  */
 public class GUIController implements Serializable{
     Board board;
-
-
     
     boolean initBoardBool; //Primo Update della Board Play
     
@@ -41,7 +39,7 @@ public class GUIController implements Serializable{
     
     boolean isBetMax = false;
     
-    boolean playDiceAnimation;
+    boolean playDiceAnimation = false;
     
     int idLastBet;
     
