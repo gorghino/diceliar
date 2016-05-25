@@ -104,7 +104,7 @@ public class Player implements Serializable{
                             
                             gC.idLastBet = myID;
                             
-//                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
+                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
                             //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             //myDice.removeDie();
@@ -113,6 +113,7 @@ public class Player implements Serializable{
                             if(myDice.nDice == 0){
                                 currentBoard.getCurrentPlayers().removePlayer(this, false, false);
                                 gC.loseGame = true;
+                                gC.restartBoard = false;
                                 System.out.println("Ho perso :(");
                             }
 

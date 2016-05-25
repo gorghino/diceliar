@@ -23,7 +23,7 @@ public class Players implements Serializable{
         //costruttore
         
         vectorPlayers = new Player[_nPlayers];
-        startAmountDice = 5;
+        startAmountDice = 1;
         
         for (int i = 0; i < _nPlayers; i += 1) {
             vectorPlayers[i] = new Player(this, i, _rmiPlayerArray.get(i).ip, _rmiPlayerArray.get(i).port, startAmountDice);
@@ -62,10 +62,14 @@ public class Players implements Serializable{
         
         vectorPlayers[playerToRemove.myID].playerOut = true;
         
-        if(this.getPlayersAlive() == 1){
+        if(this.getPlayersAlive() == 1 && currentBoard.winner == currentBoard.myID){
             System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
             currentBoard.gC.winGame = true;
         }
+        else if(this.getPlayersAlive() == 1 && currentBoard.loser == currentBoard.myID){
+            currentBoard.gC.loseGame = true;
+        }
+        
         return next;
     }
     

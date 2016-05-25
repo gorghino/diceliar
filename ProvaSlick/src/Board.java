@@ -331,7 +331,6 @@ public class Board implements Serializable{
     void newTurn(Board currentBoard, int starterIDPlayer, Bet starterBet){
         
         getCurrentPlayers().resetAllDice(myID);
-        System.out.println("Nuovo turno, nuovi dadi");
         currentPlayers.printDice();   
 
         currentBoard.setCurrentBet(starterBet);

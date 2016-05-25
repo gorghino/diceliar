@@ -172,35 +172,49 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.setBetOnTable(false);
         gC.diceAmountSelected = 0;
         gC.diceValueSelected = 0;
+        gC.oneJollyEnabled = true;
         
         rmiBoard.setnTurn(1);
         rmiBoard.status = Board.PLAYING;
         rmiBoard.printCount = 0;
         rmiBoard.printCount2 = 0;
         rmiBoard.currentBet = null;
+        rmiBoard.oneJollyEnabled = true;    
+                    
         
         System.out.println(DiceLiar.ANSI_CYAN + "TURNO PRECEDENTE VINTO DA " + board.winner + DiceLiar.ANSI_RESET);
         System.out.println(DiceLiar.ANSI_CYAN + "TURNO PRECEDENTE PERSO DA " + board.loser + DiceLiar.ANSI_RESET); 
         
-        
-        if(!board.getCurrentPlayers().vectorPlayers[board.loser].playerOut && board.loser == gC.idLastBet && board.loser != board.winner){
-            System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + gC.idLastBet + DiceLiar.ANSI_RESET);
-            rmiBoard.gC.totalDicePlayer[board.loser]--;
+        if(!board.getCurrentPlayers().vectorPlayers[board.loser].playerOut){
+            if(board.loser == board.gC.idLastBet && board.loser != board.winner){
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + gC.idLastBet + DiceLiar.ANSI_RESET);
+                rmiBoard.gC.totalDicePlayer[board.loser]--;
 
-            if (rmiBoard.gC.totalDicePlayer[board.loser] == 0) {
-                System.out.println("Il giocatore " + board.loser + " ha perso!");
-                rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[board.loser], false, false);
-                if(board.loser == rmiBoard.myID){
-                    rmiBoard.gC.loseGame = true;
-                    gC.restartBoard = false;
-                    gC.playDiceAnimation = false;
+                if (rmiBoard.gC.totalDicePlayer[board.loser] == 0) {
+                    System.out.println("Il giocatore " + board.loser + " ha perso!");
+                    rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[board.loser], false, false);
                 }
+            }
+            else{
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + board.gC.idLastBet + DiceLiar.ANSI_RESET);
+                System.out.println(DiceLiar.ANSI_RED + "Chi ha perso non è più online, non perde il dado" + DiceLiar.ANSI_RESET);
             }
         }
         else{
-            System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + gC.idLastBet + DiceLiar.ANSI_RESET);
-            System.out.println(DiceLiar.ANSI_RED + "Chi ha perso non è più online, non perde il dado" + DiceLiar.ANSI_RESET);
-        }       
+            rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[board.loser], false, false);
+        }
+        
+        if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.winner == rmiBoard.myID){
+            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
+            rmiBoard.gC.winGame = true;
+            return;
+        }
+        else if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.loser == rmiBoard.myID){
+            rmiBoard.gC.loseGame = true;
+            rmiBoard.gC.restartBoard = false;
+            rmiBoard.gC.playDiceAnimation = false;
+            return;
+        }
         
         gC.setPlayingPlayer(board.winner);
         rmiBoard.setPlayingPlayer(rmiBoard.getCurrentPlayers().vectorPlayers[board.winner]);

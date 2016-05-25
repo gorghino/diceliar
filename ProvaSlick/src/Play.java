@@ -234,12 +234,15 @@ public class Play extends BasicGameState {
             }
 
         }
-        //button leave
-        gDrawButtons.drawButton(355, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 416, Main.ySize - 285, "Leave", Color.white);
 
         /////////////////////
-        //////////////////// Panel SX
+        //////////////////// Panel SX     
         fontTurn.drawString(269, Main.ySize - 471, "Last Bet was made by: ", Color.black);
+        
+        //Playing Player stat
+        fontTurn.drawString(350, Main.ySize-305, "Current player state:", Color.black);
+        fontTurn.drawString(307, Main.ySize-272, "Player "+gC.playingPlayer, Color.black);
+        fontTurn.drawString(524, Main.ySize-272, "N Dice: "+gC.totalDicePlayer[gC.playingPlayer], Color.black);
 
         if (gC.betOnTable == true) {
             g.setColor(Color.black);
@@ -334,11 +337,14 @@ public class Play extends BasicGameState {
 
         if (gC.playDiceAnimation) return;
         if(forceRefresh){ forceRefresh = false; return; }
+        
+        if(gC.winGame){ newGame = false; return; }
 
         
         if(!board.currentPlayers.vectorPlayers[id].playerOut)
             board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
         else{
+            System.out.println("Sono player Out. Chiudo");
             System.exit(0);
         }
 
@@ -416,10 +422,6 @@ public class Play extends BasicGameState {
                     gC.setDiceAmountSelected(drawValueBet);
 
                 }
-            }
-            if ((getX >= 355 && getX <= 535) && (getY >= 249 && getY <= 299)) { //leave
-                gC.setLeaveClicked(true);
-                System.exit(0);
             }
         }
     }
