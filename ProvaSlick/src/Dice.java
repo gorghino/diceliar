@@ -1,5 +1,6 @@
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -34,9 +35,10 @@ public class Dice implements Serializable{
         }
     }
     
-    public void deleteDice() {
+    public void deleteDice() { //Mai usata?
         for (int i = 0; i < nDice; i += 1) {
             vectorDice[i].value = 0;
+            
         }
     }
 
@@ -45,6 +47,7 @@ public class Dice implements Serializable{
         for (int i = arrayLength; i >= 0; i -= 1) {
             if(vectorDice[i].getValue() != 0){
                 vectorDice[i].setValue(0);
+                
                 nDice--;
                 break;
             }

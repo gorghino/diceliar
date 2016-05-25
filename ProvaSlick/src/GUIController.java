@@ -43,6 +43,8 @@ public class GUIController implements Serializable{
     
     int idLastBet;
     
+    boolean winGame = false, loseGame = false;
+    
     int diceValueSelected;
     int diceAmountSelected;
     
@@ -50,6 +52,7 @@ public class GUIController implements Serializable{
     boolean restartBoard = false;
     
     int[] totalDicePlayer;
+    int[] dicePlayer;
     
     boolean oneJollyEnabled = true;
     boolean errorRibasso = false;
@@ -57,6 +60,7 @@ public class GUIController implements Serializable{
     
     public GUIController() {
         totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
+        dicePlayer = new int[]{1,1,1,1,1};
         playDiceAnimation = false;
     }
 
@@ -78,6 +82,8 @@ public class GUIController implements Serializable{
         System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
         System.out.println("TotalDice: " + sumOf(totalDicePlayer));
         System.out.println("Playing Player: " + playingPlayer);
+        System.out.println("Dadi : " + Arrays.toString(board.getCurrentPlayers().vectorPlayers[id].getmyDiceValue()));
+        System.out.println("Dice check:" + Arrays.toString(dicePlayer));
         System.out.println("--------------------------------");
     }
     

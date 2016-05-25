@@ -17,12 +17,17 @@ public class Players implements Serializable{
 
     Player[] vectorPlayers;
     Board currentBoard;
+    int startAmountDice;
 
     public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray) throws NotBoundException{
         //costruttore
+        
         vectorPlayers = new Player[_nPlayers];
+        startAmountDice = 2;
+        
         for (int i = 0; i < _nPlayers; i += 1) {
-            vectorPlayers[i] = new Player(this, i, _rmiPlayerArray.get(i).ip, _rmiPlayerArray.get(i).port);
+            vectorPlayers[i] = new Player(this, i, _rmiPlayerArray.get(i).ip, _rmiPlayerArray.get(i).port, startAmountDice);
+            System.out.println(vectorPlayers[i].myID + " ----------------->" + Arrays.toString(vectorPlayers[i].myDice.getDiceValues()));
         }
     }
 
@@ -57,6 +62,11 @@ public class Players implements Serializable{
         System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);
         
         vectorPlayers[playerToRemove.myID].playerOut = true;
+        
+        if(this.getPlayersAlive() == 1){
+            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
+            currentBoard.gC.winGame = true;
+        }
         return next;
     }
     
@@ -101,12 +111,8 @@ public class Players implements Serializable{
         for(Player vectorPlayer : vectorPlayers) {
             if(vectorPlayer.playerOut)
                 continue;
-            
-            if(vectorPlayer.myID == myID)
-                vectorPlayer.resetDice();
-            else{
-                vectorPlayer.myDice = null;
-            }
+           
+            vectorPlayer.resetDice();
         }
     }
 

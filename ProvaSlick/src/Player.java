@@ -37,7 +37,7 @@ public class Player implements Serializable{
     Players allPlayers;
     Dice myDice;
 
-    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort) throws NotBoundException{
+    public Player(Players _allPlayers, int _myID, String _myIP, int _myPort, int startAmountDice) throws NotBoundException{
         System.out.println("Creo player con ID " + _myID + ", IP: " + _myIP + ":" + _myPort);
         myID = _myID;
         myIP = _myIP;
@@ -49,8 +49,9 @@ public class Player implements Serializable{
         IDPrev = ((((myID - 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
        
 
+        System.out.println(myID + " --> " + startAmountDice);
         try {
-            //myDice = new Dice(5);
+            myDice = new Dice(startAmountDice);
             rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");
         } catch (RemoteException ex) {
             System.out.println(DiceLiar.ANSI_RED + "!! FATAL ERROR - RMI ERROR NELLA CREAZIONE DI UN GIOCATORE" + DiceLiar.ANSI_RESET);
@@ -65,7 +66,7 @@ public class Player implements Serializable{
                 if(betOnTable != null){
                     
                     if (betOnTable.valueDie == 6 && betOnTable.amountDice == GUIController.sumOf(gC.totalDicePlayer)) {
-                        System.out.println("MASSIMO!!");
+                        //System.out.println("MASSIMO!!");
                         gC.isBetMax = true;
                     }
                     
@@ -78,12 +79,19 @@ public class Player implements Serializable{
                         if(doubt(currentBoard)){
                             currentBoard.status = Board.INIT_RESET;
                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
-                            currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
+                            
+                            currentBoard.winner = this.getMyID();
+                            currentBoard.loser = this.getAllPlayers().vectorPlayers[myID].IDPrev;
+                            
+                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
+                            //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             //myBet = makeBet(currentBoard);
 
                             currentBoard.diceUpdated = 1;
                             currentBoard.oneJollyEnabled = true;
+                            
+                            gC.idLastBet = myID;
                             
                             currentBoard.newTurn(currentBoard, this.getMyID(), null); 
                             return true;
@@ -91,13 +99,21 @@ public class Player implements Serializable{
                         else{
                             System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + this.IDNext);
                             //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
-                            currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
+                            
+                            currentBoard.loser = this.getMyID();
+                            currentBoard.winner = this.getAllPlayers().vectorPlayers[myID].IDNext;
+                            
+                            gC.idLastBet = myID;
+                            
+//                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
+                            //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
-                            myDice.removeDie();
+                            //myDice.removeDie();
                             //gC.totalDicePlayer[myID]--;
                             
                             if(myDice.nDice == 0){
                                 currentBoard.getCurrentPlayers().removePlayer(this, false, false);
+                                gC.loseGame = true;
                                 System.out.println("Ho perso :(");
                             }
 
@@ -111,10 +127,7 @@ public class Player implements Serializable{
                         
                         if(gC.betClicked == false){
                             return false;
-                        }
-                        
-                        System.out.println(DiceLiar.ANSI_RED + "fatta!" + DiceLiar.ANSI_RESET);
-                            
+                        }   
       
                         gC.makeBetClicked = false;
                         
@@ -133,7 +146,10 @@ public class Player implements Serializable{
                             return false;
                         }
                         
-                        System.out.println("Scommesso!");
+                        //System.out.println("Scommesso!");
+                        
+                        currentBoard.setnTurn(currentBoard.getnTurn() + 1);
+                        gC.setTurn(currentBoard.getnTurn());
                         
                         currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                         return true;
@@ -148,6 +164,9 @@ public class Player implements Serializable{
                     myBet = makeBet(currentBoard);
                     gC.setBetOnTable(true);
                     currentBoard.setCurrentBet(myBet);
+                    currentBoard.setnTurn(currentBoard.getnTurn() + 1);
+                    gC.setTurn(currentBoard.getnTurn());
+                        
                     currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                     return true;
                 }      
@@ -234,7 +253,7 @@ public class Player implements Serializable{
             return true;
         }
         else{
-            System.out.println("OH NO, Ho perso un dado!");
+            //System.out.println("OH NO, Ho perso un dado!");
             System.out.println("Non avevi ragione!");
             currentBoard.okDoubt = false;
             return false;

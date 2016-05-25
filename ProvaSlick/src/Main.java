@@ -24,7 +24,8 @@ public class Main extends StateBasedGame implements Runnable{
     
     @Override
     public void initStatesList(GameContainer gc) throws SlickException{
-        
+       
+       gc.setAlwaysRender(true);
        GUIController gC = new GUIController();
        GuiDefineImages gDefImg = new GuiDefineImages();
        GuiDefineFont gDefFont = new GuiDefineFont();
@@ -43,7 +44,7 @@ public class Main extends StateBasedGame implements Runnable{
         try {
             appgc = new AppGameContainer(new Main(gameName));
             appgc.setDisplayMode(xSize, ySize, false);
-            appgc.setTargetFrameRate(20);
+            appgc.setTargetFrameRate(15);
             System.out.println("Start appgc");
             appgc.start();
         }
