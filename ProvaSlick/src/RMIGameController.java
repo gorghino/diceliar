@@ -312,6 +312,10 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             if(rmiBoard.currentPlayers.vectorPlayers[i].playerOut != board.currentPlayers.vectorPlayers[i].playerOut){
                 System.out.println("ID: " + rmiBoard.myID + DiceLiar.ANSI_RED + " !! SIGNAL CRASH: IL GIOCATORE " + i + " E' CRASHATO" + DiceLiar.ANSI_RESET);
                 rmiBoard.currentPlayers.removePlayer(rmiBoard.currentPlayers.vectorPlayers[i], true, false);
+                
+                if(board.getnTurn() == 1){
+                    rmiBoard.initBoard = false;
+                }
             }
         }
     }

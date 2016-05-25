@@ -49,7 +49,6 @@ public class Player implements Serializable{
         IDPrev = ((((myID - 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
        
 
-        System.out.println(myID + " --> " + startAmountDice);
         try {
             myDice = new Dice(startAmountDice);
             rmiPointer = (RMI)LocateRegistry.getRegistry(myIP, myPort).lookup("player");

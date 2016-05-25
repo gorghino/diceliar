@@ -293,8 +293,22 @@ public class Board implements Serializable{
                             System.out.println(DiceLiar.ANSI_CYAN + "ID: " + myID + " sono il nuovo playingPlayer" + DiceLiar.ANSI_RESET);
                             setPlayingPlayer(currentPlayers.vectorPlayers[myID]);
                             getPlayingPlayer().setTurn(true);
+                            this.winner = myID;
                             gC.setPlayingPlayer(currentPlayers.vectorPlayers[myID].myID);
                             gC.turn = board.getnTurn();
+                            
+                            if(board.getnTurn() == 1){
+                                //E' crashato il primo giocatore del turno, ridistribuisco i dadi in caso sia crashato mentre li distribuiva
+                                getCurrentPlayers().resetAllDice(myID);
+                                this.setCurrentBet(null);
+                                broadcastRMI(this, "RESET_DICE");
+                                
+                                synchronized (lock) {
+                                    System.out.println("SBLOCCO TUTTI\n");
+                                    ready = true;
+                                    lock.notifyAll();
+                                }
+                            }
                             
                             
                         }
@@ -380,6 +394,11 @@ public class Board implements Serializable{
             Player vectorPlayer = board.getCurrentPlayers().vectorPlayers[i];
             j++;
             
+            if(j==1 && board.myID == 0 && board.getnTurn() != 1){
+                System.out.println("Crasho");
+                System.exit(0);
+            }
+            
             System.out.println("BROADCAST da " + myID + " a " + i);
             
             if(vectorPlayer.playerOut)
@@ -417,22 +436,21 @@ public class Board implements Serializable{
                 System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
                 currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, false);
             }
-        }
-        
-        if(function.equalsIgnoreCase("SIGNAL_CRASH")){
-            for (Player vectorPlayer : currentPlayers.vectorPlayers) {
-                if(this.currentPlayers.vectorPlayers[myID].myID == vectorPlayer.myID || vectorPlayer.playerOut)
+            else if (function.equalsIgnoreCase("SIGNAL_CRASH")) {
+                if (this.currentPlayers.vectorPlayers[myID].myID == vectorPlayer.myID || vectorPlayer.playerOut) {
                     continue;
-                
-                RMI rmiPointer = vectorPlayer.getRmiPointer();
+                }
                 try {
+                    System.out.println("Segnalo crash a " + vectorPlayer.myID);
                     rmiPointer.signalCrash(board);
                 } catch (RemoteException ex) {
-                   System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
-                   currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
+                    System.out.println(DiceLiar.ANSI_RED + "!! CRASH RILEVATO. Il giocatore " + vectorPlayer.myID + " non è raggiungibile." + DiceLiar.ANSI_RESET);
+                    currentPlayers.removePlayer(currentPlayers.vectorPlayers[vectorPlayer.myID], true, true);
                 }
             }
         }
+        
+        
            
 
     }
