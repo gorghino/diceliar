@@ -204,7 +204,9 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[board.loser], false, false);
         }
         
-        if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.winner == board.myID){
+        System.out.println("Players alive: " + rmiBoard.getCurrentPlayers().getPlayersAlive());
+        
+        if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && board.winner == rmiBoard.myID){
             System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
             rmiBoard.gC.winGame = true;
             rmiBoard.gC.restartBoard = false;

@@ -267,7 +267,7 @@ public class Play extends BasicGameState {
 
         if (gC.errorRibasso) {
             backPanel.draw(245, Main.ySize - 524);
-            fontValue.drawString(285, Main.ySize - 416, "You cannot revive a downward", Color.black);
+            fontValue.drawString(295, Main.ySize - 416, "You cannot revive a downward", Color.black);
         }
         
         if (gC.winGame) {

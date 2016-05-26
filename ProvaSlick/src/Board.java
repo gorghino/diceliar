@@ -393,10 +393,10 @@ public class Board implements Serializable{
             Player vectorPlayer = board.getCurrentPlayers().vectorPlayers[i];
             j++;
             
-            if(j==1 && board.myID == 0 && board.getnTurn() != 1){
-                System.out.println("Crasho");
-                System.exit(0);
-            }
+//            if(j==1 && board.myID == 0 && board.getnTurn() != 1){
+//                System.out.println("Crasho");
+//                System.exit(0);
+//            }
             
             System.out.println("BROADCAST da " + myID + " a " + i);
             
