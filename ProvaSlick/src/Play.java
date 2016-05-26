@@ -7,6 +7,9 @@ import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import static java.lang.Math.abs;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -336,17 +339,20 @@ public class Play extends BasicGameState {
         } 
 
         if (gC.playDiceAnimation) return;
+        
         if(forceRefresh){ forceRefresh = false; return; }
         
-        if(gC.winGame){ newGame = false; return; }
+        if(gC.winGame || gC.loseGame){ 
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Play.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.exit(0); }
 
         
-        if(!board.currentPlayers.vectorPlayers[id].playerOut)
-            board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
-        else{
-            System.out.println("Sono player Out. Chiudo");
-            System.exit(0);
-        }
+        board.gameLoop(board, board.getCurrentPlayers().vectorPlayers[id]);
+
 
         ///////////////////////////////////////////////////////////////////
         Input input = gc.getInput();
