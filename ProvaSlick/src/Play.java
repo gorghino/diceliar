@@ -555,7 +555,7 @@ public class Play extends BasicGameState {
 
         if (iterI == id) {
             if (iterJ < 3) { //Fila sopra
-                if (gC.playDiceAnimation == true) {
+                if (gC.playDiceAnimation == true && !(gC.winGame || gC.loseGame )) {
                     if(gC.dicePlayer[0] == 1) 
                         animationDie1.draw(positionDice[iterI][0], Main.ySize - 187);
                     else 
@@ -621,7 +621,7 @@ public class Play extends BasicGameState {
         }
         if (iterI == id) {
             if (iterJ < 3) {
-                if (gC.playDiceAnimation == true) {
+                if (gC.playDiceAnimation == true && !(gC.winGame || gC.loseGame )) {
                     if(gC.dicePlayer[0] == 1) 
                         animationDie1.draw(1175, positionDice[iterI][0]);
                     else 
@@ -688,7 +688,7 @@ public class Play extends BasicGameState {
         }
         if (iterI == id) {
             if (iterJ < 3) {
-                if (gC.playDiceAnimation == true) {
+                if (gC.playDiceAnimation == true && !(gC.winGame || gC.loseGame )) {
                     
                     if(gC.dicePlayer[0] == 1) 
                         animationDie1.draw(positionDice[iterI][0], Main.ySize - 653);
