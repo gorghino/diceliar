@@ -1,0 +1,12 @@
+DUE GIOCATORI:
+
+2.1 a volte non elimina un dato
+2.2 Se un giocatore ha tutti i dadi e l'altro perde non compare you win, ma you lose e new game
+
+TRE GIOCATORI:
+
+3.1
+
+QUATTRO GIOCATORI:
+
+4.1
