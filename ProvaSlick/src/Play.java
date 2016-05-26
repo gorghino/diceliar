@@ -310,6 +310,7 @@ public class Play extends BasicGameState {
             System.out.println("INIT BOARD PLAY");
             restartInitBoard();
             time = 0;
+            delta = 0;
             forceRefresh = true;
         }   
         
@@ -319,8 +320,10 @@ public class Play extends BasicGameState {
         }      
 
         if (gC.playDiceAnimation || gC.errorAmountMinore || gC.errorRibasso || gC.winGame || gC.loseGame) {
-            if (gC.getTurn() == 1 || gC.errorAmountMinore || gC.errorRibasso || gC.winGame || gC.loseGame)
+            if (gC.getTurn() == 1 || gC.errorAmountMinore || gC.errorRibasso || gC.winGame || gC.loseGame){
+                System.out.println("Animazione: " + time);
                 time += delta;
+            }
             else{
                 System.out.println("Turno > 1");
                 time = 3500;
