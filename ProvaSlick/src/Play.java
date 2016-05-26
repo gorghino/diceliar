@@ -654,7 +654,7 @@ public class Play extends BasicGameState {
                 if(gC.dicePlayer[3] == 1) animationDie4.draw(1265, positionDice[iterI][1]);
                 else dice.get(0).draw(1265, positionDice[iterI][1]);
                 
-                if(gC.dicePlayer[4] == 1) animationDie5.draw(1265, positionDice[iterI][1]);
+                if(gC.dicePlayer[4] == 1) animationDie5.draw(1265, positionDice[iterI][1] - 136);
                 else dice.get(0).draw(1265, positionDice[iterI][1] - 136);
                 
             } else {
