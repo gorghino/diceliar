@@ -186,8 +186,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         System.out.println(DiceLiar.ANSI_CYAN + "TURNO PRECEDENTE PERSO DA " + board.loser + DiceLiar.ANSI_RESET); 
         
         if(!board.getCurrentPlayers().vectorPlayers[board.loser].playerOut){
-            if(board.loser == board.gC.idLastBet && board.loser != board.winner){
-                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + gC.idLastBet + DiceLiar.ANSI_RESET);
+            if(board.loser != board.gC.idLastBet && board.loser != board.winner){
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet in: " + gC.idLastBet + DiceLiar.ANSI_RESET);
                 rmiBoard.gC.totalDicePlayer[board.loser]--;
 
                 if (rmiBoard.gC.totalDicePlayer[board.loser] == 0) {
@@ -196,7 +196,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
                 }
             }
             else{
-                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet: " + board.gC.idLastBet + DiceLiar.ANSI_RESET);
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet else: " + board.gC.idLastBet + DiceLiar.ANSI_RESET);
                 System.out.println(DiceLiar.ANSI_RED + "Chi ha perso non è più online, non perde il dado" + DiceLiar.ANSI_RESET);
             }
         }
@@ -204,15 +204,18 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             rmiBoard.getCurrentPlayers().removePlayer(rmiBoard.getCurrentPlayers().getVectorPlayers()[board.loser], false, false);
         }
         
-        if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.winner == rmiBoard.myID){
+        if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.winner == board.myID){
             System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
             rmiBoard.gC.winGame = true;
             return;
         }
         else if(rmiBoard.getCurrentPlayers().getPlayersAlive() == 1 && rmiBoard.loser == rmiBoard.myID){
             rmiBoard.gC.loseGame = true;
+            
             rmiBoard.gC.restartBoard = false;
+            rmiBoard.gC.initBoard = false;
             rmiBoard.gC.playDiceAnimation = false;
+            System.out.println(DiceLiar.ANSI_RED + "HAI PERSO!" + DiceLiar.ANSI_RESET);
             return;
         }
         

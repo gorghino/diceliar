@@ -62,13 +62,13 @@ public class Players implements Serializable{
         
         vectorPlayers[playerToRemove.myID].playerOut = true;
         
-        if(this.getPlayersAlive() == 1 && currentBoard.winner == currentBoard.myID){
-            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
-            currentBoard.gC.winGame = true;
-        }
-        else if(this.getPlayersAlive() == 1 && currentBoard.loser == currentBoard.myID){
-            currentBoard.gC.loseGame = true;
-        }
+//        if(this.getPlayersAlive() == 1 && currentBoard.winner == currentBoard.myID){
+//            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTOOOOO!" + DiceLiar.ANSI_RESET);
+//            currentBoard.gC.winGame = true;
+//        }
+//        else if(this.getPlayersAlive() == 1 && currentBoard.loser == currentBoard.myID){
+//            currentBoard.gC.loseGame = true;
+//        }
         
         return next;
     }

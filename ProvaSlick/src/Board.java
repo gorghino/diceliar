@@ -193,6 +193,7 @@ public class Board implements Serializable{
                     System.out.println("ID: " + myID + " STATUS: RESET");
                     if (myID == this.getPlayingPlayer().myID && haveToken) { //Reset starter
                         if(roundToken == 2){
+                            System.out.println("Pota");
                             gC.restartBoard = true;
                             gC.playDiceAnimation = true;
                             gC.oneJollyEnabled = true;
@@ -246,6 +247,7 @@ public class Board implements Serializable{
                         
                         if(diceUpdated == currentPlayers.getPlayersAlive() && roundToken == 2){
                             status = PLAYING;
+                            System.out.println("Pota2");
                             gC.restartBoard = true;
                             gC.playDiceAnimation = true;
                             gC.oneJollyEnabled = true;
@@ -279,7 +281,7 @@ public class Board implements Serializable{
                         System.out.println("Non tocca a me. Mi blocco sul giocatore " + getPlayingPlayer().myID);
                         
                         this.getPlayingPlayer().rmiPointer.checkPlayerCrash(this);
-                        System.out.println("ID: " + myID + "MI SBLOCCO DENTRO BOARD");
+                        System.out.println("ID: " + myID + " MI SBLOCCO DENTRO BOARD");
                         
                         printCount = 0;
                         ready = false;
@@ -347,9 +349,7 @@ public class Board implements Serializable{
         
         currentBoard.diceUpdated = 1;
         status = Board.INIT_RESET;
-        
-        gC.restartBoard = true;
-        gC.playDiceAnimation = true;
+       
         
 //        if(myID == currentBoard.getPlayingPlayer().myID){
 //            currentBoard.setCurrentBet(null);

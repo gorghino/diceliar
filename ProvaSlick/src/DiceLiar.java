@@ -1,3 +1,4 @@
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
@@ -6,6 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Random;
 import org.newdawn.slick.SlickException;
 
 /**
@@ -137,10 +139,14 @@ public class DiceLiar{
      * @throws org.newdawn.slick.SlickException
      */
     public static void main(String[] args) throws AlreadyBoundException, NotBoundException, UnknownHostException, SlickException{  
-        if (args.length > 0){
-            LOCAL_PORT = Integer.parseInt(args[0]);
-        }
+//        if (args.length > 0){
+//            LOCAL_PORT = Integer.parseInt(args[0]);
+//        }
         
+        System.setProperty("org.lwjgl.librarypath", new File("lib/native").getAbsolutePath());
+        LOCAL_PORT = 49152 + new Random().nextInt(65535 - 49152);
+        System.out.println(LOCAL_PORT);
+
         //Main rungraphic = new Main(Main.gameName);
         //rungraphic.run();
         Main threadGR = new Main(Main.gameName);
