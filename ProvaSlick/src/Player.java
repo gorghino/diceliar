@@ -137,8 +137,8 @@ public class Player implements Serializable{
                         if(currentBoard.getCurrentBet() == null){
                             currentBoard.setCurrentBet(tempBet);
                             
-                            gC.diceValueSelected = tempBet.valueDie;
-                            gC.diceAmountSelected = tempBet.amountDice;
+                            //gC.diceValueSelected = tempBet.valueDie;
+                            //gC.diceAmountSelected = tempBet.amountDice;
                             gC.betClicked = false;
                             gC.makeBetClicked = true;
                             
@@ -179,8 +179,8 @@ public class Player implements Serializable{
         boolean checkValue = true;
         int valueDie = 0;
         
-        valueDie = gC.diceValueSelected;
-        int amountDice = gC.diceAmountSelected;
+        valueDie = gC.getDiceValueSelected();
+        int amountDice = gC.getDiceAmountSelected();
         
         if (valueDie == 1 && currentBoard.isOneJollyEnabled()) {
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
@@ -205,8 +205,8 @@ public class Player implements Serializable{
 
         Bet currentBet = currentBoard.getCurrentBet();
              
-        valueDie = gC.diceValueSelected;
-        amountDice = gC.diceAmountSelected;
+        valueDie = gC.getDiceValueSelected();
+        amountDice = gC.getDiceAmountSelected();
         
         if(amountDice < currentBet.getAmount()){
                 System.out.println("Non puoi rilanciare a ribasso");

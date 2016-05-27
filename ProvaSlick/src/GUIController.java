@@ -35,8 +35,8 @@ public class GUIController implements Serializable{
     
     boolean winGame = false, loseGame = false;
     
-    int diceValueSelected;
-    int diceAmountSelected;
+    private int diceValueSelected;
+    private int diceAmountSelected;
     
     boolean initBoard = true;
     boolean initGame = true;
@@ -117,20 +117,13 @@ public class GUIController implements Serializable{
     }
 
     public int getDiceAmountSelected() {
-        return diceAmountSelected;
-    }
-
-    public void setDiceAmountSelected(int diceAmountSelected) {
-        this.diceAmountSelected = diceAmountSelected;
+        return this.board.getCurrentBet().getAmount();
     }
 
     public int getDiceValueSelected() {
-        return diceValueSelected;
+        return this.board.getCurrentBet().getValueDie();
     }
 
-    public void setDiceValueSelected(int diceValueSelected) {
-        this.diceValueSelected = diceValueSelected;
-    }
 
     public boolean isDoubtClicked() {
         return doubtClicked;

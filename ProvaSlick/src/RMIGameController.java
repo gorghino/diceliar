@@ -48,8 +48,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.setnTurn(board.getnTurn());
         
         rmiBoard.setCurrentBet(board.getCurrentBet());
-        gC.diceAmountSelected = board.getCurrentBet().getAmount();
-        gC.diceValueSelected = board.getCurrentBet().getValueDie();
+        //gC.diceAmountSelected = board.getCurrentBet().getAmount();
+        //gC.diceValueSelected = board.getCurrentBet().getValueDie();
         
         gC.setBetOnTable(true);
         rmiBoard.setIdLastBet(board.getMyID());
@@ -88,8 +88,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.oneJollyEnabled = true;
         gC.setTurn(1);
         gC.setBetOnTable(false);
-        gC.diceAmountSelected = 0;
-        gC.diceValueSelected = 0;
+        //gC.diceAmountSelected = 0;
+        //gC.diceValueSelected = 0;
         gC.oneJollyEnabled = true;
         gC.countDiceCrashed = false;
         
@@ -97,7 +97,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.setStatus(Board.PLAYING);
         rmiBoard.printCount = 0;
         rmiBoard.printCount2 = 0;
-        rmiBoard.setCurrentBet(null);
+        rmiBoard.setCurrentBet(new Bet(0,0));
         rmiBoard.setOneJollyEnabled(true);
         
         rmiBoard.setWinner(board.getWinner()); 
@@ -184,8 +184,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         GUIController gC = rmiBoard.getgC();
         System.out.println("NOTIFYMOVE: Il giocatore " + board.getPlayingPlayer().myID + " ha rilanciato con " + board.getCurrentBet().amountDice + " dadi di valore " + board.getCurrentBet().valueDie);
         gC.betOnTable = true;
-        gC.diceAmountSelected = board.getCurrentBet().amountDice;
-        gC.diceValueSelected = board.getCurrentBet().valueDie;
+        //gC.diceAmountSelected = board.getCurrentBet().amountDice;
+        //gC.diceValueSelected = board.getCurrentBet().valueDie;
            
         rmiBoard.setCurrentBet(board.getCurrentBet());
         rmiBoard.setPlayingPlayer(board.getCurrentPlayers().vectorPlayers[board.getPlayingPlayer().IDNext]);

@@ -363,7 +363,7 @@ public class Play extends BasicGameState {
         }
         
         if(gC.updateBetValues){
-            drawValueBet = gC.diceAmountSelected;
+            drawValueBet = gC.getDiceAmountSelected();
             gC.updateBetValues = false;
         }
 
@@ -448,9 +448,9 @@ public class Play extends BasicGameState {
                     gC.setBetClicked(true);
                     lbDrawDieBet = drawDieBet;
                     lbDrawValueBet = drawValueBet;
-
-                    gC.setDiceValueSelected(drawDieBet);
-                    gC.setDiceAmountSelected(drawValueBet);
+                    
+                    //gC.setDiceValueSelected(drawDieBet);
+                    //gC.setDiceAmountSelected(drawValueBet);
 
                 }
             }
