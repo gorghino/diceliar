@@ -1,20 +1,9 @@
-
 import java.io.Serializable;
 
 
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author gorgo
- */
 public class Bet implements Serializable{
-    int amountDice; //Numero dei dadi
-    int valueDie; //Valore dei dadi
+    private int amountDice; //Numero dei dadi
+    private int valueDie; //Valore dei dadi
 
     public Bet(int _amount, int _valueDie) {
         if (_valueDie >= 1 && _valueDie <= 6) {

@@ -1,59 +1,35 @@
-
 import java.io.Serializable;
 import java.util.Arrays;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author gorgo
- */
 public class GUIController implements Serializable{
     Board board;
    
     private int nPlayers; // Numero giocatori attivi
-   
-       
+    private int diceValueSelected = 0;
+    private int diceAmountSelected = 0;
+    public int[] totalDicePlayer;
+    public int[] dicePlayer;
+    private boolean errorRibasso = false;
+    private boolean errorAmountMinore = false;
     
     // Check button Clicked
-    boolean PlayConnectedClicked = false;
-    boolean makeBetClicked = false;
-    boolean doubtClicked = false;
-    
-    boolean betClicked = false;
-    boolean leaveClicked = false;
-    
-    boolean betOnTable = false;
-    boolean makeChoice = false;
-    
-    boolean isBetMax = false;
-    
-    boolean playDiceAnimation = false;
-    
-    boolean winGame = false, loseGame = false;
-    
-    private int diceValueSelected;
-    private int diceAmountSelected;
-    
-    boolean initBoard = true;
-    boolean initGame = true;
-    
-    boolean restartBoard = false;
-    
-    boolean countDiceCrashed = false;
-    boolean updateBetValues = false;
-    boolean showDice = false;
-    
-    int[] totalDicePlayer;
-    int[] dicePlayer;
-    
-    boolean oneJollyEnabled = true;
-    boolean errorRibasso = false;
-    boolean errorAmountMinore = false;
-    
+    public boolean PlayConnectedClicked = false;
+    public boolean makeBetClicked = false;
+    public boolean doubtClicked = false; 
+    public boolean betClicked = false;
+    public boolean leaveClicked = false;  
+    public boolean betOnTable = false;
+    public boolean makeChoice = false;   
+    public boolean isBetMax = false; 
+    public boolean playDiceAnimation = false;
+    private boolean winGame = false, loseGame = false; 
+    private boolean initBoard = true;
+    private boolean initGame = true;  
+    private boolean restartBoard = false;  
+    private boolean countDiceCrashed = false;
+    private boolean updateBetValues = false;
+    private boolean showDice = false;
+
     public GUIController() {
         totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
         dicePlayer = new int[]{1,1,1,1,1};
@@ -76,7 +52,7 @@ public class GUIController implements Serializable{
         System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
         System.out.println("TotalDice: " + sumOf(totalDicePlayer));
         System.out.println("Playing Player: " + getPlayingPlayer());
-        System.out.println("Dadi : " + Arrays.toString(board.getCurrentPlayers().vectorPlayers[getId()].getmyDiceValue()));
+        System.out.println("Dadi : " + Arrays.toString(board.getCurrentPlayers().getVectorPlayers()[getId()].getmyDiceValue()));
         System.out.println("Dice check:" + Arrays.toString(dicePlayer));
         System.out.println("--------------------------------");
     }
@@ -87,13 +63,8 @@ public class GUIController implements Serializable{
         return total;
     } 
 
-//    public void setPlayingPlayer(int _playingPlayer) {
-//        System.out.println("Aggiorno PP da " + this.playingPlayer + " a " + _playingPlayer);
-//        this.board.playingPlayer = this.board.geplayingPlayer;
-//    }
-    
     public int getPlayingPlayer(){
-        return this.board.getPlayingPlayer().myID;
+        return this.board.getPlayingPlayer().getMyID();
     }
     
     public int getIdLastBet(){
@@ -117,13 +88,20 @@ public class GUIController implements Serializable{
     }
 
     public int getDiceAmountSelected() {
-        return this.board.getCurrentBet().getAmount();
+        return diceAmountSelected;
+    }
+
+    public void setDiceAmountSelected(int diceAmountSelected) {
+        this.diceAmountSelected = diceAmountSelected;
     }
 
     public int getDiceValueSelected() {
-        return this.board.getCurrentBet().getValueDie();
+        return diceValueSelected;
     }
 
+    public void setDiceValueSelected(int diceValueSelected) {
+        this.diceValueSelected = diceValueSelected;
+    }
 
     public boolean isDoubtClicked() {
         return doubtClicked;
@@ -290,11 +268,7 @@ public class GUIController implements Serializable{
     }
 
     public boolean isOneJollyEnabled() {
-        return oneJollyEnabled;
-    }
-
-    public void setOneJollyEnabled(boolean oneJollyEnabled) {
-        this.oneJollyEnabled = oneJollyEnabled;
+        return this.board.isOneJollyEnabled();
     }
 
     public boolean isErrorRibasso() {
@@ -311,10 +285,5 @@ public class GUIController implements Serializable{
 
     public void setErrorAmountMinore(boolean errorAmountMinore) {
         this.errorAmountMinore = errorAmountMinore;
-    }
-
-    
-    
-    
-    
+    }  
 }

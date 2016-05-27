@@ -43,11 +43,11 @@ public class DiceLiar{
         Players currentPlayers = startBoard.getCurrentPlayers();
         currentPlayers.setCurrentBoard(startBoard);
         rgc.rmiBoard = startBoard;
-        currentPlayers.vectorPlayers[rgc.myID].setMyDice(new Dice(currentPlayers.startAmountDice));
+        currentPlayers.getVectorPlayers()[rgc.myID].setMyDice(new Dice(currentPlayers.getStartAmountDice()));
         
         //CONNESSIONE CON IL GIOCATORE SUCCESSIVO ---------------------------------------------------------------------------------
         int IDPlayerRequest = (rgc.myID+1)%rmiPlayerArray.size();
-        Registry regNext = LocateRegistry.getRegistry(currentPlayers.vectorPlayers[IDPlayerRequest].myIP, currentPlayers.vectorPlayers[IDPlayerRequest].myPort);
+        Registry regNext = LocateRegistry.getRegistry(currentPlayers.getVectorPlayers()[IDPlayerRequest].getMyIP(), currentPlayers.getVectorPlayers()[IDPlayerRequest].getMyPort());
         rmiNext = (RMI) regNext.lookup("player");
         
         return startBoard;
@@ -68,7 +68,7 @@ public class DiceLiar{
         RMI rmi = (RMI) reg.lookup("lobby");
         
         System.out.println(ANSI_GREEN + "Lobby CONNESSA ... Mancano " + rmi.getTimer() + " secondi al VIA\n" + ANSI_RESET); 
-        rmiTimer = rmi.getTimer(); //prendo questo valore per il timer della connect
+        rmiTimer = rmi.getTimer();
         rmiPlayerArray = rmi.addClient(InetAddress.getLocalHost().getHostAddress(), LOCAL_PORT);
 
         for (int i = 0; i < rmiPlayerArray.size(); i++) {
@@ -83,8 +83,7 @@ public class DiceLiar{
     public int getRmiTimer() {
         return rmiTimer;
     }
-    
-    
+     
     /**
      * @param args the command line arguments
      * @throws java.rmi.AlreadyBoundException
@@ -94,11 +93,7 @@ public class DiceLiar{
      */
     public static void main(String[] args) throws AlreadyBoundException, NotBoundException, UnknownHostException, SlickException{
         LOCAL_PORT = 49152 + new Random().nextInt(65535 - 49152);
-
-
         Main threadGR = new Main(Main.gameName);
-        new Thread(threadGR).start();
-        
-    }
-    
+        new Thread(threadGR).start();   
+    }   
 }

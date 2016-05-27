@@ -1,27 +1,12 @@
-
 import java.io.Serializable;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
-/**
- *
- * @author proietfb
- */
 public class Dice implements Serializable{
-    int nDice; //Numero di dadi validi
-    Die[] vectorDice;
+    private int nDice; //Numero di dadi validi
+    private Die[] vectorDice;
    
 
     public Dice(int _nDice){
-        //costruttore
         nDice = _nDice;
-        
-
         vectorDice = new Die[_nDice];
         for (int i = 0; i < _nDice; i += 1) {
             vectorDice[i] = new Die();
@@ -36,8 +21,7 @@ public class Dice implements Serializable{
     
     public void deleteDice() {
         for (int i = 0; i < nDice; i += 1) {
-            vectorDice[i].value = 0;
-            
+            vectorDice[i].value = 0;    
         }
     }
 
@@ -45,8 +29,7 @@ public class Dice implements Serializable{
         int arrayLength = vectorDice.length-1;
         for (int i = arrayLength; i >= 0; i -= 1) {
             if(vectorDice[i].getValue() != 0){
-                vectorDice[i].setValue(0);
-                
+                vectorDice[i].setValue(0); 
                 nDice--;
                 break;
             }
@@ -55,19 +38,16 @@ public class Dice implements Serializable{
 
     public int[] getDiceValues(){
         int[] diceValue = new int[nDice];
-        for(int i=0; i< nDice; i+=1){
+        for(int i=0; i< nDice; i+=1)
             diceValue[i] = vectorDice[i].getValue();      
-        }
         return diceValue;
     }
 
     public int[] getDiceValuesGrouped(Board currentBoard){
          int[] diceValue = new int[6];
          for(int i=0; i<nDice; i+=1){
-             if(vectorDice[i].getValue() != 0)
-                diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
-             else
-                diceValue[i] = 0;
+             if(vectorDice[i].getValue() != 0) diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
+             else diceValue[i] = 0;
          }
          if(currentBoard.isOneJollyEnabled()){
             for(int i=1; i<diceValue.length; i+=1)
@@ -93,6 +73,4 @@ public class Dice implements Serializable{
     public void setVectorDice(Die[] _vectorDice) {
         this.vectorDice = _vectorDice;
     }
-    
-
 }

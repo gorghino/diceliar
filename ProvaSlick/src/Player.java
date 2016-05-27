@@ -1,11 +1,3 @@
-
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -13,29 +5,22 @@ import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author proietfb
- */
+
 public class Player implements Serializable{
-    String name;
-    int myID;
-    String myIP;
-    int myPort;
-    
-    RMI rmiPointer;
-    
-    RMI rmiNextPlayer;
-    
-    boolean playerOut = false;
-    
-    int IDPrev;
-    int IDNext; 
-    
-    boolean myTurn;
-    Bet myBet;
-    Players allPlayers;
-    Dice myDice;
+    private int myID;
+    private String myIP;
+    private int myPort;
+
+    public RMI rmiPointer; 
+    public RMI rmiNextPlayer;
+    public int IDPrev;
+    public int IDNext; 
+
+    private boolean myTurn;
+    private boolean playerOut = false;
+    private Bet myBet;
+    private Players allPlayers;
+    private Dice myDice;
 
     public Player(Players _allPlayers, int _myID, String _myIP, int _myPort, int startAmountDice) throws NotBoundException{
         System.out.println("Creo player con ID " + _myID + ", IP: " + _myIP + ":" + _myPort);
@@ -45,9 +30,8 @@ public class Player implements Serializable{
         allPlayers = _allPlayers;
         myTurn = false;
         
-        IDNext = ((((myID + 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
-        IDPrev = ((((myID - 1) % allPlayers.vectorPlayers.length) + allPlayers.vectorPlayers.length) % allPlayers.vectorPlayers.length);
-       
+        IDNext = ((((myID + 1) % allPlayers.getVectorPlayers().length) + allPlayers.getVectorPlayers().length) % allPlayers.getVectorPlayers().length);
+        IDPrev = ((((myID - 1) % allPlayers.getVectorPlayers().length) + allPlayers.getVectorPlayers().length) % allPlayers.getVectorPlayers().length);
 
         try {
             myDice = new Dice(startAmountDice);
@@ -64,13 +48,12 @@ public class Player implements Serializable{
                 Bet betOnTable = currentBoard.getCurrentBet();        
                 if(betOnTable != null){
                     
-                    if (betOnTable.valueDie == 6 && betOnTable.amountDice == GUIController.sumOf(gC.totalDicePlayer)) {
+                    if(betOnTable.getValueDie() == 6 && betOnTable.getAmount() == GUIController.sumOf(gC.totalDicePlayer)) 
                         gC.isBetMax = true;
-                    }
                     
                     gC.makeChoice = true;
-                    if(gC.doubtClicked){ // HO CLICCATO DUBITO
-                        
+                    
+                    if(gC.doubtClicked){ // HO CLICCATO DUBITO 
                         gC.makeChoice = false;
                         gC.doubtClicked = false;
                         
@@ -82,40 +65,28 @@ public class Player implements Serializable{
                             currentBoard.setLoser(IDPrev);
                             
                             currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.getLoser()].getMyDiceObject().removeDie();
-                            //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
-
-                            //myBet = makeBet(currentBoard);
-
-                            currentBoard.setDiceUpdated(1);
                             currentBoard.setOneJollyEnabled(true); 
-                            
                             currentBoard.setIdLastBet(myID);
-                            
                             currentBoard.newTurn(currentBoard, this.getMyID(), null); 
                             return true;
                         }
                         else{
-                            System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + this.IDNext);
+                            //System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + this.IDNext);
                             //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
                             
                             currentBoard.setLoser(myID);
                             currentBoard.setWinner(IDNext);
                             
                             currentBoard.setIdLastBet(myID);
-                            
                             currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.getLoser()].getMyDiceObject().removeDie();
-                            //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
-                            //myDice.removeDie();
-                            //gC.totalDicePlayer[myID]--;
-                            
-                            if(myDice.nDice == 0){
+                            if(myDice.getnDice() == 0){
                                 currentBoard.getCurrentPlayers().removePlayer(this, false, false);
-                                gC.loseGame = true;
-                                gC.restartBoard = false;
-                                System.out.println("Ho perso :(");
+                                gC.setLoseGame(true);
+                                gC.setRestartBoard(false);
+                                //System.out.println("Ho perso :(");
                             }
-
+                            
                             currentBoard.newTurn(currentBoard, this.IDNext, null);
                             return true;
                         }
@@ -124,73 +95,55 @@ public class Player implements Serializable{
                         
                         gC.makeChoice = false;
                         
-                        if(gC.betClicked == false){
-                            return false;
-                        }   
+                        if(gC.betClicked == false) return false; 
       
                         gC.makeBetClicked = false;
                         
                         Bet tempBet = currentBoard.getCurrentBet();
-                        
                         currentBoard.setCurrentBet(makeBetConditional(currentBoard));
                         
                         if(currentBoard.getCurrentBet() == null){
                             currentBoard.setCurrentBet(tempBet);
-                            
-                            //gC.diceValueSelected = tempBet.valueDie;
-                            //gC.diceAmountSelected = tempBet.amountDice;
                             gC.betClicked = false;
-                            gC.makeBetClicked = true;
-                            
+                            gC.makeBetClicked = true;                           
                             return false;
                         }
                         
-                        //System.out.println("Scommesso!");
-                        
                         currentBoard.setnTurn(currentBoard.getnTurn() + 1);
                         gC.setTurn(currentBoard.getnTurn());
-                        
                         currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                         return true;
                     }
                 }
                 else{ //Sono il primo giocatore a iniziare il giro
-                    //System.out.println("NON CI SONO SCOMMESSE SUL TAVOLO");
                     
-                    if(gC.betClicked == false)
-                        return false;
+                    if(gC.betClicked == false) return false;
                     
                     myBet = makeBet(currentBoard);
                     gC.setBetOnTable(true);
                     currentBoard.setCurrentBet(myBet);
                     currentBoard.setnTurn(currentBoard.getnTurn() + 1);
-                    gC.setTurn(currentBoard.getnTurn());
-                        
+                    gC.setTurn(currentBoard.getnTurn());                      
                     currentBoard.broadcastRMI(currentBoard, "NOTIFY_MOVE");
                     return true;
                 }      
         }
-        
         return false;
     }
 
     public Bet makeBet(Board currentBoard){
         GUIController gC = currentBoard.getgC();
-        boolean checkValue = true;
         int valueDie = 0;
         
         valueDie = gC.getDiceValueSelected();
         int amountDice = gC.getDiceAmountSelected();
         
         if (valueDie == 1 && currentBoard.isOneJollyEnabled()) {
-                //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-                System.out.println("Il valore 1 non vale più come JOLLY");
-                currentBoard.setOneJollyEnabled(false);
-                currentBoard.gC.oneJollyEnabled = false;
-                currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
+            //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
+            currentBoard.setOneJollyEnabled(false);
+            currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         
-        System.out.println("Scommetto " + amountDice + " dadi di valore " + valueDie);
         currentBoard.setIdLastBet(myID);
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
@@ -203,15 +156,13 @@ public class Player implements Serializable{
         int valueDie = 0;
         boolean checkBet = true;
 
-        Bet currentBet = currentBoard.getCurrentBet();
-             
+        Bet currentBet = currentBoard.getCurrentBet();    
         valueDie = gC.getDiceValueSelected();
         amountDice = gC.getDiceAmountSelected();
         
         if(amountDice < currentBet.getAmount()){
-                System.out.println("Non puoi rilanciare a ribasso");
-                gC.errorRibasso = true;
-                return null;
+            gC.setErrorRibasso(true);
+            return null;
         }
         else if(amountDice == currentBet.getAmount()){
             if(valueDie > currentBet.getValueDie() && valueDie <= 6){
@@ -219,99 +170,86 @@ public class Player implements Serializable{
                 checkBet = false;
             }
             else{
-                System.out.println("Non puoi rilanciare uguale o minore");
-                gC.errorAmountMinore = true;
+                gC.setErrorAmountMinore(true);
                 return null;
             }
         }
         else if(amountDice > currentBet.getAmount() && valueDie <= 6){
-               System.out.println("OK");
                checkBet = false;
         }
 
         if(!checkBet && valueDie == 1 && currentBoard.isOneJollyEnabled()) {
             //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
-            System.out.println("Il valore 1 non vale più come JOLLY");
             currentBoard.setOneJollyEnabled(false);
-            currentBoard.gC.oneJollyEnabled = false;
             currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         
         currentBoard.setIdLastBet(myID);
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
-
     }
 
     public boolean doubt(Board currentBoard){
-        System.out.println("Dubito! Non e' vero che sul tavolo ci sono almeno " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
+        //System.out.println("Dubito! Non e' vero che sul tavolo ci sono almeno " + currentBoard.getCurrentBet().getAmount() + " dadi con valore " + currentBoard.getCurrentBet().getValueDie());
         boolean result = currentBoard.checkBet();
         if(result){ //Hai dubitato giusto
-            System.out.println("Hai dubitato giusto");
+            //System.out.println("Hai dubitato giusto");
             currentBoard.setOkDoubt(true);
             return true;
         }
         else{
-            System.out.println("Non avevi ragione!");
+            //System.out.println("Non avevi ragione!");
             currentBoard.setOkDoubt(false);
             return false;
         }
     }
-    
-        
+         
     public int findNextPlayer(){
-            int i = myID;
-            
+            int i = myID;          
             int countOthers = 1;
-            
-            int nextCandidate = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+            int nextCandidate = getAllPlayers().getVectorPlayers()[(i+countOthers)%getAllPlayers().getVectorPlayers().length].myID;
             
             while(true){
                 try {
-                    if(getAllPlayers().vectorPlayers[nextCandidate].rmiPointer.heartbeat()){   
-                        //getAllPlayers().vectorPlayers[i].IDNext = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+                    if(getAllPlayers().getVectorPlayers()[nextCandidate].rmiPointer.heartbeat()){   
                         System.out.println(DiceLiar.ANSI_GREEN + "NEXT di " + i + ": TROVATO! Il player " + nextCandidate + " è raggiungibile" + DiceLiar.ANSI_RESET);
-                        return getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
+                        return getAllPlayers().getVectorPlayers()[(i+countOthers)%getAllPlayers().getVectorPlayers().length].myID;
                     }
                 } catch (RemoteException ex) {
                     System.out.println(DiceLiar.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Il player " + nextCandidate + " non è più raggiungibile" + DiceLiar.ANSI_RESET);
-                    getAllPlayers().removePlayer(getAllPlayers().vectorPlayers[nextCandidate], false, false);
+                    getAllPlayers().removePlayer(getAllPlayers().getVectorPlayers()[nextCandidate], false, false);
                     countOthers++;
-                    if(countOthers == getAllPlayers().vectorPlayers.length){
+                    if(countOthers == getAllPlayers().getVectorPlayers().length){
                         System.out.println(DiceLiar.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + DiceLiar.ANSI_RESET);
                         return -1;
                     }
-                    System.out.println(DiceLiar.ANSI_CYAN + "NEXT di " + i + ": Chiedo al player " + (i+countOthers)%getAllPlayers().vectorPlayers.length + " se è vivo" + DiceLiar.ANSI_RESET);
-                    nextCandidate = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
-                }
-                
+                    System.out.println(DiceLiar.ANSI_CYAN + "NEXT di " + i + ": Chiedo al player " + (i+countOthers)%getAllPlayers().getVectorPlayers().length + " se è vivo" + DiceLiar.ANSI_RESET);
+                    nextCandidate = getAllPlayers().getVectorPlayers()[(i+countOthers)%getAllPlayers().getVectorPlayers().length].myID;
+                }        
             }  
     }
     
     public int findPrevPlayer() {
         int i = myID;
-
         int countOthers = 1;
-        int prevCandidate = getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
+        int prevCandidate = getAllPlayers().getVectorPlayers()[(((i-countOthers)%getAllPlayers().getVectorPlayers().length) + getAllPlayers().getVectorPlayers().length)%getAllPlayers().getVectorPlayers().length].myID;
 
         while (true) {
             try {
-                if (getAllPlayers().vectorPlayers[prevCandidate].rmiPointer.heartbeat()) {
-                    //getAllPlayers().vectorPlayers[i].IDPrev = getAllPlayers().vectorPlayers[(i - countOthers) % getAllPlayers().vectorPlayers.length].myID;
+                if (getAllPlayers().getVectorPlayers()[prevCandidate].rmiPointer.heartbeat()) {
                     System.out.println(DiceLiar.ANSI_GREEN + "PREV di " + i + ": TROVATO! Il player " + prevCandidate + " è raggiungibile" + DiceLiar.ANSI_RESET);
-                    return getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
-
+                    return getAllPlayers().getVectorPlayers()[(((i-countOthers)%getAllPlayers().getVectorPlayers().length) + getAllPlayers().getVectorPlayers().length)%getAllPlayers().getVectorPlayers().length].myID;
                 }
             } catch (RemoteException ex) {
                 System.out.println(DiceLiar.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Il player " + prevCandidate + " non è più raggiungibile" + DiceLiar.ANSI_RESET);
                 countOthers++;
-                getAllPlayers().removePlayer(getAllPlayers().vectorPlayers[prevCandidate], false, false);
-                if (countOthers == getAllPlayers().vectorPlayers.length) {
+                getAllPlayers().removePlayer(getAllPlayers().getVectorPlayers()[prevCandidate], false, false);
+                if (countOthers == getAllPlayers().getVectorPlayers().length) {
                     System.out.println(DiceLiar.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + DiceLiar.ANSI_RESET);
                     return -1;
                 }
-                System.out.println(DiceLiar.ANSI_CYAN + "PREV di " + i + ": Chiedo al player " + (((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length + " se è vivo" + DiceLiar.ANSI_RESET);
-                prevCandidate = getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
+                System.out.println(DiceLiar.ANSI_CYAN + "PREV di " + i + ": Chiedo al player " + (((i-countOthers)%getAllPlayers().getVectorPlayers().length) + getAllPlayers().getVectorPlayers().length)%getAllPlayers().getVectorPlayers().length + " se è vivo" + DiceLiar.ANSI_RESET);
+                prevCandidate = getAllPlayers().getVectorPlayers()[(((i-countOthers)%getAllPlayers().getVectorPlayers().length) + getAllPlayers().getVectorPlayers().length)%getAllPlayers().getVectorPlayers().length].myID;
             }
         }
     }
@@ -350,14 +288,6 @@ public class Player implements Serializable{
 
     public void setMyBet(Bet _myBet) {
         this.myBet = _myBet;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Players getAllPlayers() {
@@ -405,4 +335,19 @@ public class Player implements Serializable{
         this.rmiPointer = rmiPointer;
     }
 
+    public boolean isPlayerOut() {
+        return playerOut;
+    }
+
+    public void setPlayerOut(boolean playerOut) {
+        this.playerOut = playerOut;
+    }
+
+    public boolean isMyTurn() {
+        return myTurn;
+    }
+
+    public void setMyTurn(boolean myTurn) {
+        this.myTurn = myTurn;
+    }
 }

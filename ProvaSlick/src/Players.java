@@ -1,27 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-/**
- *
- * @author proietfb
- */
+
 public class Players implements Serializable{
 
-    Player[] vectorPlayers;
-    Board currentBoard;
-    int startAmountDice;
+    private Player[] vectorPlayers;
+    private Board currentBoard;
+    private int startAmountDice;
 
     public Players(int _nPlayers, ArrayList<PlayerEntry> _rmiPlayerArray) throws NotBoundException{
-        //costruttore
-        
         vectorPlayers = new Player[_nPlayers];
         startAmountDice = 5;
         
@@ -47,30 +35,18 @@ public class Players implements Serializable{
             next = playerToRemove.findNextPlayer();
             vectorPlayers[prev].IDNext = next; //Faccio puntare al precedente, il registro RMI del successivo
             vectorPlayers[next].IDPrev = prev;
-            
             vectorPlayers[prev].rmiNextPlayer = vectorPlayers[next].rmiPointer;
-            
-            vectorPlayers[playerToRemove.myID].playerOut = true;
+            vectorPlayers[playerToRemove.getMyID()].setPlayerOut(true);
             
             if(!broadcasted)
                 currentBoard.broadcastRMI(currentBoard, "SIGNAL_CRASH");
             
-            System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + " invia a " + next + DiceLiar.ANSI_RESET);
-        }
-        
-        System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);
-        
-        vectorPlayers[playerToRemove.myID].playerOut = true;
-        currentBoard.gC.countDiceCrashed = true;
-        
-//        if(this.getPlayersAlive() == 1 && currentBoard.winner == currentBoard.myID){
-//            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTOOOOO!" + DiceLiar.ANSI_RESET);
-//            currentBoard.gC.winGame = true;
-//        }
-//        else if(this.getPlayersAlive() == 1 && currentBoard.loser == currentBoard.myID){
-//            currentBoard.gC.loseGame = true;
-//        }
-        
+            //System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + " invia a " + next + DiceLiar.ANSI_RESET);
+        } 
+        //System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);
+        vectorPlayers[playerToRemove.getMyID()].setPlayerOut(true);
+        currentBoard.gC.setCountDiceCrashed(true);
+         
         return next;
     }
     
@@ -80,9 +56,7 @@ public class Players implements Serializable{
         for (int i = 0; i < vectorPlayers.length; i += 1) {
             Player player = vectorPlayers[i];
             
-            if(player.playerOut && !gC.countDiceCrashed)
-                continue;
-            
+            if(player.isPlayerOut() && !gC.isCountDiceCrashed())  continue;  
             
             for(int j=0; j<6; j += 1){
                 //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped(currentBoard)[j] + " dadi di valore " + (j+1));
@@ -109,15 +83,13 @@ public class Players implements Serializable{
         int[] idArray = new int[vectorPlayers.length];
         for (int i=0;i<vectorPlayers.length;i++)
             idArray[i] = vectorPlayers[i].getMyID();
-
         return idArray;
     }
 
     public void resetAllDice(int myID){
         for(Player vectorPlayer : vectorPlayers) {
-            if(vectorPlayer.playerOut)
+            if(vectorPlayer.isPlayerOut())
                 continue;
-           
             vectorPlayer.resetDice();
         }
     }
@@ -136,13 +108,17 @@ public class Players implements Serializable{
     
     public int getPlayersAlive(){
         int j=0;
-        
         for (Player vectorPlayer : vectorPlayers)
-            if (!vectorPlayer.playerOut)
+            if (!vectorPlayer.isPlayerOut())
                 j++;
-        
         return j;
-    
     }
 
+    public int getStartAmountDice() {
+        return startAmountDice;
+    }
+
+    public void setStartAmountDice(int startAmountDice) {
+        this.startAmountDice = startAmountDice;
+    }
 }

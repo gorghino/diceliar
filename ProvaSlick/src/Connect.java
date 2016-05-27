@@ -158,7 +158,6 @@ public class Connect extends BasicGameState {
     public void runPlay(StateBasedGame sbg,GameContainer gc) throws SlickException{
         Play playState = (Play)sbg.getState(Main.play);
         playState.setBoard(startBoard);
-        System.out.println("Cambio schermata\n");
         sbg.enterState(2,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));
     }
 }
