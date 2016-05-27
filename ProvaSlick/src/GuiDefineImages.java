@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.util.ResourceLoader;
 
 /**
  *
@@ -18,6 +19,7 @@ public class GuiDefineImages {
     public GuiDefineImages() {}
 
     public void importImages() throws SlickException {
+        ResourceLoader rL = new ResourceLoader();
         background = new Image("img/bgDiceLiar.png");
         guiBoard = new Image("img/board.png");
         menuTitle = new Image("img/diceTitle.png");

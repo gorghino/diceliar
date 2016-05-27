@@ -61,6 +61,7 @@ public class Players implements Serializable{
         System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);
         
         vectorPlayers[playerToRemove.myID].playerOut = true;
+        currentBoard.gC.countDiceCrashed = true;
         
 //        if(this.getPlayersAlive() == 1 && currentBoard.winner == currentBoard.myID){
 //            System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTOOOOO!" + DiceLiar.ANSI_RESET);
@@ -74,12 +75,14 @@ public class Players implements Serializable{
     }
     
     public int[] getAllDice(boolean printValues){
+        GUIController gC = currentBoard.gC;
         int[] allDiceVector = new int[6];
         for (int i = 0; i < vectorPlayers.length; i += 1) {
             Player player = vectorPlayers[i];
             
-            if(player.playerOut)
+            if(player.playerOut && !gC.countDiceCrashed)
                 continue;
+            
             
             for(int j=0; j<6; j += 1){
                 //System.out.println("Il giocatore " + i + " ha " + player.getmyDiceValueGrouped(currentBoard)[j] + " dadi di valore " + (j+1));

@@ -13,8 +13,7 @@ import java.util.Arrays;
  */
 public class GUIController implements Serializable{
     Board board;
-    
-    boolean initBoardBool; //Primo Update della Board Play
+ 
     
     int turn; // Numero turn
     int id; //ID current Player
@@ -51,6 +50,10 @@ public class GUIController implements Serializable{
     boolean initBoard = true;
     boolean restartBoard = false;
     
+    boolean countDiceCrashed = false;
+    boolean updateBetValues = false;
+    boolean showDice = false;
+    
     int[] totalDicePlayer;
     int[] dicePlayer;
     
@@ -68,7 +71,6 @@ public class GUIController implements Serializable{
     public void printValues() {
         System.out.println("--------------------------------");
         System.out.println("id: " + id);
-        System.out.println("initBoardBool: " + initBoardBool);
         System.out.println("turn: " + turn);
         System.out.println("nPlayers: " + nPlayers);
         System.out.println("PlayConnectedClicked: " + PlayConnectedClicked);
@@ -144,14 +146,6 @@ public class GUIController implements Serializable{
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public boolean isInitBoardBool() {
-        return initBoardBool;
-    }
-
-    public void setInitBoardBool(boolean initBoardBool) {
-        this.initBoardBool = initBoardBool;
     }
 
     public int getInitDicePlayer() {

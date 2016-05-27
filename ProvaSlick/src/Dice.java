@@ -1,6 +1,5 @@
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -35,7 +34,7 @@ public class Dice implements Serializable{
         }
     }
     
-    public void deleteDice() { //Mai usata?
+    public void deleteDice() {
         for (int i = 0; i < nDice; i += 1) {
             vectorDice[i].value = 0;
             
@@ -65,7 +64,10 @@ public class Dice implements Serializable{
     public int[] getDiceValuesGrouped(Board currentBoard){
          int[] diceValue = new int[6];
          for(int i=0; i<nDice; i+=1){
-             diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
+             if(vectorDice[i].getValue() != 0)
+                diceValue[vectorDice[i].getValue()-1] = diceValue[vectorDice[i].getValue()-1] + 1;
+             else
+                diceValue[i] = 0;
          }
          if(currentBoard.oneJollyEnabled){
             for(int i=1; i<diceValue.length; i+=1)

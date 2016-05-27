@@ -65,7 +65,6 @@ public class Player implements Serializable{
                 if(betOnTable != null){
                     
                     if (betOnTable.valueDie == 6 && betOnTable.amountDice == GUIController.sumOf(gC.totalDicePlayer)) {
-                        //System.out.println("MASSIMO!!");
                         gC.isBetMax = true;
                     }
                     
@@ -253,7 +252,6 @@ public class Player implements Serializable{
             return true;
         }
         else{
-            //System.out.println("OH NO, Ho perso un dado!");
             System.out.println("Non avevi ragione!");
             currentBoard.okDoubt = false;
             return false;

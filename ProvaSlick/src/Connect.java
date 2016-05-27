@@ -102,6 +102,7 @@ public class Connect extends BasicGameState {
         if (input.isMouseButtonDown(0)){
             getX = Mouse.getX();
             getY = Mouse.getY();
+            System.out.println("CLICCATO SU " + getX + " " + getY);
 
         }
         if (clickedPlay == false){
