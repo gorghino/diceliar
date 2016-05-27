@@ -55,7 +55,7 @@ public class Players implements Serializable{
             if(!broadcasted)
                 currentBoard.broadcastRMI(currentBoard, "SIGNAL_CRASH");
             
-            System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + " invia a " + next + Board.ANSI_RESET);
+            System.out.println(DiceLiar.ANSI_GREEN + "Ora il player " + prev + " invia a " + next + DiceLiar.ANSI_RESET);
         }
         
         System.out.println(DiceLiar.ANSI_RED + "Il giocatore " + playerToRemove.myID + " non gioca più." + DiceLiar.ANSI_RESET);

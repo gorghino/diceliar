@@ -131,6 +131,7 @@ public class Connect extends BasicGameState {
                             
                         System.out.println("INITBOARD\n");
                         startBoard = dl.initBoard(gC);
+                        gC.setBoard(startBoard);
                         startBoard.initGame(startBoard, dl.rmiNext);
                         runPlay(sbg, gc);
                         

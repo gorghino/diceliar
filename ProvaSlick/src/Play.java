@@ -178,7 +178,7 @@ public class Play extends BasicGameState {
         dimXHor = 240;
         dimYVer = 377;
 
-        for (int i = 0; i < getBoard().getnPlayers(); i++) {
+        for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
                     drawPlayerOneTwo(i, j, gC.showDice);
@@ -199,7 +199,7 @@ public class Play extends BasicGameState {
         //PANEL DX
         fontTurn.drawString(850, Main.ySize - 471, "Panel Bet", Color.black);
 
-        if (gC.makeChoice && gC.getTurn() > 1 && id == getBoard().getPlayingPlayer().myID) {
+        if (gC.makeChoice && gC.getTurn() > 1 && id == gC.getBoard().getPlayingPlayer().myID) {
             //button MakeBet
             if (!gC.isBetMax) {
                 gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
@@ -207,7 +207,7 @@ public class Play extends BasicGameState {
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 885, Main.ySize - 285, "Doubt", Color.white);
 
-        } else if (id == getBoard().getPlayingPlayer().myID) {
+        } else if (id == gC.getBoard().getPlayingPlayer().myID) {
 
             //button Bet
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 902, Main.ySize - 285, "Bet", Color.white);
@@ -245,12 +245,12 @@ public class Play extends BasicGameState {
         
         //Playing Player stat
         fontTurn.drawString(275, Main.ySize-305, "Current playing player's state:", Color.black);
-        fontTurn.drawString(307, Main.ySize-272, "Player "+gC.playingPlayer, Color.black);
-        fontTurn.drawString(524, Main.ySize-272, "N Dice: "+gC.totalDicePlayer[gC.playingPlayer], Color.black);
+        fontTurn.drawString(307, Main.ySize-272, "Player "+gC.getPlayingPlayer(), Color.black);
+        fontTurn.drawString(524, Main.ySize-272, "N Dice: "+gC.totalDicePlayer[gC.getPlayingPlayer()], Color.black);
 
         if (gC.betOnTable == true) {
             g.setColor(Color.black);
-            fontTurn.drawString(534, Main.ySize - 471, "Player " + gC.idLastBet, Color.black);
+            fontTurn.drawString(534, Main.ySize - 471, "Player " + gC.getIdLastBet(), Color.black);
             fontTurn.drawString(285, Main.ySize - 370, gC.getDiceAmountSelected() + " dice whose value is", Color.black);
             g.drawImage(dice.get(gC.getDiceValueSelected()), 527, Main.ySize - 408);
         }
@@ -262,8 +262,8 @@ public class Play extends BasicGameState {
             if(newGame){
                 fontValue.drawString(590, Main.ySize - 420, "New Game", Color.black);
             }
-            else if(getBoard().winner != getBoard().loser){
-                fontValue.drawString(420, Main.ySize - 470, "Player " +  getBoard().loser + "  lost the previous turn", Color.black);
+            else if(gC.getBoard().winner != gC.getBoard().loser){
+                fontValue.drawString(420, Main.ySize - 470, "Player " +  gC.getBoard().loser + "  lost the previous turn", Color.black);
                 fontValue.drawString(590, Main.ySize - 386, "New Turn", Color.black);
             }
         }
@@ -289,12 +289,12 @@ public class Play extends BasicGameState {
         }
 
         //CHECK PLAYER OUT
-        for (int i = 0; i < getBoard().getnPlayers(); i++) {
+        for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             if (i == 0 || i == 1 || i == 4 || i == 5) {
-                if (this.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
+                if (gC.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
                     playerRemovedHoriz.draw(selectorPosition[i][0], selectorPosition[i][1]);
                 }
-            } else if (this.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
+            } else if (gC.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
                 playerRemovedVert.draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
@@ -309,12 +309,12 @@ public class Play extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
         timeCheckCrash += delta;
         
-        if(timeCheckCrash >= 15000 && getBoard().initBoard == true){
+        if(timeCheckCrash >= 15000 && gC.getBoard().initGame == true){
             System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + "ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
-            getBoard().initBoard = false;
+            gC.getBoard().initGame = false;
         }
         //System.out.println("GC.InitBoard: "+ gC.initBoard + "  restartBoard: " + gC.restartBoard + "   board.initBoard: " + getBoard().initBoard);
-        if ((gC.initBoard == true || gC.restartBoard == true) && getBoard().initBoard == false) {
+        if ((gC.initBoard == true || gC.restartBoard == true) && gC.getBoard().initGame == false) {
             System.out.println("RESTART INIT BOARD");
             restartInitBoard();
             time = 0;
@@ -328,8 +328,8 @@ public class Play extends BasicGameState {
                 //System.out.println("RESTART INIT BOARD");
             }
             
-            if(time < 3000 && !getBoard().initBoard)
-                gC.showDice = true;
+            if(time < 3000 && !gC.getBoard().initGame)
+                gC.showDice = false; //Mettere true per far vedere i dadi di tutti
             
             if(time >= 3000 && time < 5000)
                 gC.showDice = false;
@@ -339,7 +339,7 @@ public class Play extends BasicGameState {
                 gC.errorAmountMinore = false;
                 gC.errorRibasso = false;
                 
-                if(getBoard().initBoard == false){
+                if(gC.getBoard().initGame == false){
                     gC.playDiceAnimation = false;
                     time = 0; 
                 }
@@ -462,7 +462,7 @@ public class Play extends BasicGameState {
     private void restartInitBoard() {
 
         if (gC.restartBoard) {
-            for (int s = 0; s < getBoard().getnPlayers(); s++) {
+            for (int s = 0; s < gC.getBoard().getnPlayers(); s++) {
                 for (int i = 0; i < 5; i++) {
                     positionPlayerDice[s][i] = 0;
                 }
@@ -477,36 +477,36 @@ public class Play extends BasicGameState {
             gC.isBetMax = false;
             gC.restartBoard = false;
             
-            System.out.println(DiceLiar.ANSI_GREEN + "Loser: " + getBoard().loser + " Winner: " + getBoard().winner + DiceLiar.ANSI_RESET);
+            System.out.println(DiceLiar.ANSI_GREEN + "Loser: " + gC.getBoard().loser + " Winner: " + gC.getBoard().winner + DiceLiar.ANSI_RESET);
 
             forceRefresh = true;
         }
 
         forceRefresh = true;
         
-        gC.board = this.getBoard();
+        //gC.board = this.getBoard();
 
         newTurn = true; // Start delle animazioni e del pannello del nuovo turno
         gC.initBoard = false;
 
-        id = getBoard().myID;
+        id = gC.getBoard().myID;
         gC.setId(id);
 
-        nPlayers = getBoard().getnPlayers();
+        nPlayers = gC.getBoard().getnPlayers();
         gC.setnPlayers(nPlayers);
 
         gC.totalDicePlayer = new int[nPlayers];
 
         for (int i = 0; i < nPlayers; i++) {
-            if (getBoard().getCurrentPlayers().vectorPlayers[i].playerOut) {
+            if (gC.getBoard().getCurrentPlayers().vectorPlayers[i].playerOut) {
                 gC.totalDicePlayer[i] = 0;
             } else {
-                gC.totalDicePlayer[i] = getBoard().getCurrentPlayers().vectorPlayers[i].myDice.nDice;
+                gC.totalDicePlayer[i] = gC.getBoard().getCurrentPlayers().vectorPlayers[i].myDice.nDice;
             }
         }
 
         for (int s = 0; s < nPlayers; s++) {
-            amountDicePlayers = getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
+            amountDicePlayers = gC.getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
 
             for (int i = 0; i < amountDicePlayers.length; i++) {
                 positionPlayerDice[s][i] = amountDicePlayers[i];
@@ -532,10 +532,10 @@ public class Play extends BasicGameState {
         selectorPosition[7][0] = 3;
         selectorPosition[7][1] = selectorPosition[2][1];
 
-        if (gC.playingPlayer == 0 || gC.playingPlayer == 1 || gC.playingPlayer == 4 || gC.playingPlayer == 5) {
-            selectedPlayerHoriz.draw(selectorPosition[gC.playingPlayer][0], selectorPosition[gC.playingPlayer][1]);
+        if (gC.getPlayingPlayer() == 0 || gC.getPlayingPlayer() == 1 || gC.getPlayingPlayer() == 4 || gC.getPlayingPlayer() == 5) {
+            selectedPlayerHoriz.draw(selectorPosition[gC.getPlayingPlayer()][0], selectorPosition[gC.getPlayingPlayer()][1]);
         } else {
-            selectedPlayerVer.draw(selectorPosition[gC.playingPlayer][0], selectorPosition[gC.playingPlayer][1]);
+            selectedPlayerVer.draw(selectorPosition[gC.getPlayingPlayer()][0], selectorPosition[gC.getPlayingPlayer()][1]);
         }
 
     }
@@ -854,10 +854,6 @@ public class Play extends BasicGameState {
     @Override
     public int getID() {
         return 2;
-    }
-
-    public Board getBoard() {
-        return board;
     }
 
     public void setBoard(Board board) {

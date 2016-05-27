@@ -46,14 +46,13 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         System.out.println("RMI ID: " + board.myID + " NotifyTurn in");
         
         rmiBoard.setnTurn(board.getnTurn());
-        gC.turn = board.getnTurn();
         
         rmiBoard.setCurrentBet(board.getCurrentBet());
         gC.diceAmountSelected = board.getCurrentBet().getAmount();
         gC.diceValueSelected = board.getCurrentBet().getValueDie();
         
         gC.setBetOnTable(true);
-        gC.idLastBet = board.myID;
+        rmiBoard.setIdLastBet(board.myID);
         
         //if(rmiBoard.getCurrentBet() == null || board.getCurrentBet() == null)
            //rmiBoard.getCurrentPlayers().vectorPlayers[myID].makeChoice(rmiBoard);
@@ -63,8 +62,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.getCurrentPlayers().getVectorPlayers()[myID].setTurn(true);
         
         
-        rmiBoard.gC.setPlayingPlayer(board.getPlayingPlayer().myID);
-        rmiBoard.gC.turn = board.getnTurn();
+        //rmiBoard.gC.setPlayingPlayer(board.getPlayingPlayer().myID);
         
        // System.out.println("Sblocco il giocatore " + rmiBoard.myID);
         
@@ -110,8 +108,8 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         System.out.println(DiceLiar.ANSI_CYAN + "TURNO PRECEDENTE PERSO DA " + board.loser + DiceLiar.ANSI_RESET); 
         
         if(!board.getCurrentPlayers().vectorPlayers[board.loser].playerOut){
-            if(board.loser != board.gC.idLastBet && board.loser != board.winner){
-                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet in: " + gC.idLastBet + DiceLiar.ANSI_RESET);
+            if(board.loser != board.getIdLastBet() && board.loser != board.winner){
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet in: " + rmiBoard.getIdLastBet() + DiceLiar.ANSI_RESET);
                 rmiBoard.gC.totalDicePlayer[board.loser]--;
 
                 if (rmiBoard.gC.totalDicePlayer[board.loser] == 0) {
@@ -120,7 +118,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
                 }
             }
             else{
-                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet else: " + board.gC.idLastBet + DiceLiar.ANSI_RESET);
+                System.out.println(DiceLiar.ANSI_CYAN + "id Last bet else: " + board.getIdLastBet() + DiceLiar.ANSI_RESET);
                 System.out.println(DiceLiar.ANSI_RED + "Chi ha perso non è più online, non perde il dado" + DiceLiar.ANSI_RESET);
             }
         }
@@ -158,7 +156,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
             return;
         }
         
-        gC.setPlayingPlayer(board.winner);
+        //gC.setPlayingPlayer(board.winner);
         rmiBoard.setPlayingPlayer(rmiBoard.getCurrentPlayers().vectorPlayers[board.winner]);
         rmiBoard.getCurrentPlayers().vectorPlayers[board.winner].setTurn(true);
         
@@ -167,7 +165,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         System.out.println(DiceLiar.ANSI_CYAN + "NUOVI DADI" + DiceLiar.ANSI_RESET);
         rmiBoard.currentPlayers.printDice();
         
-        rmiBoard.initBoard = false;
+        rmiBoard.initGame = false;
         
         System.out.println("------------------------------------------------------------------");
         
@@ -191,13 +189,13 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
            
         rmiBoard.currentBet = board.currentBet;
         rmiBoard.setPlayingPlayer(board.currentPlayers.vectorPlayers[board.getPlayingPlayer().IDNext]);
-        gC.setPlayingPlayer(board.getPlayingPlayer().IDNext);
+        //gC.setPlayingPlayer(board.getPlayingPlayer().IDNext);
         
         System.out.println("NOTIFYMOVE - TURN: " + board.getnTurn());
         gC.setTurn(board.getnTurn());
         rmiBoard.setnTurn(board.getnTurn());
         
-        gC.idLastBet = board.getPlayingPlayer().myID; 
+        rmiBoard.setIdLastBet(board.getPlayingPlayer().myID);
         gC.updateBetValues = true;
     }
 
@@ -214,7 +212,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
                 rmiBoard.currentPlayers.removePlayer(rmiBoard.currentPlayers.vectorPlayers[i], true, false);
                 
                 if(board.getnTurn() == 1){
-                    rmiBoard.initBoard = false;
+                    rmiBoard.initGame = false;
                 }
             }
         }

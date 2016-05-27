@@ -13,13 +13,12 @@ import java.util.Arrays;
  */
 public class GUIController implements Serializable{
     Board board;
- 
     
-    int turn; // Numero turn
-    int id; //ID current Player
+    private int turn; // Numero turn
+    private int id; //ID current Player
     
-    int initDicePlayer; //Numero iniziale di dadi del giocatore
-    int nPlayers; // Numero giocatori attivi
+    private int initDicePlayer; //Numero iniziale di dadi del giocatore
+    private int nPlayers; // Numero giocatori attivi
    
        
     
@@ -34,13 +33,13 @@ public class GUIController implements Serializable{
     boolean betOnTable = false;
     boolean makeChoice = false;
     
-    int playingPlayer = 0;
+    private int playingPlayer = 0;
     
     boolean isBetMax = false;
     
     boolean playDiceAnimation = false;
     
-    int idLastBet;
+    private int idLastBet;
     
     boolean winGame = false, loseGame = false;
     
@@ -48,6 +47,8 @@ public class GUIController implements Serializable{
     int diceAmountSelected;
     
     boolean initBoard = true;
+    boolean initGame = true;
+    
     boolean restartBoard = false;
     
     boolean countDiceCrashed = false;
@@ -66,7 +67,6 @@ public class GUIController implements Serializable{
         dicePlayer = new int[]{1,1,1,1,1};
         playDiceAnimation = false;
     }
-
     
     public void printValues() {
         System.out.println("--------------------------------");
@@ -93,11 +93,19 @@ public class GUIController implements Serializable{
         int total = 0;
         for (int i = 0; i < integers.length; total += integers[i++]);
         return total;
-    }   
+    } 
 
-    public void setPlayingPlayer(int _playingPlayer) {
-        System.out.println("Aggiorno PP da " + this.playingPlayer + " a " + _playingPlayer);
-        this.playingPlayer = _playingPlayer;
+//    public void setPlayingPlayer(int _playingPlayer) {
+//        System.out.println("Aggiorno PP da " + this.playingPlayer + " a " + _playingPlayer);
+//        this.board.playingPlayer = this.board.geplayingPlayer;
+//    }
+    
+    public int getPlayingPlayer(){
+        return this.board.getPlayingPlayer().myID;
+    }
+    
+    public int getIdLastBet(){
+        return this.board.getIdLastBet();
     }
 
     public boolean isPlayConnectedClicked() {
@@ -181,7 +189,7 @@ public class GUIController implements Serializable{
     }
 
     public int getTurn() {
-        return turn;
+        return this.board.getnTurn();
     }
 
     public void setTurn(int turn) {
@@ -190,6 +198,10 @@ public class GUIController implements Serializable{
     
     public Board getBoard() {
         return board;
+    }
+    
+    public void setBoard(Board _currentBoard){
+        this.board = _currentBoard;
     }
 
     public boolean isBetOnTable() {
@@ -200,7 +212,135 @@ public class GUIController implements Serializable{
         this.betOnTable = betOnTable;
     }
 
-     
+    public boolean isMakeChoice() {
+        return makeChoice;
+    }
+
+    public void setMakeChoice(boolean makeChoice) {
+        this.makeChoice = makeChoice;
+    }
+
+    public boolean isIsBetMax() {
+        return isBetMax;
+    }
+
+    public void setIsBetMax(boolean isBetMax) {
+        this.isBetMax = isBetMax;
+    }
+
+    public boolean isPlayDiceAnimation() {
+        return playDiceAnimation;
+    }
+
+    public void setPlayDiceAnimation(boolean playDiceAnimation) {
+        this.playDiceAnimation = playDiceAnimation;
+    }
+
+    public boolean isWinGame() {
+        return winGame;
+    }
+
+    public void setWinGame(boolean winGame) {
+        this.winGame = winGame;
+    }
+
+    public boolean isLoseGame() {
+        return loseGame;
+    }
+
+    public void setLoseGame(boolean loseGame) {
+        this.loseGame = loseGame;
+    }
+
+    public boolean isInitBoard() {
+        return initBoard;
+    }
+
+    public void setInitBoard(boolean initBoard) {
+        this.initBoard = initBoard;
+    }
+
+    public boolean isInitGame() {
+        return initGame;
+    }
+
+    public void setInitGame(boolean initGame) {
+        this.initGame = initGame;
+    }
+
+    public boolean isRestartBoard() {
+        return restartBoard;
+    }
+
+    public void setRestartBoard(boolean restartBoard) {
+        this.restartBoard = restartBoard;
+    }
+
+    public boolean isCountDiceCrashed() {
+        return countDiceCrashed;
+    }
+
+    public void setCountDiceCrashed(boolean countDiceCrashed) {
+        this.countDiceCrashed = countDiceCrashed;
+    }
+
+    public boolean isUpdateBetValues() {
+        return updateBetValues;
+    }
+
+    public void setUpdateBetValues(boolean updateBetValues) {
+        this.updateBetValues = updateBetValues;
+    }
+
+    public boolean isShowDice() {
+        return showDice;
+    }
+
+    public void setShowDice(boolean showDice) {
+        this.showDice = showDice;
+    }
+
+    public int[] getTotalDicePlayer() {
+        return totalDicePlayer;
+    }
+
+    public void setTotalDicePlayer(int[] totalDicePlayer) {
+        this.totalDicePlayer = totalDicePlayer;
+    }
+
+    public int[] getDicePlayer() {
+        return dicePlayer;
+    }
+
+    public void setDicePlayer(int[] dicePlayer) {
+        this.dicePlayer = dicePlayer;
+    }
+
+    public boolean isOneJollyEnabled() {
+        return oneJollyEnabled;
+    }
+
+    public void setOneJollyEnabled(boolean oneJollyEnabled) {
+        this.oneJollyEnabled = oneJollyEnabled;
+    }
+
+    public boolean isErrorRibasso() {
+        return errorRibasso;
+    }
+
+    public void setErrorRibasso(boolean errorRibasso) {
+        this.errorRibasso = errorRibasso;
+    }
+
+    public boolean isErrorAmountMinore() {
+        return errorAmountMinore;
+    }
+
+    public void setErrorAmountMinore(boolean errorAmountMinore) {
+        this.errorAmountMinore = errorAmountMinore;
+    }
+
+    
     
     
     

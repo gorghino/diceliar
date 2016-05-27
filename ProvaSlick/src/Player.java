@@ -89,7 +89,7 @@ public class Player implements Serializable{
                             currentBoard.diceUpdated = 1;
                             currentBoard.oneJollyEnabled = true;
                             
-                            gC.idLastBet = myID;
+                            currentBoard.setIdLastBet(myID);
                             
                             currentBoard.newTurn(currentBoard, this.getMyID(), null); 
                             return true;
@@ -101,7 +101,7 @@ public class Player implements Serializable{
                             currentBoard.loser = this.getMyID();
                             currentBoard.winner = this.getAllPlayers().vectorPlayers[myID].IDNext;
                             
-                            gC.idLastBet = myID;
+                            currentBoard.setIdLastBet(myID);
                             
                             currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
                             //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
@@ -191,7 +191,7 @@ public class Player implements Serializable{
         }
         
         System.out.println("Scommetto " + amountDice + " dadi di valore " + valueDie);
-        gC.idLastBet = myID;
+        currentBoard.setIdLastBet(myID);
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
         
@@ -237,7 +237,7 @@ public class Player implements Serializable{
             currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
         
-        gC.idLastBet = myID;
+        currentBoard.setIdLastBet(myID);
         Bet myNewBet = new Bet(amountDice, valueDie);
         return myNewBet;
 
@@ -270,18 +270,18 @@ public class Player implements Serializable{
                 try {
                     if(getAllPlayers().vectorPlayers[nextCandidate].rmiPointer.heartbeat()){   
                         //getAllPlayers().vectorPlayers[i].IDNext = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
-                        System.out.println(DiceLiar.ANSI_GREEN + "NEXT di " + i + ": TROVATO! Il player " + nextCandidate + " è raggiungibile" + Board.ANSI_RESET);
+                        System.out.println(DiceLiar.ANSI_GREEN + "NEXT di " + i + ": TROVATO! Il player " + nextCandidate + " è raggiungibile" + DiceLiar.ANSI_RESET);
                         return getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
                     }
                 } catch (RemoteException ex) {
-                    System.out.println(Board.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Il player " + nextCandidate + " non è più raggiungibile" + Board.ANSI_RESET);
+                    System.out.println(DiceLiar.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Il player " + nextCandidate + " non è più raggiungibile" + DiceLiar.ANSI_RESET);
                     getAllPlayers().removePlayer(getAllPlayers().vectorPlayers[nextCandidate], false, false);
                     countOthers++;
                     if(countOthers == getAllPlayers().vectorPlayers.length){
-                        System.out.println(Board.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + Board.ANSI_RESET);
+                        System.out.println(DiceLiar.ANSI_RED + "NEXT di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + DiceLiar.ANSI_RESET);
                         return -1;
                     }
-                    System.out.println(DiceLiar.ANSI_CYAN + "NEXT di " + i + ": Chiedo al player " + (i+countOthers)%getAllPlayers().vectorPlayers.length + " se è vivo" + Board.ANSI_RESET);
+                    System.out.println(DiceLiar.ANSI_CYAN + "NEXT di " + i + ": Chiedo al player " + (i+countOthers)%getAllPlayers().vectorPlayers.length + " se è vivo" + DiceLiar.ANSI_RESET);
                     nextCandidate = getAllPlayers().vectorPlayers[(i+countOthers)%getAllPlayers().vectorPlayers.length].myID;
                 }
                 
@@ -298,19 +298,19 @@ public class Player implements Serializable{
             try {
                 if (getAllPlayers().vectorPlayers[prevCandidate].rmiPointer.heartbeat()) {
                     //getAllPlayers().vectorPlayers[i].IDPrev = getAllPlayers().vectorPlayers[(i - countOthers) % getAllPlayers().vectorPlayers.length].myID;
-                    System.out.println(DiceLiar.ANSI_GREEN + "PREV di " + i + ": TROVATO! Il player " + prevCandidate + " è raggiungibile" + Board.ANSI_RESET);
+                    System.out.println(DiceLiar.ANSI_GREEN + "PREV di " + i + ": TROVATO! Il player " + prevCandidate + " è raggiungibile" + DiceLiar.ANSI_RESET);
                     return getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
 
                 }
             } catch (RemoteException ex) {
-                System.out.println(Board.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Il player " + prevCandidate + " non è più raggiungibile" + Board.ANSI_RESET);
+                System.out.println(DiceLiar.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Il player " + prevCandidate + " non è più raggiungibile" + DiceLiar.ANSI_RESET);
                 countOthers++;
                 getAllPlayers().removePlayer(getAllPlayers().vectorPlayers[prevCandidate], false, false);
                 if (countOthers == getAllPlayers().vectorPlayers.length) {
-                    System.out.println(Board.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + Board.ANSI_RESET);
+                    System.out.println(DiceLiar.ANSI_RED + "PREV di " + i + ": ATTENZIONE! Non ci sono più giocatori a parte te" + DiceLiar.ANSI_RESET);
                     return -1;
                 }
-                System.out.println(DiceLiar.ANSI_CYAN + "PREV di " + i + ": Chiedo al player " + (((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length + " se è vivo" + Board.ANSI_RESET);
+                System.out.println(DiceLiar.ANSI_CYAN + "PREV di " + i + ": Chiedo al player " + (((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length + " se è vivo" + DiceLiar.ANSI_RESET);
                 prevCandidate = getAllPlayers().vectorPlayers[(((i-countOthers)%getAllPlayers().vectorPlayers.length) + getAllPlayers().vectorPlayers.length)%getAllPlayers().vectorPlayers.length].myID;
             }
         }

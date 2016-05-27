@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import static java.lang.Thread.sleep;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,22 +28,21 @@ public class Board implements Serializable{
     Player playingPlayer;
     
     boolean okDoubt;
-    int broadcastCount = 0;
+    
     int status;
     public static int IDLE = 0;
     public static int PLAYING = 2;
     public static int INIT_RESET = 3;
     
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
-        
     public transient final Object lock;
     
     public boolean oneJollyEnabled;
     
     int loser = 0, winner = 0;
     
-    boolean initBoard;
+    private int idLastBet;
+    
+    boolean initGame;
     
     int printCount = 0, printCount2 = 0;
     
@@ -61,7 +59,7 @@ public class Board implements Serializable{
         currentPlayers.getAllId();
         
         oneJollyEnabled = true;
-        initBoard = true;
+        initGame = true;
 
         status = PLAYING;
         
@@ -78,7 +76,7 @@ public class Board implements Serializable{
         Player playerStarter = startBoard.getCurrentPlayers().getVectorPlayers()[playerStarterID];
         setPlayingPlayer(playerStarter);
         
-        gC.setPlayingPlayer(playerStarter.myID);
+        //gC.setPlayingPlayer(playerStarter.myID);
         gC.setTurn(1);
                 
         if(startBoard.myID == 0){
@@ -132,12 +130,12 @@ public class Board implements Serializable{
                     
                     nextPlayer.setTurn(true);
                     board.setPlayingPlayer(nextPlayer);
-                    gC.setPlayingPlayer(nextPlayer.myID);
+                    //gC.setPlayingPlayer(nextPlayer.myID);
                     
                     gC.betOnTable = true;
                     gC.diceAmountSelected = board.getCurrentBet().amountDice;
                     gC.diceValueSelected = board.getCurrentBet().valueDie;
-                    gC.idLastBet = myID;
+                    setIdLastBet(myID);
      
                     try {
                         this.currentPlayers.vectorPlayers[myID].rmiNextPlayer.notifyTurn(board);
@@ -192,8 +190,7 @@ public class Board implements Serializable{
                             setPlayingPlayer(currentPlayers.vectorPlayers[myID]);
                             getPlayingPlayer().setTurn(true);
                             this.winner = myID;
-                            gC.setPlayingPlayer(currentPlayers.vectorPlayers[myID].myID);
-                            gC.turn = board.getnTurn();
+                            //gC.setPlayingPlayer(currentPlayers.vectorPlayers[myID].myID);
                             
                             if(board.getnTurn() == 1){
                                 //E' crashato il primo giocatore del turno, ridistribuisco i dadi in caso sia crashato mentre li distribuiva
@@ -208,11 +205,10 @@ public class Board implements Serializable{
                         }
                         else{ //Aggiorno il playing su cui bloccarmi
                             setPlayingPlayer(currentPlayers.vectorPlayers[newPlaying]);
-                            gC.setPlayingPlayer(currentPlayers.vectorPlayers[newPlaying].myID);
+                            //gC.setPlayingPlayer(currentPlayers.vectorPlayers[newPlaying].myID);
                             
                             System.out.println("Turno GC: " + board.getnTurn());
                             getPlayingPlayer().setTurn(true);
-                            gC.turn = board.getnTurn();
                         }
                     }
                     
@@ -228,7 +224,7 @@ public class Board implements Serializable{
         currentBoard.setCurrentBet(starterBet);
         currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer].setTurn(true); 
         currentBoard.setPlayingPlayer(currentBoard.getCurrentPlayers().getVectorPlayers()[starterIDPlayer]);
-        gC.setPlayingPlayer(starterIDPlayer);
+        //gC.setPlayingPlayer(starterIDPlayer);
         
         broadcastRMI(currentBoard, "RESET_DICE");
         
@@ -237,11 +233,6 @@ public class Board implements Serializable{
     }
     
     public void broadcastRMI(Board board, String function){
-        
-        broadcastCount++;
-        
-        System.out.println(DiceLiar.ANSI_RED + myID + " chiama BROADCAST() " + function + " " + broadcastCount + DiceLiar.ANSI_RESET);
-
         int j=0;
         for (int i=(board.myID + 1)%board.getnPlayers(); j<board.getnPlayers(); i=(i+1)%board.getnPlayers()) {
             Player vectorPlayer = board.getCurrentPlayers().vectorPlayers[i];
@@ -352,5 +343,15 @@ public class Board implements Serializable{
 
     public GUIController getgC() {
         return gC;
-    }   
+    }
+
+    public int getIdLastBet() {
+        return idLastBet;
+    }
+
+    public void setIdLastBet(int idLastBet) {
+        this.idLastBet = idLastBet;
+    }
+    
+    
 }

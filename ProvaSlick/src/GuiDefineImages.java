@@ -48,6 +48,8 @@ public class GuiDefineImages {
         arrayDice.add(7, new Image("img/DieQM.png"));
         arrayDice.add(8, new Image("img/DieJoker.png"));
     }
+    
+    
 
     public Image getBackground() {
         return background;
