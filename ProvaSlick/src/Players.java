@@ -125,7 +125,7 @@ public class Players implements Serializable{
     public void printDice(){
         String jollyString;
         
-        if(currentBoard.oneJollyEnabled)
+        if(currentBoard.isOneJollyEnabled())
             jollyString = "1 VALE Jolly";
         else
             jollyString = "1 VALE 1";    

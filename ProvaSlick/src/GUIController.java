@@ -13,11 +13,7 @@ import java.util.Arrays;
  */
 public class GUIController implements Serializable{
     Board board;
-    
-    private int turn; // Numero turn
-    private int id; //ID current Player
-    
-    private int initDicePlayer; //Numero iniziale di dadi del giocatore
+   
     private int nPlayers; // Numero giocatori attivi
    
        
@@ -33,13 +29,9 @@ public class GUIController implements Serializable{
     boolean betOnTable = false;
     boolean makeChoice = false;
     
-    private int playingPlayer = 0;
-    
     boolean isBetMax = false;
     
     boolean playDiceAnimation = false;
-    
-    private int idLastBet;
     
     boolean winGame = false, loseGame = false;
     
@@ -70,8 +62,8 @@ public class GUIController implements Serializable{
     
     public void printValues() {
         System.out.println("--------------------------------");
-        System.out.println("id: " + id);
-        System.out.println("turn: " + turn);
+        System.out.println("id: " + getId());
+        System.out.println("turn: " + getTurn());
         System.out.println("nPlayers: " + nPlayers);
         System.out.println("PlayConnectedClicked: " + PlayConnectedClicked);
         System.out.println("makeChoice: " + makeChoice);
@@ -83,8 +75,8 @@ public class GUIController implements Serializable{
         System.out.println("diceAmountSelected: " + diceAmountSelected);
         System.out.println("totalDicePlayer: " + Arrays.toString(totalDicePlayer));
         System.out.println("TotalDice: " + sumOf(totalDicePlayer));
-        System.out.println("Playing Player: " + playingPlayer);
-        System.out.println("Dadi : " + Arrays.toString(board.getCurrentPlayers().vectorPlayers[id].getmyDiceValue()));
+        System.out.println("Playing Player: " + getPlayingPlayer());
+        System.out.println("Dadi : " + Arrays.toString(board.getCurrentPlayers().vectorPlayers[getId()].getmyDiceValue()));
         System.out.println("Dice check:" + Arrays.toString(dicePlayer));
         System.out.println("--------------------------------");
     }
@@ -149,19 +141,7 @@ public class GUIController implements Serializable{
     }
 
     public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getInitDicePlayer() {
-        return initDicePlayer;
-    }
-
-    public void setInitDicePlayer(int initDicePlayer) {
-        this.initDicePlayer = initDicePlayer;
+        return this.getBoard().getMyID();
     }
 
     public boolean isLeaveClicked() {
@@ -193,7 +173,7 @@ public class GUIController implements Serializable{
     }
 
     public void setTurn(int turn) {
-        this.turn = turn;
+        this.board.setnTurn(turn);
     }
     
     public Board getBoard() {

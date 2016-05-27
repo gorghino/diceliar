@@ -262,8 +262,8 @@ public class Play extends BasicGameState {
             if(newGame){
                 fontValue.drawString(590, Main.ySize - 420, "New Game", Color.black);
             }
-            else if(gC.getBoard().winner != gC.getBoard().loser){
-                fontValue.drawString(420, Main.ySize - 470, "Player " +  gC.getBoard().loser + "  lost the previous turn", Color.black);
+            else if(gC.getBoard().getWinner() != gC.getBoard().getLoser()){
+                fontValue.drawString(420, Main.ySize - 470, "Player " +  gC.getBoard().getLoser() + "  lost the previous turn", Color.black);
                 fontValue.drawString(590, Main.ySize - 386, "New Turn", Color.black);
             }
         }
@@ -291,10 +291,10 @@ public class Play extends BasicGameState {
         //CHECK PLAYER OUT
         for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             if (i == 0 || i == 1 || i == 4 || i == 5) {
-                if (gC.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
+                if (gC.getBoard().getCurrentPlayers().vectorPlayers[i].playerOut) {
                     playerRemovedHoriz.draw(selectorPosition[i][0], selectorPosition[i][1]);
                 }
-            } else if (gC.getBoard().currentPlayers.vectorPlayers[i].playerOut) {
+            } else if (gC.getBoard().getCurrentPlayers().vectorPlayers[i].playerOut) {
                 playerRemovedVert.draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
@@ -309,12 +309,12 @@ public class Play extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
         timeCheckCrash += delta;
         
-        if(timeCheckCrash >= 15000 && gC.getBoard().initGame == true){
+        if(timeCheckCrash >= 15000 && gC.getBoard().getInitGame() == true){
             System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + "ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
-            gC.getBoard().initGame = false;
+            gC.getBoard().setInitGame(false);
         }
         //System.out.println("GC.InitBoard: "+ gC.initBoard + "  restartBoard: " + gC.restartBoard + "   board.initBoard: " + getBoard().initBoard);
-        if ((gC.initBoard == true || gC.restartBoard == true) && gC.getBoard().initGame == false) {
+        if ((gC.initBoard == true || gC.restartBoard == true) && gC.getBoard().getInitGame() == false) {
             System.out.println("RESTART INIT BOARD");
             restartInitBoard();
             time = 0;
@@ -328,7 +328,7 @@ public class Play extends BasicGameState {
                 //System.out.println("RESTART INIT BOARD");
             }
             
-            if(time < 3000 && !gC.getBoard().initGame)
+            if(time < 3000 && !gC.getBoard().getInitGame())
                 gC.showDice = false; //Mettere true per far vedere i dadi di tutti
             
             if(time >= 3000 && time < 5000)
@@ -339,7 +339,7 @@ public class Play extends BasicGameState {
                 gC.errorAmountMinore = false;
                 gC.errorRibasso = false;
                 
-                if(gC.getBoard().initGame == false){
+                if(gC.getBoard().getInitGame() == false){
                     gC.playDiceAnimation = false;
                     time = 0; 
                 }
@@ -449,8 +449,6 @@ public class Play extends BasicGameState {
                     lbDrawDieBet = drawDieBet;
                     lbDrawValueBet = drawValueBet;
 
-                    board.betDone = true;
-
                     gC.setDiceValueSelected(drawDieBet);
                     gC.setDiceAmountSelected(drawValueBet);
 
@@ -477,20 +475,17 @@ public class Play extends BasicGameState {
             gC.isBetMax = false;
             gC.restartBoard = false;
             
-            System.out.println(DiceLiar.ANSI_GREEN + "Loser: " + gC.getBoard().loser + " Winner: " + gC.getBoard().winner + DiceLiar.ANSI_RESET);
+            System.out.println(DiceLiar.ANSI_GREEN + "Loser: " + gC.getBoard().getLoser() + " Winner: " + gC.getBoard().getWinner() + DiceLiar.ANSI_RESET);
 
             forceRefresh = true;
         }
 
         forceRefresh = true;
         
-        //gC.board = this.getBoard();
-
         newTurn = true; // Start delle animazioni e del pannello del nuovo turno
         gC.initBoard = false;
 
-        id = gC.getBoard().myID;
-        gC.setId(id);
+        id = gC.getBoard().getMyID();
 
         nPlayers = gC.getBoard().getnPlayers();
         gC.setnPlayers(nPlayers);

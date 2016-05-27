@@ -17,37 +17,35 @@ import java.util.logging.Logger;
  * @author proietfb
  */
 public class Board implements Serializable{
-    int nTurn;
-    int nPlayers;
+    private int nTurn;
+    private int nPlayers;
     
-    int myID;
+    private int myID;
 
-    Bet currentBet;
+    private Bet currentBet;
 
-    Players currentPlayers;
-    Player playingPlayer;
+    private Players currentPlayers;
+    private Player playingPlayer;
     
-    boolean okDoubt;
+    private boolean okDoubt;
     
-    int status;
+    private int status;
     public static int IDLE = 0;
     public static int PLAYING = 2;
     public static int INIT_RESET = 3;
     
     public transient final Object lock;
     
-    public boolean oneJollyEnabled;
+    private boolean oneJollyEnabled;
     
-    int loser = 0, winner = 0;
+    private int loser = 0, winner = 0;
     
     private int idLastBet;
     
-    boolean initGame;
+    private boolean initGame;
+    public int printCount = 0, printCount2 = 0;
     
-    int printCount = 0, printCount2 = 0;
-    
-    public int diceUpdated = 1;
-    boolean betDone;
+    private int diceUpdated = 1;
     
     GUIController gC;
 
@@ -352,6 +350,74 @@ public class Board implements Serializable{
     public void setIdLastBet(int idLastBet) {
         this.idLastBet = idLastBet;
     }
+
+    public int getMyID() {
+        return myID;
+    }
+
+    public void setMyID(int myID) {
+        this.myID = myID;
+    }
+
+    public boolean isOkDoubt() {
+        return okDoubt;
+    }
+
+    public void setOkDoubt(boolean okDoubt) {
+        this.okDoubt = okDoubt;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public boolean isOneJollyEnabled() {
+        return oneJollyEnabled;
+    }
+
+    public void setOneJollyEnabled(boolean oneJollyEnabled) {
+        this.oneJollyEnabled = oneJollyEnabled;
+    }
+
+    public int getLoser() {
+        return loser;
+    }
+
+    public void setLoser(int loser) {
+        this.loser = loser;
+    }
+
+    public int getWinner() {
+        return winner;
+    }
+
+    public void setWinner(int winner) {
+        this.winner = winner;
+    }
+
+    public boolean getInitGame() {
+        return initGame;
+    }
+
+    public void setInitGame(boolean initGame) {
+        this.initGame = initGame;
+    }
+
+    public int getDiceUpdated() {
+        return diceUpdated;
+    }
+
+    public void setDiceUpdated(int diceUpdated) {
+        this.diceUpdated = diceUpdated;
+    }
+    
+    
+    
+    
     
     
 }

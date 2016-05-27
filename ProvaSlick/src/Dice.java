@@ -69,7 +69,7 @@ public class Dice implements Serializable{
              else
                 diceValue[i] = 0;
          }
-         if(currentBoard.oneJollyEnabled){
+         if(currentBoard.isOneJollyEnabled()){
             for(int i=1; i<diceValue.length; i+=1)
                 diceValue[i] += diceValue[0];
             diceValue[0] = 0;

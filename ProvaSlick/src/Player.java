@@ -75,19 +75,19 @@ public class Player implements Serializable{
                         gC.doubtClicked = false;
                         
                         if(doubt(currentBoard)){
-                            currentBoard.status = Board.INIT_RESET;
+                            currentBoard.setStatus(Board.INIT_RESET);
                             //Ho dubitato. Avevo ragione. tocca a me iniziare un nuovo turno..
                             
-                            currentBoard.winner = this.getMyID();
-                            currentBoard.loser = this.getAllPlayers().vectorPlayers[myID].IDPrev;
+                            currentBoard.setWinner(myID);
+                            currentBoard.setLoser(IDPrev);
                             
-                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
+                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.getLoser()].getMyDiceObject().removeDie();
                             //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             //myBet = makeBet(currentBoard);
 
-                            currentBoard.diceUpdated = 1;
-                            currentBoard.oneJollyEnabled = true;
+                            currentBoard.setDiceUpdated(1);
+                            currentBoard.setOneJollyEnabled(true); 
                             
                             currentBoard.setIdLastBet(myID);
                             
@@ -98,12 +98,12 @@ public class Player implements Serializable{
                             System.out.println("Non avevo ragione (" + this.getMyID() + "). Inizierà " + this.IDNext);
                             //Ho Dubitato. NON avevo Ragione. Tocca al giocatore dopo di me
                             
-                            currentBoard.loser = this.getMyID();
-                            currentBoard.winner = this.getAllPlayers().vectorPlayers[myID].IDNext;
+                            currentBoard.setLoser(myID);
+                            currentBoard.setWinner(IDNext);
                             
                             currentBoard.setIdLastBet(myID);
                             
-                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.loser].getMyDiceObject().removeDie();
+                            currentBoard.getCurrentPlayers().getVectorPlayers()[currentBoard.getLoser()].getMyDiceObject().removeDie();
                             //currentBoard.broadcastRMI(currentBoard, "CHECK_DOUBT");
 
                             //myDice.removeDie();
@@ -182,10 +182,10 @@ public class Player implements Serializable{
         valueDie = gC.diceValueSelected;
         int amountDice = gC.diceAmountSelected;
         
-        if (valueDie == 1 && currentBoard.oneJollyEnabled) {
+        if (valueDie == 1 && currentBoard.isOneJollyEnabled()) {
                 //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
                 System.out.println("Il valore 1 non vale più come JOLLY");
-                currentBoard.oneJollyEnabled = false;
+                currentBoard.setOneJollyEnabled(false);
                 currentBoard.gC.oneJollyEnabled = false;
                 currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
@@ -229,10 +229,10 @@ public class Player implements Serializable{
                checkBet = false;
         }
 
-        if(!checkBet && valueDie == 1 && currentBoard.oneJollyEnabled) {
+        if(!checkBet && valueDie == 1 && currentBoard.isOneJollyEnabled()) {
             //Utilizzo 1 come valore e non come jolly. Nessuno può più usare 1 come Jolly
             System.out.println("Il valore 1 non vale più come JOLLY");
-            currentBoard.oneJollyEnabled = false;
+            currentBoard.setOneJollyEnabled(false);
             currentBoard.gC.oneJollyEnabled = false;
             currentBoard.broadcastRMI(currentBoard, "ONE_IS_ONE");
         }
@@ -248,12 +248,12 @@ public class Player implements Serializable{
         boolean result = currentBoard.checkBet();
         if(result){ //Hai dubitato giusto
             System.out.println("Hai dubitato giusto");
-            currentBoard.okDoubt = true;
+            currentBoard.setOkDoubt(true);
             return true;
         }
         else{
             System.out.println("Non avevi ragione!");
-            currentBoard.okDoubt = false;
+            currentBoard.setOkDoubt(false);
             return false;
         }
     }
