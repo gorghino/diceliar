@@ -7,6 +7,7 @@ import org.newdawn.slick.state.*;
 import org.newdawn.slick.GameContainer;
 import static java.lang.Math.abs;
 import java.util.Arrays;
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -331,8 +332,13 @@ public class Play extends BasicGameState {
                 //System.out.println("RESTART INIT BOARD");
             }
 
-            if (time < 3000 && !gC.getBoard().getInitGame()) {
-                gC.setShowDice(true); //Mettere true per far vedere i dadi di tutti
+            if (time < 3000 && !gC.getBoard().getInitGame() && !gC.isWinGame() && !gC.isLoseGame()) {
+                 //Mettere true per far vedere i dadi di tutti
+                for (int s= 0; s<nPlayers;s++){
+                for(int i =0; i< positionPlayerDice[s].length;i++)
+                    oldPlayerDice[s][i] = positionPlayerDice[s][i];  
+                System.out.println("oldPlayerDice " +s +": "+Arrays.toString(oldPlayerDice[s]));
+            }
             }
             if (time >= 3000 && time < 5000) {
                 gC.setShowDice(false);
@@ -400,6 +406,7 @@ public class Play extends BasicGameState {
 
                 if ((getX >= 825 && getX <= 1005) && (getY >= 249 && getY <= 299)) { //doubt
                     gC.setDoubtClicked(true);
+                    gC.setShowDice(true);
                 }
             } else {
                 ////////////////////////////////////// Arrows
@@ -504,9 +511,7 @@ public class Play extends BasicGameState {
         }
 
         for (int s = 0; s < nPlayers; s++) {
-            if (amountDicePlayers != null)
-                for(int i =0; i< amountDicePlayers.length;i++)
-                    oldPlayerDice[s][i] = amountDicePlayers[i];  
+
             amountDicePlayers = gC.getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
             for(int i =0; i< amountDicePlayers.length;i++)
               positionPlayerDice[s][i] = amountDicePlayers[i];  

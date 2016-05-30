@@ -39,13 +39,25 @@
 		Ogni partita si gioca con un numero di giocatori con un minimo di due ad un massimo di 8 (ma potrebbe essere superiore in base alla versione). Tutti i giocatori all'inizio di un nuovo round lanciano i dadi a loro disposizione (inizialmente sono 5) e li tengono comperti in modo che gli avversari non vedano i valori ottenuti. A questo punto colui che inizia il round, in base anche ai suoi dadi, deve effettuare una scommessa nel quale indicherà quanti dadi dello stesso numero sono potenzialmente in gioco. A questo punto il giocatore successivo può scegliere se credere alla precedente scommessa oppure dubitare. Nel primo caso esso è tenuto ad effettuare un rilancio sulla base dell'ultima scommessa, definendo quindi o un valore del dado maggiore rispetto al precedente oppure un numero di occorrenze superiore alla scommessa appena effettuata e passare di nuovo il turno. Nel caso in cui dubita (nella versione inglese il giocatore urla Liar!), tutti i partecipanti alla partita sveleranno i propri dadi per decretare chi ha vinto. Se la scommessa contiene un numero di occorrenze minore o uguale rispetto al valore del dado, il giocatore che ha precedentemente scommesso vince, e il suo "accusatore" perde un dado; altrimenti il vincitore sarà chi ha dubitato e a perdere un dado è lo scommettitore. Il round successivo quindi il giocatore perdente lancerà un dado in meno rispetto agli altri. Se un giocatore rimane senza dadi avrà automaticamente perso la partita e a vincere sarà colui che riuscirà ad eliminare tutti i partecipanti alla sfida.\\
 		La nostra versione inoltre contiene anche il dado jolly. Lanciando i dadi infatti, se il giocatore effettua una scommessa che non contenga il valore uno del dado, può trasformare il valore delle facce che contengono 1, in un valore a suo piacimento. D'altro canto se l'oggetto della sua scommessa contiene dadi con valore 1, la possibilità di utilizzo del jolly decade.
 	
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
-	\section{Aspetti Progettuali}%-Aspetti progettuali: in cui si illustra il progetto svolto; in particolare si discutono i problemi specifici affrontati, le soluzioni valutate e proposte, e l'architettura astratta del sistema sviluppato.
-	
+
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	\section{Aspetti Implementativi}%-Aspetti implementativi: dettagli sulle scelte implementative, ed architettura specifica implementata. Inserire almeno il diagramma delle classi e uno delle interazioni secondo lo standard UML.
-	
+		\subsection{Design Pattern}
+			La nostra implementazione si è subito orientata sull'utilizzo del design pattern Model View Controller\cite{MVC}. MVC si sposa perfettamente con le nostre esigenze: la parte che costituisce il Model infatti gestisce direttamente i dati, la logica e le regole del gioco; la View ha lo scopo di mostrare le informazioni elaborate (e quindi l'output grafico) all'utente, che tramite il Controller è in grado di manipolare.
+			
+		\subsection{Implementazione della logica del gioco}
+			La figura XXX mostra il digramma UML delle classi utilizzate per implementare la logica della nostra applicazione. Lo scopo del Model è quindi quello di generare i giocatori, i dadi, verificare le scommesse e riorganizzare lo stato dello stesso in caso di guasti improvvisi.
+			
+		\subsection{L'interfaccia grafica}
+			Per l'implementazione dell'interfaccia grafica ci siamo affidati alla libreria Open Source Slick2D \cite{Slick}. E' formata da un insieme di tools e funzionalità basate sulle librerie grafiche OpenGL e LWJGL, offrendo quindi un supporto per includere animazioni, immagini, suoni, ecc. alla nostra grafica 2D. L'utilizzo di Slick2D passa attraverso l'implementazione di una classe principale che ha lo scopo di gestire tutte le caratteristiche principali della view come il frame rate, la grandezza della finestra, la modalità di rendering, il passaggio di stato ecc. Tutte le classi che invece definiscono gli stati del sistema, si basano su tre metodi principali: 
+				\begin{itemize}
+					\item void init(): è il metodo richiamato al lancio dell'interfaccia e serve principalmente per l'inizializzazione e il caricamento degli elementi;
+					\item void update(): è un metodo ciclico che aggiorna costantemente lo stato degli elementi inizializzati dal precedente metodo attraverso le informazioni generate dalla componente Controller;
+					\item void render(): in base al refresh rate definito nella classe principale mostra gli elementi disegnati costantemente aggiornati.
+				\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	\section{Aspetti Progettuali}%-Aspetti progettuali: in cui si illustra il progetto svolto; in particolare si discutono i problemi specifici affrontati, le soluzioni valutate e proposte, e l'architettura astratta del sistema sviluppato.
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	\section{Valutazione e Conclusioni}%-Valutazione: confronto delle soluzioni proposte con soluzioni analoghe allo stato dell'arte.
@@ -55,6 +67,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{thebibliography}{}
 		\bibitem{wikiDice} \url{https://en.wikipedia.org/wiki/Liar's\_dice}
-		\bibitem{}
+		\bibitem{MVC} \url{https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller}
+		\bibitem{Slick} \url{http://slick.ninjacave.com/}
 	\end{thebibliography}
 \end{document}
