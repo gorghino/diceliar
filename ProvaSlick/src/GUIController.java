@@ -9,6 +9,7 @@ public class GUIController implements Serializable{
     private int diceAmountSelected = 0;
     public int[] totalDicePlayer;
     public int[] dicePlayer;
+    private int timeMin, timeMax;
     private boolean errorRibasso = false;
     private boolean errorAmountMinore = false;
     
@@ -286,4 +287,22 @@ public class GUIController implements Serializable{
     public void setErrorAmountMinore(boolean errorAmountMinore) {
         this.errorAmountMinore = errorAmountMinore;
     }  
+
+    public int getTimeMin() {
+        return timeMin;
+    }
+
+    public void setTimeMin(int timeMin) {
+        this.timeMin = timeMin;
+    }
+
+    public int getTimeMax() {
+        return timeMax;
+    }
+
+    public void setTimeMax(int timeMax) {
+        this.timeMax = timeMax;
+    }
+    
+    
 }

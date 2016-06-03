@@ -58,6 +58,13 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.setCountDiceCrashed(false);
         gC.setPlayDiceAnimation(true);
         
+        if(!rmiBoard.getInitGame()){
+            gC.setTimeMin(5000);
+            gC.setTimeMax(8000);
+            gC.setShowDice(true);
+        }
+            
+        
         rmiBoard.setnTurn(1);
         rmiBoard.setStatus(Board.PLAYING);
         rmiBoard.setCurrentBet(null);
@@ -112,7 +119,7 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         rmiBoard.getCurrentPlayers().getVectorPlayers()[board.getWinner()].setTurn(true);
         
         //System.out.println(DiceLiar.ANSI_CYAN + "INIZIA IL TURNO " + board.getPlayingPlayer().myID + DiceLiar.ANSI_RESET);
-        //System.out.println(DiceLiar.ANSI_CYAN + "NUOVI DADI" + DiceLiar.ANSI_RESET);
+        System.out.println(DiceLiar.ANSI_CYAN + "NUOVI DADI" + DiceLiar.ANSI_RESET);
         
         rmiBoard.getCurrentPlayers().printDice();
         rmiBoard.setInitGame(false);

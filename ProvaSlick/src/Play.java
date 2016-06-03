@@ -279,22 +279,12 @@ public class Play extends BasicGameState {
         if (gC.isPlayDiceAnimation() || gC.isErrorAmountMinore() || gC.isErrorAmountMinore() || gC.isWinGame() || gC.isLoseGame()) {
             if (gC.getTurn() == 1 || gC.isErrorAmountMinore() || gC.isErrorAmountMinore() || gC.isWinGame() || gC.isLoseGame()) {
                 time += delta;
-                //System.out.println("RESTART INIT BOARD");
             }
 
-            if (time < 3000 && !gC.getBoard().getInitGame() && !gC.isWinGame() && !gC.isLoseGame()) {
-                 //Mettere true per far vedere i dadi di tutti
-                for (int s= 0; s<nPlayers;s++){
-                for(int i =0; i< positionPlayerDice[s].length;i++)
-                    oldPlayerDice[s][i] = positionPlayerDice[s][i];  
-                System.out.println("oldPlayerDice " +s +": "+Arrays.toString(oldPlayerDice[s]));
-            }
-            }
-            if (time >= 3000 && time < 5000) {
+            if (time >= gC.getTimeMin() && time < gC.getTimeMax())
                 gC.setShowDice(false);
-            }
 
-            if (time >= 5000) {
+            if (time >= gC.getTimeMax()) {
                 newTurn = false;
                 gC.setErrorAmountMinore(false);
                 gC.setErrorRibasso(false);
@@ -356,7 +346,6 @@ public class Play extends BasicGameState {
 
                 if ((getX >= 825 && getX <= 1005) && (getY >= 249 && getY <= 299)) { //doubt
                     gC.setDoubtClicked(true);
-                    gC.setShowDice(true);
                 }
             } else {
                 ////////////////////////////////////// Arrows
@@ -419,13 +408,15 @@ public class Play extends BasicGameState {
 
     private void restartInitBoard() {
 
-        if (gC.isRestartBoard()) {
+        if (gC.isRestartBoard()) {        
+            
             for (int s = 0; s < gC.getBoard().getnPlayers(); s++) {
+                System.arraycopy(positionPlayerDice[s], 0, oldPlayerDice[s], 0, positionPlayerDice[s].length);
                 for (int i = 0; i < 5; i++) {
                     positionPlayerDice[s][i] = 0;
                 }
             }
-
+            
             if ((this.drawValueBet = gC.getDiceAmountSelected()) == 0) {
                 drawValueBet = 1;
             }
@@ -544,15 +535,13 @@ public class Play extends BasicGameState {
             }
             cnt++;
         }
-        if (iterI != id) {
-            if (iterJ < 3) {
-                dice.get(oldPlayerDice[iterI][0]).draw(positionDice[iterI][0], Main.ySize - 187);
-                dice.get(oldPlayerDice[iterI][1]).draw(positionDice[iterI][0] + 171, Main.ySize - 187);
-                dice.get(oldPlayerDice[iterI][2]).draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 187);
-            } else {
-                dice.get(oldPlayerDice[iterI][3]).draw(positionDice[iterI][1], Main.ySize - 97);
-                dice.get(oldPlayerDice[iterI][4]).draw(positionDice[iterI][1] + 173, Main.ySize - 97);
-            }
+        if (iterJ < 3) {
+            dice.get(oldPlayerDice[iterI][0]).draw(positionDice[iterI][0], Main.ySize - 187);
+            dice.get(oldPlayerDice[iterI][1]).draw(positionDice[iterI][0] + 171, Main.ySize - 187);
+            dice.get(oldPlayerDice[iterI][2]).draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 187);
+        } else {
+            dice.get(oldPlayerDice[iterI][3]).draw(positionDice[iterI][1], Main.ySize - 97);
+            dice.get(oldPlayerDice[iterI][4]).draw(positionDice[iterI][1] + 173, Main.ySize - 97);
         }
     }
 
@@ -881,6 +870,8 @@ public class Play extends BasicGameState {
     public void setBoard(Board board) {
         this.board = board;
         gC.playDiceAnimation = true;
+        gC.setTimeMin(3000);
+        gC.setTimeMax(5000);
         time = 0;
         timeCheckCrash = 0;
     }
