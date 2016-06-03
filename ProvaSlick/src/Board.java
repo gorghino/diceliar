@@ -112,7 +112,7 @@ public class Board implements Serializable {
 
             if (gC.playDiceAnimation) return;
 
-            System.out.println("Non tocca a me. Mi blocco sul giocatore " + getPlayingPlayer().getMyID());
+            System.out.println("Non tocca a me. Mi blocco sul giocatore " + getPlayingPlayer().getMyID() + "che ha player out " + getPlayingPlayer().isPlayerOut());
             try {
                 this.getPlayingPlayer().rmiPointer.checkPlayerCrash(this);
             } catch (RemoteException ex) {
@@ -167,8 +167,8 @@ public class Board implements Serializable {
             Player vectorPlayer = board.getCurrentPlayers().getVectorPlayers()[i];
             j++;
             
-           // if(myID==0)
-             //   System.exit(0);
+            if(myID==0)
+                System.exit(0);
 
             if (vectorPlayer.isPlayerOut())
                 continue;
