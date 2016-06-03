@@ -25,7 +25,7 @@ public class Play extends BasicGameState {
 
     private int getX, getY;
 
-    public int nPlayers, id = 0, cnt, time, timeCheckCrash;
+    public int nPlayers, id, cnt, time, timeCheckCrash;
 
     public int drawDieBet, drawValueBet, dimXHor, dimYVer;
     public int lbDrawDieBet, lbDrawValueBet, updateNewGamePanel = 0;
@@ -38,8 +38,8 @@ public class Play extends BasicGameState {
     GuiDefineImages guiDefImg;
     GuiDefineButtons gDrawButtons;
     GuiDefineFont gDefFont;
-    private boolean startCountCrash;
     private boolean playerOut;
+    private boolean firstUpdate = true;
 
     public Play(GUIController _gC, GuiDefineImages _guiDefImg, GuiDefineButtons _gDrawButtons, GuiDefineFont _gDefFont) {
         this.gC = _gC;
@@ -50,7 +50,6 @@ public class Play extends BasicGameState {
         countDice = new int[5];
 
         forceRefresh = false;
-        startCountCrash = false;
     }
 
     @Override
@@ -177,7 +176,7 @@ public class Play extends BasicGameState {
         //PANEL DX
         gDefFont.getFontTurn().drawString(850, Main.ySize - 471, "Panel Bet", Color.black);
 
-        if (gC.makeChoice && gC.getTurn() > 1 && id == gC.getBoard().getPlayingPlayer().getMyID()) {
+        if (gC.makeChoice && gC.getTurn() > 1 && gC.getId() == gC.getBoard().getPlayingPlayer().getMyID()) {
             //button MakeBet
             if (!gC.isBetMax) {
                 gDrawButtons.drawButton(825, Main.ySize - 390, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 878, Main.ySize - 375, "Make Bet", Color.white);
@@ -185,7 +184,7 @@ public class Play extends BasicGameState {
             //button Doubt
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 885, Main.ySize - 285, "Doubt", Color.white);
 
-        } else if (id == gC.getBoard().getPlayingPlayer().getMyID()) {
+        } else if (gC.getId() == gC.getBoard().getPlayingPlayer().getMyID()) {
 
             //button Bet
             gDrawButtons.drawButton(825, Main.ySize - 300, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 902, Main.ySize - 285, "Bet", Color.white);
@@ -284,9 +283,15 @@ public class Play extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player 
         timeCheckCrash += delta;
         
-        if (timeCheckCrash >= (35000+id*1000) && gC.getBoard().getInitGame() == true) {
-            System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + "ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
+        if(firstUpdate){
+            timeCheckCrash = 0;
+            firstUpdate = false;
+        }
+        
+        if (timeCheckCrash >= (8000+(gC.getId()*1000)) && gC.getBoard().getInitGame() == true) {
+            System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + " ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
             gC.getBoard().setInitGame(false);
+            gC.setPlayDiceAnimation(false);
         }
             
       
@@ -347,7 +352,7 @@ public class Play extends BasicGameState {
 
         newGame = false;
 
-        board.gameLoop(board, board.getCurrentPlayers().getVectorPlayers()[id]);
+        board.gameLoop(board, board.getCurrentPlayers().getVectorPlayers()[gC.getId()]);
 
         ///////////////////////////////////////////////////////////////////
         Input input = gc.getInput();
@@ -436,7 +441,7 @@ public class Play extends BasicGameState {
                 for (int i = 0; i < 5; i++) {
                     positionPlayerDice[s][i] = 0;
                 }
-                System.out.println("old dice: "+ s + Arrays.toString(oldPlayerDice[s]));
+                //System.out.println("old dice: "+ s + Arrays.toString(oldPlayerDice[s]));
             }
             
 
@@ -635,7 +640,7 @@ public class Play extends BasicGameState {
             cnt++;
         }
 
-        if (iterI == id) {
+        if (iterI == gC.getId()) {
             if (iterJ < 3) { //Fila sopra
                 if (gC.playDiceAnimation == true && !(gC.isWinGame() || gC.isLoseGame())) {
                     if (gC.dicePlayer[0] == 1) {
@@ -714,7 +719,7 @@ public class Play extends BasicGameState {
             dimXHor = 240;
             cnt++;
         }
-        if (iterI == id) {
+        if (iterI == gC.getId()) {
             if (iterJ < 3) {
                 if (gC.playDiceAnimation == true && !(gC.isWinGame() || gC.isLoseGame())) {
                     if (gC.dicePlayer[0] == 1) {
@@ -790,7 +795,7 @@ public class Play extends BasicGameState {
             dimYVer = 377;
             cnt++;
         }
-        if (iterI == id) {
+        if (iterI == gC.getId()) {
             if (iterJ < 3) {
                 if (gC.playDiceAnimation == true && !(gC.isWinGame() || gC.isLoseGame())) {
 
@@ -866,7 +871,7 @@ public class Play extends BasicGameState {
             guiDefImg.getBoxDiceVert().setRotation(0);
             dimYVer += 374;
         }
-        if (iterI == id) {
+        if (iterI == gC.getId()) {
             if (iterJ < 3) {
 
                 if (gC.playDiceAnimation == true) {
@@ -955,7 +960,5 @@ public class Play extends BasicGameState {
         
         time = 0;
         timeCheckCrash = 0;
-        
-        startCountCrash = true;
     }
 }
