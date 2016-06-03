@@ -167,8 +167,8 @@ public class Board implements Serializable {
             Player vectorPlayer = board.getCurrentPlayers().getVectorPlayers()[i];
             j++;
             
-            //if(myID==0)
-               // System.exit(0);
+           // if(myID==0)
+             //   System.exit(0);
 
             if (vectorPlayer.isPlayerOut())
                 continue;
