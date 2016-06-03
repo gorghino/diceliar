@@ -284,7 +284,7 @@ public class Play extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player 
         timeCheckCrash += delta;
         
-        if (timeCheckCrash >= 40000 && gC.getBoard().getInitGame() == true) {
+        if (timeCheckCrash >= (35000+id*1000) && gC.getBoard().getInitGame() == true) {
             System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + "ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
             gC.getBoard().setInitGame(false);
         }
@@ -296,8 +296,7 @@ public class Play extends BasicGameState {
             restartInitBoard();
             time = 0;
             timeCheckCrash = 0;
-            delta = 0;
-            playerOut = true;
+            delta = 0; 
             forceRefresh = true;
         }
 
@@ -318,6 +317,7 @@ public class Play extends BasicGameState {
                 if (gC.getBoard().getInitGame() == false) {
                     gC.setPlayDiceAnimation(false);
                     time = 0;
+                    playerOut = true;
                 }
             }
         }
