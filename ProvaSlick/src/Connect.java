@@ -22,13 +22,12 @@ public class Connect extends BasicGameState {
     RMIGameController gameC;
     RMI rmiNext;
     
-    Image background, backPanel, button;
+    private TextField ipField,portField;
     
-    TrueTypeFont textFont, textFontButton, textFontLobby;
+    private int getX, getY;
     
-    TextField ipField,portField;
     
-    int waitConnections, getX, getY;
+    int waitConnections;
     
     boolean loadPlayers = false,
             clickedPlay = false,
@@ -51,32 +50,24 @@ public class Connect extends BasicGameState {
     
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
-        
-        background = guiDefImg.getBackground();
-        backPanel = guiDefImg.getBackPanel();
-        button = guiDefImg.getButton();
-        
-        textFontButton = gDefFont.getFontButton();
-        textFont = gDefFont.getTextFont();
-        textFontLobby = gDefFont.getTextFontLobby();
-        
-        ipField = new TextField(gc, textFont, 535, Main.ySize-466, 600, 38);
-        portField = new TextField(gc, textFont, 535, Main.ySize-371, 150, 38);
+               
+        ipField = new TextField(gc, gDefFont.getTextFont(), 535, Main.ySize-466, 600, 38);
+        portField = new TextField(gc, gDefFont.getTextFont(), 535, Main.ySize-371, 150, 38);
         
     }
         
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException{
 
-        background.draw();
-        backPanel.draw(287, Main.ySize-519);
+        guiDefImg.getBackground().draw();
+        guiDefImg.getBackPanel().draw(287, Main.ySize-519);
 
-        backPanel.draw(550,Main.ySize-705,GuiDefineButtons.buttonWidth, 60);
+        guiDefImg.getBackPanel().draw(550,Main.ySize-705,GuiDefineButtons.buttonWidth, 60);
         
-        textFontLobby.drawString(600, Main.ySize-689, "Lobby", Color.black);
-        textFont.drawString(340, 285, "Insert server",Color.black);
-        textFont.drawString(340, 320, "IP Address",Color.black);
-        textFont.drawString(315 , 400, "Insert your Port",Color.black);
+        gDefFont.getTextFontLobby().drawString(600, Main.ySize-689, "Lobby", Color.black);
+        gDefFont.getTextFont().drawString(340, 285, "Insert server",Color.black);
+        gDefFont.getTextFont().drawString(340, 320, "IP Address",Color.black);
+        gDefFont.getTextFont().drawString(315 , 400, "Insert your Port",Color.black);
         
         gDrawButtons.drawButton(550, 514, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 620, 529, "Play", Color.white);
 
@@ -85,7 +76,7 @@ public class Connect extends BasicGameState {
         portField.render(gc, g);
         
         if (clickedPlaySkip == false)
-            textFont.drawString(500, 600,"Connected. Wait  other players... ",Color.white);
+            gDefFont.getTextFont().drawString(500, 600,"Connected. Wait  other players... ",Color.white);
             
         
         
@@ -133,7 +124,7 @@ public class Connect extends BasicGameState {
                         startBoard = dl.initBoard(gC);
                         gC.setBoard(startBoard);
                         startBoard.initGame(startBoard, dl.rmiNext);
-                        runPlay(sbg, gc);
+                        runPlay(sbg);
                         
                     } catch (RemoteException | AlreadyBoundException | NotBoundException | UnknownHostException ex) {
                         Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
@@ -155,7 +146,7 @@ public class Connect extends BasicGameState {
         return 1;
     }
     
-    public void runPlay(StateBasedGame sbg,GameContainer gc) throws SlickException{
+    private void runPlay(StateBasedGame sbg) throws SlickException{
         Play playState = (Play)sbg.getState(Main.play);
         playState.setBoard(startBoard);
         sbg.enterState(2,new FadeOutTransition(Color.gray),new FadeInTransition(Color.gray));

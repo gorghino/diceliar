@@ -57,7 +57,7 @@ public class GUIController implements Serializable{
         System.out.println("--------------------------------");
     }
     
-    public static int sumOf(int... integers) {
+        public static int sumOf(int... integers) {
         int total = 0;
         for (int i = 0; i < integers.length; total += integers[i++]);
         return total;
