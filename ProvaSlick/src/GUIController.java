@@ -14,6 +14,7 @@ public class GUIController implements Serializable{
     private boolean errorAmountMinore = false;
     
     // Check button Clicked
+    public boolean playerOut = true;
     public boolean PlayConnectedClicked = false;
     public boolean makeBetClicked = false;
     public boolean doubtClicked = false; 
@@ -30,7 +31,7 @@ public class GUIController implements Serializable{
     private boolean countDiceCrashed = false;
     private boolean updateBetValues = false;
     private boolean showDice = false;
-
+    
     public GUIController() {
         totalDicePlayer = new int[]{0,0,0,0,0,0,0,0};
         dicePlayer = new int[]{1,1,1,1,1};
@@ -302,6 +303,14 @@ public class GUIController implements Serializable{
 
     public void setTimeMax(int timeMax) {
         this.timeMax = timeMax;
+    }
+
+    public boolean isPlayerOut() {
+        return playerOut;
+    }
+
+    public void setPlayerOut(boolean playerOut) {
+        this.playerOut = playerOut;
     }
     
     

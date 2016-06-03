@@ -134,19 +134,16 @@ public class Play extends BasicGameState {
             for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
                     if (!gC.isShowDice()) {
-                        System.out.println("Disegna i dadi di 0 e 1 ");
                         drawPlayerOneTwo(i, j);
                     } else {
-                        System.out.println("Mostra i dadi di 0 e 1");
+                        gC.setPlayerOut(false);
                         showPlayerDiceOneTwo(i, j);
                     }
 
                 } else if (i > 1 && i < 4) {
                     if (!gC.isShowDice()) {
-                        System.out.println("Disegna i dadi di 2 e 3 ");
                         drawPlayerThreeFour(i, j);
                     } else {
-                        System.out.println("Mostra i dadi di 2 e 3");
                         showPlayerDiceThreeFour(i, j);
                     }
                 } else if (i > 3 && i < 6) {
@@ -260,10 +257,10 @@ public class Play extends BasicGameState {
         //CHECK PLAYER OUT
         for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             if (i == 0 || i == 1 || i == 4 || i == 5) {
-                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut()) {
+                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && gC.playerOut == true) {
                     guiDefImg.getPlayerRemovedHoriz().draw(selectorPosition[i][0], selectorPosition[i][1]);
                 }
-            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut()) {
+            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && gC.playerOut == true) {
                 guiDefImg.getPlayerRemovedVert().draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
@@ -308,6 +305,7 @@ public class Play extends BasicGameState {
                 if (gC.getBoard().getInitGame() == false) {
                     gC.setPlayDiceAnimation(false);
                     time = 0;
+                    gC.setPlayerOut(true);
                 }
             }
         }
@@ -440,7 +438,6 @@ public class Play extends BasicGameState {
 
             gC.isBetMax = false;
             gC.setRestartBoard(false);
-
             forceRefresh = true;
         }
 
@@ -448,7 +445,6 @@ public class Play extends BasicGameState {
 
         newTurn = true; // Start delle animazioni e del pannello del nuovo turno
         gC.setInitBoard(false);
-
         id = gC.getBoard().getMyID();
 
         nPlayers = gC.getBoard().getnPlayers();
