@@ -116,15 +116,16 @@ public class Board implements Serializable {
             try {
                 this.getPlayingPlayer().rmiPointer.checkPlayerCrash(this);
             } catch (RemoteException ex) {
-                System.out.println(DiceLiar.ANSI_RED + "!! CRASH DEL PLAYING PLAYER RILEVATO. Il giocatore " + currentPlayers.getVectorPlayers()[getPlayingPlayer().getMyID()].getMyID() + "non è raggiungibile." + DiceLiar.ANSI_RESET);
-                int newPlaying = currentPlayers.removePlayer(currentPlayers.getVectorPlayers()[getPlayingPlayer().getMyID()], true, false);
+                int idCrashed = getPlayingPlayer().getMyID();
+                System.out.println(DiceLiar.ANSI_RED + "!! CRASH DEL PLAYING PLAYER RILEVATO. Il giocatore " + idCrashed + " non è raggiungibile." + DiceLiar.ANSI_RESET);
+                int newPlaying = currentPlayers.removePlayer(currentPlayers.getVectorPlayers()[idCrashed], true, false);
 
-                if (getCurrentPlayers().getPlayersAlive() == 1 && this.winner == myID) {
+                if (getCurrentPlayers().getPlayersAlive() == 1 && getWinner() == myID) {
                     System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
                     gC.setWinGame(true);
                     gC.setRestartBoard(false);
                     gC.setInitBoard(false);
-                    gC.playDiceAnimation = false;
+                    gC.setPlayDiceAnimation(false);
                     return;
                 }
 
@@ -132,7 +133,8 @@ public class Board implements Serializable {
                     System.out.println(DiceLiar.ANSI_CYAN + "ID: " + myID + " sono il nuovo playingPlayer" + DiceLiar.ANSI_RESET);
                     setPlayingPlayer(currentPlayers.getVectorPlayers()[myID]);
                     getPlayingPlayer().setTurn(true);
-                    this.winner = myID;
+                    setWinner(myID);
+                    setLoser(idCrashed);
                     
                     if (board.getnTurn() == 1) {
                         //E' crashato il primo giocatore del turno, ridistribuisco i dadi in caso sia crashato mentre li distribuiva
@@ -164,6 +166,9 @@ public class Board implements Serializable {
         for (int i = (board.myID + 1) % board.getnPlayers(); j < board.getnPlayers(); i = (i + 1) % board.getnPlayers()) {
             Player vectorPlayer = board.getCurrentPlayers().getVectorPlayers()[i];
             j++;
+            
+            //if(myID==0)
+               // System.exit(0);
 
             if (vectorPlayer.isPlayerOut())
                 continue;

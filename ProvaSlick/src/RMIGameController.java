@@ -57,14 +57,13 @@ public class RMIGameController extends UnicastRemoteObject implements RMI {
         gC.setDiceValueSelected(0);
         gC.setCountDiceCrashed(false);
         gC.setPlayDiceAnimation(true);
-        
+      
         if(!rmiBoard.getInitGame()){
             gC.setTimeMin(5000);
             gC.setTimeMax(8000);
             gC.setShowDice(true);
         }
-            
-        
+              
         rmiBoard.setnTurn(1);
         rmiBoard.setStatus(Board.PLAYING);
         rmiBoard.setCurrentBet(null);

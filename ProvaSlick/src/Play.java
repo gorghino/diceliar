@@ -38,6 +38,8 @@ public class Play extends BasicGameState {
     GuiDefineImages guiDefImg;
     GuiDefineButtons gDrawButtons;
     GuiDefineFont gDefFont;
+    private boolean startCountCrash;
+    private boolean playerOut;
 
     public Play(GUIController _gC, GuiDefineImages _guiDefImg, GuiDefineButtons _gDrawButtons, GuiDefineFont _gDefFont) {
         this.gC = _gC;
@@ -48,6 +50,7 @@ public class Play extends BasicGameState {
         countDice = new int[5];
 
         forceRefresh = false;
+        startCountCrash = false;
     }
 
     @Override
@@ -56,6 +59,8 @@ public class Play extends BasicGameState {
         dice = guiDefImg.getArrayDice();
 
         nPlayers = 8;
+        
+        playerOut = true;
 
         positionPlayerDice = new int[nPlayers][5];
         oldPlayerDice = new int[nPlayers][5];
@@ -134,19 +139,20 @@ public class Play extends BasicGameState {
             for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
                     if (!gC.isShowDice()) {
-                        System.out.println("Disegna i dadi di 0 e 1 ");
+                        //System.out.println("Disegna i dadi di 0 e 1 ");
                         drawPlayerOneTwo(i, j);
                     } else {
-                        System.out.println("Mostra i dadi di 0 e 1");
+                        //System.out.println("Mostra i dadi di 0 e 1");
+                        playerOut = false;
                         showPlayerDiceOneTwo(i, j);
                     }
 
                 } else if (i > 1 && i < 4) {
                     if (!gC.isShowDice()) {
-                        System.out.println("Disegna i dadi di 2 e 3 ");
+                        //System.out.println("Disegna i dadi di 2 e 3 ");
                         drawPlayerThreeFour(i, j);
                     } else {
-                        System.out.println("Mostra i dadi di 2 e 3");
+                        //System.out.println("Mostra i dadi di 2 e 3");
                         showPlayerDiceThreeFour(i, j);
                     }
                 } else if (i > 3 && i < 6) {
@@ -260,10 +266,10 @@ public class Play extends BasicGameState {
         //CHECK PLAYER OUT
         for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             if (i == 0 || i == 1 || i == 4 || i == 5) {
-                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut()) {
+                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && playerOut) {
                     guiDefImg.getPlayerRemovedHoriz().draw(selectorPosition[i][0], selectorPosition[i][1]);
                 }
-            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut()) {
+            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && playerOut) {
                 guiDefImg.getPlayerRemovedVert().draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
@@ -275,19 +281,23 @@ public class Play extends BasicGameState {
     }
 
     @Override
-    public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player
+    public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException { // run this every frame to display graphics to the player 
         timeCheckCrash += delta;
-
-        if (timeCheckCrash >= 15000 && gC.getBoard().getInitGame() == true) {
+        
+        if (timeCheckCrash >= 40000 && gC.getBoard().getInitGame() == true) {
             System.out.println(DiceLiar.ANSI_RED + timeCheckCrash + "ATTENZIONE! PROBABILE CRASH DI CHI DOVEVA INVIARE I DADI " + DiceLiar.ANSI_RESET);
             gC.getBoard().setInitGame(false);
         }
+            
+      
         //System.out.println("GC.InitBoard: "+ gC.initBoard + "  restartBoard: " + gC.restartBoard + "   board.initBoard: " + getBoard().initBoard);
         if ((gC.isInitBoard() == true || gC.isRestartBoard() == true) && gC.getBoard().getInitGame() == false) {
             System.out.println("RESTART INIT BOARD");
             restartInitBoard();
             time = 0;
+            timeCheckCrash = 0;
             delta = 0;
+            playerOut = true;
             forceRefresh = true;
         }
 
@@ -939,9 +949,13 @@ public class Play extends BasicGameState {
     public void setBoard(Board board) {
         this.board = board;
         gC.playDiceAnimation = true;
+        
         gC.setTimeMin(3000);
         gC.setTimeMax(5000);
+        
         time = 0;
         timeCheckCrash = 0;
+        
+        startCountCrash = true;
     }
 }
