@@ -14,7 +14,7 @@ public class GUIController implements Serializable{
     private boolean errorAmountMinore = false;
     
     // Check button Clicked
-    public boolean playerOut = true;
+    
     public boolean PlayConnectedClicked = false;
     public boolean makeBetClicked = false;
     public boolean doubtClicked = false; 
@@ -305,13 +305,5 @@ public class GUIController implements Serializable{
         this.timeMax = timeMax;
     }
 
-    public boolean isPlayerOut() {
-        return playerOut;
-    }
-
-    public void setPlayerOut(boolean playerOut) {
-        this.playerOut = playerOut;
-    }
-    
     
 }

@@ -30,7 +30,7 @@ public class Play extends BasicGameState {
     public int drawDieBet, drawValueBet, dimXHor, dimYVer;
     public int lbDrawDieBet, lbDrawValueBet, updateNewGamePanel = 0;
 
-    public boolean clickToChangeDie = false, clickToChangeValue = false, newTurn = false, newGame = true, forceRefresh;
+    public boolean clickToChangeDie = false, clickToChangeValue = false, newTurn = false, newGame = true, forceRefresh,  playerOut = true;;
 
     Board board;
 
@@ -136,7 +136,7 @@ public class Play extends BasicGameState {
                     if (!gC.isShowDice()) {
                         drawPlayerOneTwo(i, j);
                     } else {
-                        gC.setPlayerOut(false);
+                        playerOut = false;
                         showPlayerDiceOneTwo(i, j);
                     }
 
@@ -257,10 +257,10 @@ public class Play extends BasicGameState {
         //CHECK PLAYER OUT
         for (int i = 0; i < gC.getBoard().getnPlayers(); i++) {
             if (i == 0 || i == 1 || i == 4 || i == 5) {
-                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && gC.playerOut == true) {
+                if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && playerOut == true) {
                     guiDefImg.getPlayerRemovedHoriz().draw(selectorPosition[i][0], selectorPosition[i][1]);
                 }
-            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && gC.playerOut == true) {
+            } else if (gC.getBoard().getCurrentPlayers().getVectorPlayers()[i].isPlayerOut() && playerOut == true) {
                 guiDefImg.getPlayerRemovedVert().draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
@@ -305,7 +305,7 @@ public class Play extends BasicGameState {
                 if (gC.getBoard().getInitGame() == false) {
                     gC.setPlayDiceAnimation(false);
                     time = 0;
-                    gC.setPlayerOut(true);
+                    playerOut = true;
                 }
             }
         }
