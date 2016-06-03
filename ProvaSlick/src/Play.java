@@ -18,7 +18,7 @@ public class Play extends BasicGameState {
 
     public ArrayList<Image> dice = new ArrayList<>();
 
-    Animation animationDie1,animationDie2, animationDie3, animationDie4, animationDie5;
+    Animation animationDie1, animationDie2, animationDie3, animationDie4, animationDie5;
 
     int[][] positionPlayerDice, positionDice, playerNamePosition, selectorPosition, oldPlayerDice;
     int[] amountDicePlayers, countDice;
@@ -27,8 +27,8 @@ public class Play extends BasicGameState {
 
     public int nPlayers, id = 0, cnt, time, timeCheckCrash;
 
-    public  int drawDieBet, drawValueBet, dimXHor, dimYVer;
-    public int lbDrawDieBet,lbDrawValueBet, updateNewGamePanel = 0;
+    public int drawDieBet, drawValueBet, dimXHor, dimYVer;
+    public int lbDrawDieBet, lbDrawValueBet, updateNewGamePanel = 0;
 
     public boolean clickToChangeDie = false, clickToChangeValue = false, newTurn = false, newGame = true, forceRefresh;
 
@@ -52,7 +52,7 @@ public class Play extends BasicGameState {
 
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-        
+
         dice = guiDefImg.getArrayDice();
 
         nPlayers = 8;
@@ -134,16 +134,32 @@ public class Play extends BasicGameState {
             for (int j = 0; j < 5; j++) {
                 if (i <= 1) {
                     if (!gC.isShowDice()) {
+                        System.out.println("Disegna i dadi di 0 e 1 ");
                         drawPlayerOneTwo(i, j);
                     } else {
-                        showPlayerDice(i, j);
+                        System.out.println("Mostra i dadi di 0 e 1");
+                        showPlayerDiceOneTwo(i, j);
                     }
+
                 } else if (i > 1 && i < 4) {
-                    drawPlayerThreeFour(i, j);
+                    if (!gC.isShowDice()) {
+                        System.out.println("Disegna i dadi di 2 e 3 ");
+                        drawPlayerThreeFour(i, j);
+                    } else {
+                        System.out.println("Mostra i dadi di 2 e 3");
+                        showPlayerDiceThreeFour(i, j);
+                    }
                 } else if (i > 3 && i < 6) {
-                    drawPlayerFiveSix(i, j);
-                } else {
+                    if (!gC.isShowDice()) {
+                        drawPlayerFiveSix(i, j);
+                    } else {
+                        showPlayerDiceFiveSix(i, j);
+                    }
+                } else 
+                    if (!gC.isShowDice()) {
                     drawPlayerSevenEight(i, j);
+                } else {
+                    showPlayerDiceSevenEight(i, j);
                 }
             }
         }
@@ -188,7 +204,6 @@ public class Play extends BasicGameState {
             }
 
             if (clickToChangeValue) {
-                //gDefFont.getFontValue().drawString(1005, 385, "" + drawValueBet, Color.black);
                 gDefFont.getFontValue().drawString(1005, 385, "" + drawValueBet, Color.black);
             }
 
@@ -281,8 +296,9 @@ public class Play extends BasicGameState {
                 time += delta;
             }
 
-            if (time >= gC.getTimeMin() && time < gC.getTimeMax())
+            if (time >= gC.getTimeMin() && time < gC.getTimeMax()) {
                 gC.setShowDice(false);
+            }
 
             if (time >= gC.getTimeMax()) {
                 newTurn = false;
@@ -297,7 +313,6 @@ public class Play extends BasicGameState {
         }
 
         if (gC.playDiceAnimation) {
-            //System.out.println("Play dice Animation"); 
             return;
         }
 
@@ -369,13 +384,11 @@ public class Play extends BasicGameState {
                     drawValueBet -= 1;
                     if (gC.getDiceAmountSelected() == 0) {
                         if (drawValueBet < 1) {
-                            drawValueBet = sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
+                            drawValueBet = sumOf(gC.totalDicePlayer); 
                         }
                     } else if (drawValueBet < gC.getDiceAmountSelected()) {
-                        drawValueBet = sumOf(gC.totalDicePlayer); //Temporaneo, devo sapere quanti dadi ogni giocare ha dopo ogni scommessa
+                        drawValueBet = sumOf(gC.totalDicePlayer); 
                     }
-
-                    //clickToChangeValue = false;
                 }
                 if ((getX >= 1055 && getX <= 1111) && (getY >= 332 && getY <= 389)) { //right arrow Value
                     clickToChangeValue = true;
@@ -389,9 +402,7 @@ public class Play extends BasicGameState {
                         }
 
                     }
-                    //clickToChangeValue = false;
                 }
-
                 //////////////////////////////////////
                 ///////////////////////////////////// Buttons
                 if ((getX >= 825 && getX <= 1005) && (getY >= 249 && getY <= 299)) { //bet
@@ -408,15 +419,17 @@ public class Play extends BasicGameState {
 
     private void restartInitBoard() {
 
-        if (gC.isRestartBoard()) {        
-            
+        if (gC.isRestartBoard()) {
+
             for (int s = 0; s < gC.getBoard().getnPlayers(); s++) {
                 System.arraycopy(positionPlayerDice[s], 0, oldPlayerDice[s], 0, positionPlayerDice[s].length);
                 for (int i = 0; i < 5; i++) {
                     positionPlayerDice[s][i] = 0;
                 }
+                System.out.println("old dice: "+ s + Arrays.toString(oldPlayerDice[s]));
             }
             
+
             if ((this.drawValueBet = gC.getDiceAmountSelected()) == 0) {
                 drawValueBet = 1;
             }
@@ -454,8 +467,9 @@ public class Play extends BasicGameState {
         for (int s = 0; s < nPlayers; s++) {
 
             amountDicePlayers = gC.getBoard().getCurrentPlayers().getVectorPlayers()[s].getmyDiceValue();
-            for(int i =0; i< amountDicePlayers.length;i++)
-              positionPlayerDice[s][i] = amountDicePlayers[i];  
+            for (int i = 0; i < amountDicePlayers.length; i++) {
+                positionPlayerDice[s][i] = amountDicePlayers[i];
+            }
         }
     }
 
@@ -525,7 +539,7 @@ public class Play extends BasicGameState {
         }
     }
 
-    private void showPlayerDice(int iterI, int iterJ) {
+    private void showPlayerDiceOneTwo(int iterI, int iterJ) {
         if (cnt <= 1) {
             guiDefImg.getBoxDiceHoriz().draw(dimXHor, Main.ySize - 213);
             if (dimXHor < 690) {
@@ -542,6 +556,61 @@ public class Play extends BasicGameState {
         } else {
             dice.get(oldPlayerDice[iterI][3]).draw(positionDice[iterI][1], Main.ySize - 97);
             dice.get(oldPlayerDice[iterI][4]).draw(positionDice[iterI][1] + 173, Main.ySize - 97);
+        }
+    }
+
+    private void showPlayerDiceThreeFour(int iterI, int iterJ) {
+        if (cnt <= 3) {
+            guiDefImg.getBoxDiceVert().draw(1153, Main.ySize - dimYVer);
+            dimYVer += 374;
+            dimXHor = 240;
+            cnt++;
+        }
+        if (iterJ < 3) {
+            dice.get(oldPlayerDice[iterI][0]).draw(1175, positionDice[iterI][0]);
+            dice.get(oldPlayerDice[iterI][1]).draw(1175, positionDice[iterI][0] - 134);
+            dice.get(oldPlayerDice[iterI][2]).draw(1175, positionDice[iterI][0] - (134 * 2));
+        } else {
+            dice.get(oldPlayerDice[iterI][3]).draw(1265, positionDice[iterI][1]);
+            dice.get(oldPlayerDice[iterI][4]).draw(1265, positionDice[iterI][1] - 136);
+        }
+
+    }
+
+    private void showPlayerDiceFiveSix(int iterI, int iterJ) {
+        if (cnt <= 5) {
+            guiDefImg.getBoxDiceHoriz().draw(dimXHor, Main.ySize - 768);
+            dimXHor += 450;
+            dimYVer = 377;
+            cnt++;
+        }
+        if (iterJ < 3) {
+            dice.get(oldPlayerDice[iterI][0]).draw(positionDice[iterI][0], Main.ySize - 743);
+            dice.get(oldPlayerDice[iterI][1]).draw(positionDice[iterI][0] + 171, Main.ySize - 743);
+            dice.get(oldPlayerDice[iterI][2]).draw(positionDice[iterI][0] + (171 * 2), Main.ySize - 743);
+        } else {
+            dice.get(oldPlayerDice[iterI][3]).draw(positionDice[iterI][1], Main.ySize - 653);
+            dice.get(oldPlayerDice[iterI][4]).draw(positionDice[iterI][1] + 173, Main.ySize - 653);
+
+        }
+
+    }
+
+    private void showPlayerDiceSevenEight(int iterI, int iterJ) {
+        if (cnt <= 7) {
+            guiDefImg.getBoxDiceVert().setRotation(180);
+            guiDefImg.getBoxDiceVert().draw(0, Main.ySize - dimYVer);
+            guiDefImg.getBoxDiceVert().setRotation(0);
+            dimYVer += 374;
+        }
+        if (iterJ<3){
+            dice.get(oldPlayerDice[iterI][0]).draw(115, positionDice[iterI][0]);
+            dice.get(oldPlayerDice[iterI][1]).draw(115, positionDice[iterI][0]-134);
+            dice.get(oldPlayerDice[iterI][2]).draw(115, positionDice[iterI][0] - (134*2));
+        }
+        else{
+            dice.get(oldPlayerDice[iterI][3]).draw(25, positionDice[iterI][1]);
+            dice.get(oldPlayerDice[iterI][4]).draw(25, positionDice[iterI][1]-136);
         }
     }
 
