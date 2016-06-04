@@ -25,10 +25,10 @@ public class Play extends BasicGameState {
 
     private int getX, getY;
 
-    public int nPlayers, id, cnt, time, timeCheckCrash;
+    private int nPlayers, cnt, time, timeCheckCrash;//1
 
-    public int drawDieBet, drawValueBet, dimXHor, dimYVer;
-    public int lbDrawDieBet, lbDrawValueBet, updateNewGamePanel = 0;
+    private int drawDieBet, drawValueBet, dimXHor, dimYVer;//0
+    public int lbDrawDieBet, lbDrawValueBet, updateNewGamePanel = 0, id;
 
     public boolean clickToChangeDie = false, clickToChangeValue = false, newTurn = false, newGame = true, forceRefresh;
 
@@ -219,7 +219,9 @@ public class Play extends BasicGameState {
         gDefFont.getFontTurn().drawString(269, Main.ySize - 471, "Last bet made by: ", Color.black);
 
         //Playing Player stat
-        gDefFont.getFontTurn().drawString(275, Main.ySize - 305, "Current playing player's state:", Color.black);
+        gDefFont.getFontTurn().drawString(275, Main.ySize - 305, "Current playing player", Color.black);
+        gDefFont.getPinesFont().drawString(525, Main.ySize - 310, "' ", Color.black);
+        gDefFont.getFontTurn().drawString(533, Main.ySize - 305, "s state:", Color.black);
         gDefFont.getFontTurn().drawString(307, Main.ySize - 272, "Player " + gC.getPlayingPlayer(), Color.black);
         gDefFont.getFontTurn().drawString(524, Main.ySize - 272, "N Dice: " + gC.totalDicePlayer[gC.getPlayingPlayer()], Color.black);
 

@@ -4,19 +4,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Board.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Bet.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Dice.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/GUIController.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Players.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/GuiDefineImages.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/RMI.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Play.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Player.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Connect.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/Main.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/RMIGameController.java</file>
-            <file>file:/home/gorgo/tmp/diceliar/ProvaSlick/src/DiceLiar.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/GUIController.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/Players.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/GuiDefineFont.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/Menu.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/Play.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/DiceLiar.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/RMIGameController.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/Player.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/Board.java</file>
+            <file>file:/home/proietfb/Documents/diceliar/ProvaSlick/src/GuiDefineImages.java</file>
         </group>
     </open-files>
 </project-private>

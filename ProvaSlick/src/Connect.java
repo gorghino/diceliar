@@ -27,7 +27,7 @@ public class Connect extends BasicGameState {
     private int getX, getY;
     
     
-    int waitConnections;
+    public int waitConnections;
     
     boolean loadPlayers = false,
             clickedPlay = false,
@@ -51,8 +51,8 @@ public class Connect extends BasicGameState {
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{        
                
-        ipField = new TextField(gc, gDefFont.getTextFont(), 535, Main.ySize-466, 600, 38);
-        portField = new TextField(gc, gDefFont.getTextFont(), 535, Main.ySize-371, 150, 38);
+        ipField = new TextField(gc, gDefFont.getPinesFont(), 535, Main.ySize-466, 600, 38);
+        portField = new TextField(gc, gDefFont.getPinesFont(), 535, Main.ySize-371, 150, 38);
         
     }
         

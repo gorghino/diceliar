@@ -13,9 +13,9 @@ import org.newdawn.slick.util.ResourceLoader;
  */
 public class GuiDefineFont {
    
-    TrueTypeFont fontButton, textFont, textFontLobby, fontValue, fontTurn;
+    TrueTypeFont fontButton, textFont, textFontLobby, fontValue, fontTurn, pinesFont;
 
-    Font awtFont, awtFontButton, awtFontText, awtFontTextButton, awtFontTextLobby, awtFontValue, awtFontTurn;
+    Font awtFont, awtFontButton, awtFontText, awtFontTextButton, awtFontTextLobby, awtFontValue, awtFontTurn, awtPinesFont;
     
     public GuiDefineFont(){}
     
@@ -23,6 +23,7 @@ public class GuiDefineFont {
 
         try {
             InputStream inputStream = ResourceLoader.getResourceAsStream("font/VarsityPlaybook-DEMO.ttf");
+            InputStream inputStream2 = ResourceLoader.getResourceAsStream("font/TT Pines Bold Italic DEMO.otf");
             
             //Menu
             awtFont = Font.createFont(java.awt.Font.TRUETYPE_FONT, inputStream);
@@ -44,6 +45,12 @@ public class GuiDefineFont {
             awtFontTurn = awtFont;
             awtFontTurn = awtFontTurn.deriveFont(32f);
             fontTurn = new TrueTypeFont(awtFontTurn, true);
+            
+            //Font2
+            awtPinesFont = Font.createFont(java.awt.Font.TRUETYPE_FONT, inputStream2);
+            awtPinesFont = awtPinesFont.deriveFont(30f);
+            pinesFont = new TrueTypeFont(awtPinesFont, true);
+            
 
         } catch (FontFormatException | IOException e) {
         }
@@ -69,6 +76,10 @@ public class GuiDefineFont {
         return fontTurn;
     }
 
+    public TrueTypeFont getPinesFont() {
+        return pinesFont;
+    }
+    
     
     
 }

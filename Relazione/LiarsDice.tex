@@ -56,11 +56,17 @@
 L'obiettivo primario del gioco progettato è la tolleranza ai guasti di tipo crash, ottenuta mediante uno studio accurato del sistema di comunicazione tra i processi giocanti e lo scambio di informazioni per mantenere la coerenza durante l'intera partita.\\
 
 	\subsection{Il gioco}
-	Il gioco, dal punto di vista progettuale, non differisce dalla versione realmente giocata e propone a chi gioca, una grafica accattivante e dinamica in grado di visualizzare ogni mossa fatta da ogni giocatore attivo.\\
+	Il gioco (fig.\ref{board}), dal punto di vista progettuale, non differisce dalla versione realmente giocata e propone a chi gioca, una grafica accattivante e dinamica in grado di visualizzare ogni mossa fatta da ogni giocatore attivo.\\
 	Ognuno è costantemente aggiornato sulla situazione dei propri dadi e di quelli degli altri, pur non vedendoli scoperti se non alla fine del turno. La board indica chi è il giocatore attivo, ovvero colui che deve far la mossa, mediante un'apposita cornice, mentre il riquadro sinistro ne riporta le informazioni in formato testuale.\\
 	La logica, per ogni mossa, verifica se precedentemente vi sono già state fatte scommesse relative ai dadi sulla board: in caso negativo, significa che il giocatore attivo deve iniziare il turno e la board propone solamente la possibilità di fare una scommessa (\textit{"Make bet"}); in caso positivo il giocatore può decidere se dubitare (\textit{"Doubt"}) della scommessa del giocatore precedente, o rilanciare con una scommessa più alta, mediante gli appositi pulsanti.\\
 	Il sistema, se qualcuno dubita, verifica chi ha ragione tra chi ha dubitato e il giocatore precedente che ha scommesso che sulla board c'è almeno una certa quantità di dadi con un certo valore. A questo punto chi non aveva ragione, perde uno dei 5 dadi a disposizione, mentre chi vince ha diritto a iniziare il prossimo turno.\\
-
+	
+			\begin{figure}[H]
+				\includegraphics[scale=0.34]{img/BoardExample.png}
+				\caption{\small{Screen della Board di gioco}}
+				\label{board}
+			\end{figure}
+	
 	\subsection{Connessione dei nodi con il server}
 	Prima di descrivere la comunicazione tra i nodi è necessario spiegare come questi reperiscono le informazioni utili per riconoscere con chi possono interagire. \\
 	Ogni nodo prima di comunicare con gli altri deve necessariamente stabilire un collegamento con una lobby che funge da server e si salva indirizzo IP e porta di ogni partecipante. Esso inizialmente attende una finestra di tempo in cui tutti i nodi possono notificare la loro volontà di connessione; al termine di questa fase, la lobby invia in broadcast un array contente gli indirizzi dei partecipanti alla partita in modo che d'ora in poi possa avvenire la comunicazione diretta solo tra nodi. Questa fase è l'unica in cui si presenta una interazione con una entità centralizzata. 
@@ -314,15 +320,26 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 	\item A inizio partita, dopo che ogni giocatore conosce gli altri, può capitare che il giocatore con id 0 sia in crash, non permettendo agli altri di iniziare il turno. E' stato impostato un timeout di tempo arbitrario, per notificare a tutti l'anomalia; a questo punto il giocatore con id successivo si farà carico di ridistribuire i dadi e di verificare la reale situazione del giocatore 0.
 	\item A inizio turno successivo al primo della partita, il giocatore che ha vinto può essere in crash prima o dopo aver notificato l'esito; se il crash avviene prima, l'esito viene annullato e il giocatore successivo continua come nessuno avesse dubitato, mentre se avviene dopo allora il giocatore successivo prende il controllo del turno rigenerando i dadi per tutti.
 \end{itemize}
-	
+		\begin{figure}[H]
+			\includegraphics[scale=0.34]{img/Activity.png}
+			\caption{\small{Activity Diagram di 3 giocatori e con presenza di crash.}}
+			\label{activity}
+		\end{figure}
+	\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	\section{Aspetti Implementativi}%-Aspetti implementativi: dettagli sulle scelte implementative, ed architettura specifica implementata. Inserire almeno il diagramma delle classi e uno delle interazioni secondo lo standard UML.
 		\subsection{Design Pattern}
 			La nostra implementazione si è subito orientata sull'utilizzo del design pattern Model View Controller\cite{MVC}. MVC si sposa perfettamente con le nostre esigenze: la parte che costituisce il Model infatti gestisce direttamente i dati, la logica e le regole del gioco; la View ha lo scopo di mostrare le informazioni elaborate (e quindi l'output grafico) all'utente, che tramite il Controller è in grado di manipolare.
 			
 		\subsection{Implementazione della logica del gioco}
-			La figura XXX mostra il digramma UML delle classi utilizzate per implementare la logica della nostra applicazione. Lo scopo del Model è quindi quello di generare i giocatori, i dadi, verificare le scommesse e riorganizzare lo stato dello stesso in caso di guasti improvvisi. La classe DiceLiar, oltre a far connettere tra di loro i processi, ha lo scopo di definire l'oggetto \textit{board}. Essa attraverso gli oggetti delle classi \textit{Dice}, \textit{Players} e \textit{Bet} gestisce il game loop e l'aggiornamento degli elementi.
-			
+			La figura \ref{Model} mostra il digramma UML delle classi utilizzate per implementare la logica della nostra applicazione. Lo scopo del Model è quindi quello di generare i giocatori, i dadi, verificare le scommesse e riorganizzare lo stato dello stesso in caso di guasti improvvisi. La classe DiceLiar, oltre a far connettere tra di loro i processi, ha lo scopo di definire l'oggetto \textit{board}. Essa attraverso gli oggetti delle classi \textit{Dice}, \textit{Players} e \textit{Bet} gestisce il game loop e l'aggiornamento degli elementi.
+			\newpage
+			\begin{figure}[H]
+				\includegraphics[scale=0.35]{img/Model.png}
+				\caption{\small{Class Diagram della componente Model.}}
+				\label{Model}
+			\end{figure}
+			\newpage
 		\subsection{L'interfaccia grafica}
 			Per l'implementazione dell'interfaccia grafica ci siamo affidati alla libreria Open Source Slick2D \cite{Slick}. E' formata da un insieme di tools e funzionalità basate sulle librerie grafiche OpenGL e LWJGL, offrendo quindi un supporto per includere animazioni, immagini, suoni, ecc. alla nostra grafica 2D. L'utilizzo di Slick2D passa attraverso l'implementazione di una classe principale che ha lo scopo di gestire tutte le caratteristiche principali della view come il frame rate, la grandezza della finestra, la modalità di rendering, il passaggio di stato ecc. Tutte le classi che invece definiscono gli stati del sistema, si basano su tre metodi principali: 
 				\begin{itemize}
@@ -331,8 +348,19 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 					\item void render(): in base al refresh rate definito nella classe principale mostra gli elementi disegnati costantemente aggiornati.
 				\end{itemize}
 			L'intero processo della view è eseguito su un thread dedicato. La classe Main si occupa di gestire i vari stati in base alle interazioni che l'utente ha con essa.
-			Per quanto riguarda gli aggiornamenti grafici (dadi correnti, ultima scommessa, ecc.) la view utilizza i valori definiti nella classe \textit{GUIController}, che appunto funge da controller.
-
+			Per quanto riguarda gli aggiornamenti grafici (dadi correnti, ultima scommessa, ecc.) la view (fig.\ref*{View}) utilizza i valori definiti nella classe \textit{GUIController}, che appunto funge da controller (fig.\ref{Controller}).
+		\begin{figure}[H]
+			\includegraphics[scale=0.34]{img/Controller.png}
+			\caption{\small{Class Diagram della componente Controller.}}
+			\label{Controller}
+		\end{figure}	
+		\newpage
+		\begin{figure}[H]
+			\includegraphics[scale=0.34]{img/View.png}
+			\caption{\small{Class Diagram della componente View.}}
+			\label{View}
+		\end{figure}
+		
 		\subsection{Comunicazione tra nodi}
 			Lo scambio di informazioni tra i nodi distribuiti viene effettuato attraverso le API di java RMI. La Remote Method Invocation infatti permette a tutti i processi di invocare dei metodi remoti, fornendo così omogeneità e simmetria nel progetto; infatti la procedura utilizzata è disegnata sul paradadigma Object Oriented e i vari processi si comportano come degli oggetti che effettuano delle chiamate a metodi.
 			Più precisamente ogni nodo presente in una differente Virtual Machine, ha 
