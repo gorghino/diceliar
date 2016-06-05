@@ -31,7 +31,7 @@
 	%
 	\author{Davide Aguiari, Fabio Proietti}
 	%
-	\institute{Università di Bologna, Dipartimento di Scienze dell'Informazione
+	\institute{Università di Bologna, Dipartimento di Scienze dell'Informazione\\
 		\email{davide.aguiari@studio.unibo.it\\fabio.proietti@studio.unibo.it}}
 	\maketitle
 	%
@@ -43,17 +43,17 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{Introduzione}%-Introduzione: in cui si inquadra il problema affrontato, chiarendo gli obiettivi, riassumendo lo stato dell'arte, e descrivendo la struttura della relazione.
-		La nostra idea di progetto è stata quella di sviluppare la versione multiplayer del  famosissimo gioco da tavolo, con un approccio di rete totalmente distribuito e attribuendo particolare attenzione all'affidabilità del sistema al fine di tollerarne i guasti di tipo crash. \\
+		La nostra idea di progetto è stata quella di sviluppare la versione multiplayer del  famosissimo gioco da tavolo, con un approccio di rete distribuito e attribuendo particolare attenzione all'affidabilità del sistema al fine di tollerarne i guasti di tipo crash. \\
 		Liar's Dice \cite{wikiDice} è originario del Sudamerica e importato in Europa dai \textit{conquistadores} nel XV secolo. Il gioco è conosciuto anche con i nomi di \textit{Perudo}, \textit{Dudo} o, grazie anche al film Pirati dei Caraibi, come \textit{Pirate's dice}.\footnote[1]{\url{https://www.youtube.com/watch?v=piGg5ZrmoQA}}\\
 		Le successive sezioni tratteranno la logica del gioco, gli aspetti progettuali, le scelte implementative adottate, la valutazione dopo la fase di test, e per finire alcune considerazioni conclusive sul sistema e possibili miglioramenti futuri.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%		 
-	\section{Logica del Sistema}
+	\section{Logica del gioco}
 		Per rendere più semplice la comprensione progettuale del sistema, in questa sezione spiegheremo più in dettaglio le regole del gioco. \\
 		Ogni partita si gioca con un minimo di due giocatori ad un massimo di 8 (ma potrebbe essere superiore in base alla versione). Tutti i giocatori all'inizio di un nuovo round lanciano i dadi a loro disposizione (inizialmente sono 5) e li tengono coperti in modo che gli avversari non vedano i valori ottenuti. A questo punto colui che inizia il round, in base anche ai suoi dadi, deve effettuare una scommessa nel quale indicherà quanti dadi dello stesso numero sono potenzialmente in gioco, compresi quelli degli altri giocatori.\\ A questo punto il giocatore successivo può scegliere se credere alla precedente scommessa oppure dubitare. Nel primo caso esso è tenuto ad effettuare un rilancio sulla base dell'ultima scommessa, definendo quindi o un valore del dado maggiore rispetto al precedente oppure un numero di occorrenze superiore alla scommessa appena effettuata e passare di nuovo il turno. Nel caso in cui dubita (nella versione inglese il giocatore urla Liar!), tutti i partecipanti alla partita sveleranno i propri dadi per decretare chi ha vinto. Se la scommessa contiene un numero di occorrenze minore o uguale rispetto al valore del dado, il giocatore che ha precedentemente scommesso vince, e il suo "accusatore" perde un dado; altrimenti il vincitore sarà chi ha dubitato e a perdere un dado è lo scommettitore. Il round successivo, quindi, il giocatore perdente lancerà un dado in meno rispetto agli altri. Se un giocatore rimane senza dadi avrà automaticamente perso la partita e a vincere sarà colui che riuscirà ad eliminare tutti i partecipanti alla sfida.\\
 		La nostra versione inoltre contiene anche il dado jolly: il dado di valore 1 può essere usato con un valore diverso a piacere, solo se nessuno, durante il turno, scommette utilizzando 1 come valore reale; a quel punto gli 1 smettono di valere valore jolly per tutta la durata del turno.
 	
 \section{Aspetti progettuali}
-L'obiettivo primario del gioco progettato è la tolleranza ai guasti di tipo crash, ottenuta mediante uno studio accurato del sistema di comunicazione tra i processi giocanti e lo scambio di informazioni per mantenere la coerenza durante l'intera partita.\\
+L'obiettivo primario del gioco progettato è la tolleranza ai guasti di tipo crash, ottenuta mediante uno studio accurato del sistema di comunicazione tra i processi giocanti e lo scambio di informazioni per mantenere la coerenza durante l'intera partita.
 
 	\subsection{Il gioco}
 	Il gioco (fig.\ref{board}), dal punto di vista progettuale, non differisce dalla versione realmente giocata e propone a chi gioca, una grafica accattivante e dinamica in grado di visualizzare ogni mossa fatta da ogni giocatore attivo.\\
@@ -322,17 +322,22 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 \end{itemize}
 		\begin{figure}[H]
 			\includegraphics[scale=0.34]{img/Activity.png}
-			\caption{\small{Activity Diagram di 3 giocatori e con presenza di crash.}}
+			\caption{\small{Sequence Diagram di 3 giocatori e con presenza di crash.}}
 			\label{activity}
 		\end{figure}
 	\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	\section{Aspetti Implementativi}%-Aspetti implementativi: dettagli sulle scelte implementative, ed architettura specifica implementata. Inserire almeno il diagramma delle classi e uno delle interazioni secondo lo standard UML.
+	In questa sezione spieghiamo quali sono i dettagli implementati adottati, i design pattern utilizzati e il framework grafico per rendere l'esperienza di gioco più coinvolgente.\\
+	Si è scelto di utilizzare il linguaggio a oggetti JAVA perchè ben si presta all'implementazione di un gioco di questo tipo grazie anche a RMI, descritto in seguito, per invocare metodi di processi remoti.
 		\subsection{Design Pattern}
-			La nostra implementazione si è subito orientata sull'utilizzo del design pattern Model View Controller\cite{MVC}. MVC si sposa perfettamente con le nostre esigenze: la parte che costituisce il Model infatti gestisce direttamente i dati, la logica e le regole del gioco; la View ha lo scopo di mostrare le informazioni elaborate (e quindi l'output grafico) all'utente, che tramite il Controller è in grado di manipolare.
+			La nostra implementazione si è subito orientata sull'utilizzo del design pattern Model View Controller\cite{MVC}. MVC si sposa perfettamente con le nostre esigenze: la parte che costituisce il Model infatti gestisce direttamente i dati, la logica e le regole del gioco; la View ha lo scopo di mostrare le informazioni elaborate (e quindi l'output grafico) all'utente, che tramite il Controller è in grado di manipolare. I diagrammi UML nelle seguenti pagine mostrano in dettaglio dipendenze e interazioni tra le classi implementate.
 			
-		\subsection{Implementazione della logica del gioco}
-			La figura \ref{Model} mostra il digramma UML delle classi utilizzate per implementare la logica della nostra applicazione. Lo scopo del Model è quindi quello di generare i giocatori, i dadi, verificare le scommesse e riorganizzare lo stato dello stesso in caso di guasti improvvisi. La classe DiceLiar, oltre a far connettere tra di loro i processi, ha lo scopo di definire l'oggetto \textit{board}. Essa attraverso gli oggetti delle classi \textit{Dice}, \textit{Players} e \textit{Bet} gestisce il game loop e l'aggiornamento degli elementi.
+\subsection{Implementazione della logica del gioco}
+La figura \ref{Model} mostra il digramma UML delle classi utilizzate per implementare la logica della nostra applicazione.\\
+Lo scopo del Model è quindi quello di generare inizialmente la baord di gioco insieme ai giocatori e ai dadi; la board si preoccupa di indicare al giocatore del turno la possibilità di fare una scommessa, verificandone la correttezza secondo le regole inizialmente descritte; infine si riorganizza lo stato del nuovo turno generando nuovi dadi e aggiornando gli attributi dei giocatori.\\
+La classe DiceLiar contiene il metodo \textit{main()} del progetto e, oltre a far connettere tra di loro i processi mediante la lobby, ha lo scopo di inizializzare la \textit{board}.\\
+I metodi remoti utilizzati da RMI sono tutti organizzati in \textit{RMIController}.
 			\newpage
 			\begin{figure}[H]
 				\includegraphics[scale=0.35]{img/Model.png}
@@ -364,7 +369,7 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 		\subsection{Comunicazione tra nodi}
 			Lo scambio di informazioni tra i nodi distribuiti viene effettuato attraverso le API di java RMI. La Remote Method Invocation infatti permette a tutti i processi di invocare dei metodi remoti, fornendo così omogeneità e simmetria nel progetto; infatti la procedura utilizzata è disegnata sul paradadigma Object Oriented e i vari processi si comportano come degli oggetti che effettuano delle chiamate a metodi.
 			Più precisamente ogni nodo presente in una differente Virtual Machine, ha 
-			l'obbligo di implementare una interfaccia comune a tutti gli altri che mostra quali metodi sono "esportabili". 
+			l'obbligo di implementare una interfaccia comune a tutti gli altri mostrando i metodi "esportabili". 
 			In generale RMI è composto da 3 entità distinte: 
 				\begin{itemize}
 					\item Uno o più server RMI;
@@ -374,6 +379,24 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 			Il processo che funge da server implementa l'interfaccia relativa agli oggetti che intende esportare e li registra nel proprio registry, che non è altro che un processo demone che tiene traccia di questi oggetti. Il client quindi non fa altro che effettuare delle chiamate a questo registro al fine di utilizzarne gli oggetti presenti. La gestione della comunicazione è affidata allo stub \cite{rmi}. \\
 			Nel caso di Liar's Dice abbiamo deciso di implementare questa tecnica in modo che ogni nodo funga sia da client che da server traedone molteplici vantaggi, uno su tutti la possibilità definire la politica di tolleranza ai guasti descritta precedentemente.
 			
+			
+\subsection{Tolleranza ai guasti}
+In aggiunta ai dettagli più di tipo progettuale, descritti in precedenza, vengono qui descritti i dettagli implementativi per quanto riguarda la tolleranza ai guasti di tipo crash.
+	Nel caso di un guasto di questo tipo sul player corrent, il
+	sistema invoca un'eccezione di tipo \textit{RemoteException} verso
+	i nodi a lui connessi e in \textit{wait()} nel metodo RMI \textit{checkPlayerCrash()}; il vecchio player giocante viene quindi tolto dalla lista dei giocatori, conservando i dadi fino alla fine del turno, riconfigurando l'anello individuando chi sono i giocatori precedenti e successivi a quello in stato crash.\\
+	Nel caso di un guasto di un nodo intermedio, quindi non direttamente giocante, il risultato è il
+	medesimo al momento di un'interrogazione da parte dei vari nodi
+	dell'anello, in diverse operazioni durante il turno di gioco, come descritto precedentemente.
+	Si è scelto questo approccio per permettere di completare un turno anche se vi sono stati dei giocatori in stato crash, al fine di mantenere coerente lo stato locale delle
+	diverse istanze.\\
+Il sistema così implementato assicura l'esecuzione della partita, tollerando fino a $N-2$ giocatori in crash, dove N è il numero di giocatori; nel momento in cui un giocatore si accorge di essere rimasto l'unico in gara, si autodichiara vincitore della partita.
+
+\subsection{Gestione della critical section}
+
+Il sistema di gioco e l'architettura token ring del turno è implementata mediante una critical section: solo il giocatore designato giocante (\textit{PlayingPlayer}) è autorizzato a scommettere sulla \textit{Bet} della board, verificando che il valore PlayingPlayer con il proprio id. I giocatori che non sono \textit{PlayingPlayer} vengono bloccati mediante un oggetto di tipo \textit{Lock} e sbloccati (\textit{notifyAll()}) solo quando il turno è concluso, quindi se è stata alzata la scommessa o si è dubitato.\\
+Il meccanismo di tolleranza ai guasti rimane comunque valido, dato che i processi bloccati vengono segnalati e sbloccati se l'eccezione \textit{RemoteException} è sollevata.
+			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 
 
@@ -382,7 +405,7 @@ E' chiaro quindi come il crash di un client non inficia lo sviluppo di un turno,
 	\section{Valutazione e Conclusioni}%-Valutazione: confronto delle soluzioni proposte con soluzioni analoghe allo stato dell'arte.
 	%-Conclusioni: commenti conclusivi su possibili miglioramenti di quanto discusso, e possibili linee di intervento futuro.
 		La fase più importante per trarre le nostre conclusioni è stata quella di testing; infatti nel momento in cui abbiamo avuto la nesessità di apportate delle modifiche al codice, siamo stati costretti a rivedere alcune scelte implementative stabilite precedentemente. Dato che la nostra prima implementazione del design pattern MVC non era di facile gestione, abbiamo deciso di raffinare la sua struttura introducendo specifiche classi "ponte" contenenti tutti gli elementi necessari all'aggiornamento sia del model che della view. \\
-		Il progetto ha richiesto circa 1 mese/uomo e si è dimostrato ostico nella configurazione iniziale di RMI e nella risoluzione del bug nella distribuzione dei dadi iniziale che portava la CPU al ~700\% facendoci preferire una modalità diversa, di tipo broadcast.
+		Il progetto ha richiesto circa 1 mese/uomo e si è dimostrato ostico nella configurazione iniziale di RMI e nella risoluzione del bug nella distribuzione dei dadi iniziale che portava la CPU al 700\% circa facendoci preferire una modalità diversa, di tipo broadcast.
 		Il lavoro di bugfix è stato importante anche per l'introduzione di alcune migliorie grafiche che hanno migliorato l'esperienza di gioco dell'utente. \\
 		In conclusione, visto lo stato attuale del progetto, vi è la possibilità di estenderlo con features quali la modalità di gioco single player o un più semplice meccanismo di connessione al server. Infine la grande versatilità di java potrebbe favorire una semplice e fluida esperienza di gioco sia in ambienti mobile che desktop.
 	
