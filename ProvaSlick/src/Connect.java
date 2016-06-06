@@ -109,11 +109,9 @@ public class Connect extends BasicGameState {
                     
                     clickedPlay = true;
                     
-                    //takeIPAddr = ipField.getText();
-                    //takePort = portField.getText();
-                    takeIPAddr = "127.0.0.1";
-                    takePort = "50000";
-                    
+                    takeIPAddr = ipField.getText();
+                    takePort = portField.getText();
+                                                           
                     System.out.println("IP: " + takeIPAddr + " Port: " + takePort);
 
                     try {

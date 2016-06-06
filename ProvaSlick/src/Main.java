@@ -34,7 +34,7 @@ public class Main extends StateBasedGame implements Runnable{
        gDefImg.importImages();
        gDefFont.importFont();
        
-       //this.addState(new Menu(gC,gDefImg, gDrawButtons));
+       this.addState(new Menu(gC,gDefImg, gDrawButtons));
        this.addState(new Connect(gC, gDefImg, gDrawButtons,gDefFont));
        this.addState(new Play(gC, gDefImg, gDrawButtons, gDefFont));
 
