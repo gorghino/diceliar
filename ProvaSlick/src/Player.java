@@ -53,6 +53,16 @@ public class Player implements Serializable{
                     
                     gC.makeChoice = true;
                     
+                    if (getAllPlayers().getPlayersAlive() == 1) {
+                        System.out.println(DiceLiar.ANSI_GREEN + "Sei rimasto solo tu. HAI VINTO!" + DiceLiar.ANSI_RESET);
+                        gC.setWinGame(true);
+                        gC.setShowDice(false);
+                        gC.setRestartBoard(false);
+                        gC.setInitBoard(false);
+                        gC.playDiceAnimation = false;
+                        return false;
+                    }
+                    
                     if(gC.doubtClicked){ // HO CLICCATO DUBITO 
                         gC.makeChoice = false;
                         gC.doubtClicked = false;
