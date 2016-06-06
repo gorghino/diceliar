@@ -45,6 +45,7 @@ public class Main extends StateBasedGame implements Runnable{
             appgc = new AppGameContainer(new Main(gameName));
             appgc.setDisplayMode(xSize, ySize, false);
             appgc.setTargetFrameRate(15);
+            appgc.setShowFPS(false);
             System.out.println("Start appgc");
             appgc.start();
         }

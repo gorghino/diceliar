@@ -45,11 +45,7 @@ public class Menu extends BasicGameState {
         
         gDrawButtons.drawButton((Main.xSize/2)-(GuiDefineButtons.buttonWidth/2), 438, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 644, 451, "Connect", Color.white);
         gDrawButtons.drawButton((Main.xSize/2)-(GuiDefineButtons.buttonWidth/2), 500, GuiDefineButtons.buttonWidth, GuiDefineButtons.buttonHeigh, 660, 515, "Exit", Color.white);       
-        
-        g.setColor(Color.black);
-        g.drawString(""+getX, 50, 70);
-        g.drawString(""+getY, 50, 90);
-         
+ 
     }
     @Override
     public void update(GameContainer gc,StateBasedGame sbg,int delta) throws SlickException { // run this every frame to display graphics to the player

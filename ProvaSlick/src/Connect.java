@@ -77,12 +77,6 @@ public class Connect extends BasicGameState {
         
         if (clickedPlaySkip == false)
             gDefFont.getTextFont().drawString(500, 600,"Connected. Wait  other players... ",Color.white);
-            
-        
-        
-        g.setColor(Color.black);
-        g.drawString(""+getX, 50, 70);
-        g.drawString(""+getY, 50, 90); 
     }
 
     @Override
@@ -93,7 +87,6 @@ public class Connect extends BasicGameState {
         if (input.isMouseButtonDown(0)){
             getX = Mouse.getX();
             getY = Mouse.getY();
-            System.out.println("CLICCATO SU " + getX + " " + getY);
 
         }
         if (clickedPlay == false){

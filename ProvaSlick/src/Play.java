@@ -274,11 +274,6 @@ public class Play extends BasicGameState {
                 guiDefImg.getPlayerRemovedVert().draw(selectorPosition[i][0], selectorPosition[i][1]);
             }
         }
-
-        g.setColor(Color.black);
-        g.drawString("" + getX, 50, 70);
-        g.drawString("" + getY, 50, 90);
-
     }
 
     @Override
@@ -358,9 +353,6 @@ public class Play extends BasicGameState {
 
         ///////////////////////////////////////////////////////////////////
         Input input = gc.getInput();
-        if (gc.getInput().isKeyPressed(Input.KEY_1)) {
-            System.exit(0);
-        }
 
         if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 
