@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,11 +7,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author gorgo
- */
 public class Lobby extends UnicastRemoteObject implements RMI {
+    
+    public static int PORT = 50000;
+    public static int WAIT_SECONDS = 30;
       
     private final Object lock;
     ArrayList<PlayerEntry> arrayPlayers;
@@ -28,12 +21,12 @@ public class Lobby extends UnicastRemoteObject implements RMI {
         super();
         arrayPlayers = new ArrayList<>();
         lock = new Object();
-        seconds = 10*1000;
+        seconds = WAIT_SECONDS*1000;
     }
 
     public static void main(String[] args) throws RemoteException, AlreadyBoundException {
         Lobby lobbyServerInterface = new Lobby();
-        Registry reg = LocateRegistry.createRegistry(50000);
+        Registry reg = LocateRegistry.createRegistry(PORT);
         reg.bind("lobby", lobbyServerInterface);
         System.out.println("Server Started...");
         
@@ -44,6 +37,7 @@ public class Lobby extends UnicastRemoteObject implements RMI {
         try {
             while(seconds > 0){
                 seconds -= 1000;
+                System.out.println(seconds);
                 Thread.sleep(1000);
             }
            
@@ -60,7 +54,7 @@ public class Lobby extends UnicastRemoteObject implements RMI {
     public synchronized ArrayList<PlayerEntry> addClient(String ipPlayer, int portPlayer) throws RemoteException {
         PlayerEntry newPlayer = new PlayerEntry(ipPlayer, portPlayer);
         arrayPlayers.add(newPlayer);
-        System.out.println("Aggiunto giocatore con IP: " + ipPlayer + ":" + portPlayer + "\n");      
+        //System.out.println("Aggiunto giocatore con IP: " + ipPlayer + ":" + portPlayer + "\n");      
         synchronized (lock) {
             try {
                 while (!ready){
